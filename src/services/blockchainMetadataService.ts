@@ -1,5 +1,11 @@
 import { Connection, PublicKey } from '@solana/web3.js'
 import { supabase } from '@/integrations/supabase/client'
+import { Buffer } from 'buffer'
+
+// Ensure Buffer is available globally for browser compatibility
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer
+}
 
 // Metaplex Token Metadata Program ID
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s')
@@ -154,7 +160,22 @@ export class BlockchainMetadataService {
 
     } catch (error) {
       console.error(`Error fetching blockchain metadata for ${mintAddress}:`, error)
-      return null
+      
+      // Return basic fallback even on error to prevent complete failure
+      try {
+        const mintPubkey = new PublicKey(mintAddress)
+        const tokenSupply = await this.connection.getTokenSupply(mintPubkey)
+        return {
+          mint: mintAddress,
+          symbol: mintAddress.slice(0, 4) + '...',
+          name: 'Unknown Token',
+          decimals: tokenSupply.value.decimals,
+          is_verified: false
+        }
+      } catch (fallbackError) {
+        console.error(`Complete fallback failed for ${mintAddress}:`, fallbackError)
+        return null
+      }
     }
   }
 
@@ -212,28 +233,60 @@ export class BlockchainMetadataService {
       // This is a simplified parser - in production use @metaplex-foundation/mpl-token-metadata
       let offset = 1 // Skip discriminator
       
+      // Ensure we have enough data
+      if (data.length < 43) {
+        console.warn('Metadata account data too short')
+        return {}
+      }
+      
       // Read name (32 bytes, null-terminated)
       const nameBytes = data.slice(offset, offset + 32)
-      const name = nameBytes.toString('utf8').replace(/\0/g, '').trim()
+      const name = this.safeDecodeString(nameBytes)
       offset += 32
       
       // Read symbol (10 bytes, null-terminated)
       const symbolBytes = data.slice(offset, offset + 10)
-      const symbol = symbolBytes.toString('utf8').replace(/\0/g, '').trim()
+      const symbol = this.safeDecodeString(symbolBytes)
       offset += 10
       
-      // Read URI (200 bytes, null-terminated)
-      const uriBytes = data.slice(offset, offset + 200)
-      const uri = uriBytes.toString('utf8').replace(/\0/g, '').trim()
+      // Read URI (200 bytes, null-terminated) - check bounds
+      if (data.length >= offset + 200) {
+        const uriBytes = data.slice(offset, offset + 200)
+        const uri = this.safeDecodeString(uriBytes)
+        
+        return {
+          name: name || null,
+          symbol: symbol || null,
+          uri: uri || null
+        }
+      }
       
       return {
         name: name || null,
         symbol: symbol || null,
-        uri: uri || null
+        uri: null
       }
     } catch (error) {
       console.error('Error parsing metadata account:', error)
       return {}
+    }
+  }
+
+  /**
+   * Safely decode string from bytes with error handling
+   */
+  private static safeDecodeString(bytes: Buffer): string {
+    try {
+      // Try UTF-8 first
+      return bytes.toString('utf8').replace(/\0/g, '').trim()
+    } catch (error) {
+      try {
+        // Fallback to latin1
+        return bytes.toString('latin1').replace(/\0/g, '').trim()
+      } catch (fallbackError) {
+        console.warn('String decode failed:', fallbackError)
+        return ''
+      }
     }
   }
 

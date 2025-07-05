@@ -107,6 +107,14 @@ const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: str
     description: 'Pyth delivers real-time market data to smart contracts.',
     website: 'https://pyth.network/',
     twitter: 'https://twitter.com/PythNetwork'
+  },
+  'DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ': {
+    symbol: 'DUST',
+    name: 'Dust Protocol',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ/logo.png',
+    description: 'DUST is a token for the Dust Protocol.',
+    website: 'https://dustprotocol.com/',
+    twitter: 'https://twitter.com/dustprotocol'
   }
 }
 
