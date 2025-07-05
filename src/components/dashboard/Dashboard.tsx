@@ -27,7 +27,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <PortfolioChart />
           
           {/* Token List */}
-          <TokenList />
+          <TokenList onNavigate={onNavigate} />
           
           {/* Quick Actions */}
           <div className="col-span-full lg:col-span-7 dashboard-card p-6">

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
-import { TrendingUp, TrendingDown, ExternalLink, RefreshCw } from "lucide-react"
+import { TrendingUp, TrendingDown, ExternalLink, RefreshCw, Wallet } from "lucide-react"
 
 interface Token {
   symbol: string
@@ -64,7 +64,11 @@ const mockTokens: Token[] = [
   }
 ]
 
-export function TokenList() {
+interface TokenListProps {
+  onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => void
+}
+
+export function TokenList({ onNavigate }: TokenListProps) {
   const { wallets, connected } = useWallet()
   const { portfolio, loading, refreshing, refreshPortfolio, lastUpdated } = usePortfolio()
 
@@ -123,16 +127,25 @@ export function TokenList() {
           </div>
           <h4 className="text-lg font-semibold text-foreground mb-2">No Holdings Found</h4>
           <p className="text-muted-foreground mb-6">
-            Click refresh to fetch your latest token holdings
+            Add wallets to track your portfolio or refresh to fetch your latest token holdings
           </p>
-          <Button 
-            variant="primary" 
-            onClick={refreshPortfolio}
-            disabled={refreshing}
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Refreshing...' : 'Refresh Portfolio'}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button 
+              variant="primary" 
+              onClick={refreshPortfolio}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : 'Refresh Portfolio'}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => onNavigate?.("wallets")}
+            >
+              <Wallet className="w-4 h-4 mr-2" />
+              Manage Wallets
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4 max-h-80 overflow-y-auto dashboard-scrollbar">
