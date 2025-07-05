@@ -21,14 +21,58 @@ export interface WalletHoldings {
   totalUsdValue: number
 }
 
-// Known SPL tokens for mainnet (you can expand this list)
+// Known SPL tokens for mainnet with logos and metadata
 const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: string }> = {
   'So11111111111111111111111111111111111111112': {
     symbol: 'SOL',
     name: 'Solana',
     logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
   },
-  // Add more tokens as needed
+  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': {
+    symbol: 'USDC',
+    name: 'USD Coin',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
+  },
+  'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': {
+    symbol: 'USDT',
+    name: 'Tether USD',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg'
+  },
+  'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': {
+    symbol: 'mSOL',
+    name: 'Marinade staked SOL',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So/logo.png'
+  },
+  '7dHbWXmci3dT6jZmpyS8J2h7V4k8EG1XaBtFr9TvQw4o': {
+    symbol: 'JITO',
+    name: 'Jito Staked SOL',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT6jZmpyS8J2h7V4k8EG1XaBtFr9TvQw4o/logo.png'
+  },
+  'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263': {
+    symbol: 'BONK',
+    name: 'Bonk',
+    logoURI: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY58'
+  },
+  'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN': {
+    symbol: 'JUP',
+    name: 'Jupiter',
+    logoURI: 'https://static.jup.ag/jup/icon.png'
+  },
+  'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn': {
+    symbol: 'jitoSOL',
+    name: 'Jito Staked SOL',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn/logo.png'
+  },
+  'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1': {
+    symbol: 'bSOL',
+    name: 'BlazeStake Staked SOL',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1/logo.png'
+  },
+  'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3': {
+    symbol: 'PYTH',
+    name: 'Pyth Network',
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png'
+  }
 }
 
 export class SolanaService {

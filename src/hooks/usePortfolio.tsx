@@ -68,9 +68,9 @@ export function usePortfolio() {
   }
 
   /**
-   * Refresh portfolio by fetching from Solana blockchain
+   * Refresh portfolio by fetching from Solana blockchain with retry logic
    */
-  const refreshPortfolio = async () => {
+  const refreshPortfolio = async (retryCount = 0) => {
     if (!user || wallets.length === 0) {
       toast({
         title: "No Wallets",
@@ -81,6 +81,8 @@ export function usePortfolio() {
     }
 
     setRefreshing(true)
+    const maxRetries = 3
+    
     try {
       const walletAddresses = wallets.map(w => w.wallet_address)
       
@@ -89,8 +91,19 @@ export function usePortfolio() {
         description: `Fetching data for ${walletAddresses.length} wallet(s)...`,
       })
 
-      // Fetch holdings from Solana blockchain
-      const holdingsArray = await solanaService.getMultipleWalletHoldings(walletAddresses)
+      // Fetch holdings from Solana blockchain with retry logic
+      let holdingsArray: any[] = []
+      
+      try {
+        holdingsArray = await solanaService.getMultipleWalletHoldings(walletAddresses)
+      } catch (error) {
+        if (retryCount < maxRetries) {
+          console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`)
+          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)))
+          return refreshPortfolio(retryCount + 1)
+        }
+        throw error
+      }
       
       // Clear existing portfolio data for this user
       await supabase
@@ -100,6 +113,7 @@ export function usePortfolio() {
 
       // Insert new portfolio data
       const portfolioData: any[] = []
+      let totalTokensFound = 0
       
       holdingsArray.forEach(holdings => {
         // Add SOL balance
@@ -114,6 +128,7 @@ export function usePortfolio() {
             usd_value: 0, // Will be updated when we add price feeds
             last_updated: new Date().toISOString()
           })
+          totalTokensFound++
         }
 
         // Add SPL tokens
@@ -128,6 +143,7 @@ export function usePortfolio() {
             usd_value: 0, // Will be updated when we add price feeds
             last_updated: new Date().toISOString()
           })
+          totalTokensFound++
         })
       })
 
@@ -144,9 +160,10 @@ export function usePortfolio() {
             variant: "destructive",
           })
         } else {
+          const uniqueTokens = new Set(portfolioData.map(p => p.token_mint)).size
           toast({
             title: "Success",
-            description: `Updated portfolio with ${portfolioData.length} holdings`,
+            description: `Updated portfolio: ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`,
           })
           
           // Reload from database to show updated data
@@ -161,9 +178,14 @@ export function usePortfolio() {
 
     } catch (error) {
       console.error('Error refreshing portfolio:', error)
+      
+      const errorMessage = retryCount >= maxRetries 
+        ? `Failed to refresh portfolio after ${maxRetries} attempts. Please try again later.`
+        : "Failed to refresh portfolio"
+        
       toast({
         title: "Error",
-        description: "Failed to refresh portfolio",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
