@@ -4,14 +4,17 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Wallet, Mail, Lock } from "lucide-react"
+import { Wallet, Mail, Lock, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { EmailConfirmationPage } from "./EmailConfirmationPage"
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false)
+  const [confirmationEmail, setConfirmationEmail] = useState("")
   const { signIn, signUp } = useAuth()
   const { toast } = useToast()
 
@@ -31,10 +34,8 @@ export function AuthPage() {
           variant: "destructive",
         })
       } else if (!isLogin) {
-        toast({
-          title: "Success",
-          description: "Check your email to confirm your account",
-        })
+        setConfirmationEmail(email)
+        setShowEmailConfirmation(true)
       }
     } catch (error) {
       toast({
@@ -45,6 +46,20 @@ export function AuthPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (showEmailConfirmation) {
+    return (
+      <EmailConfirmationPage 
+        email={confirmationEmail}
+        onBack={() => {
+          setShowEmailConfirmation(false)
+          setIsLogin(true)
+          setEmail("")
+          setPassword("")
+        }}
+      />
+    )
   }
 
   return (
@@ -104,7 +119,14 @@ export function AuthPage() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? "Loading..." : (isLogin ? "Sign In" : "Sign Up")}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {isLogin ? "Signing In..." : "Creating Account..."}
+              </>
+            ) : (
+              isLogin ? "Sign In" : "Sign Up"
+            )}
           </Button>
         </form>
 
@@ -113,6 +135,7 @@ export function AuthPage() {
             type="button"
             onClick={() => setIsLogin(!isLogin)}
             className="text-primary hover:underline text-sm"
+            disabled={loading}
           >
             {isLogin 
               ? "Don't have an account? Sign up" 
