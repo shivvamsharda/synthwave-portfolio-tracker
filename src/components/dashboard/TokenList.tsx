@@ -2,7 +2,8 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useWallet } from "@/hooks/useWallet"
-import { TrendingUp, TrendingDown, ExternalLink } from "lucide-react"
+import { usePortfolio } from "@/hooks/usePortfolio"
+import { TrendingUp, TrendingDown, ExternalLink, RefreshCw } from "lucide-react"
 
 interface Token {
   symbol: string
@@ -65,19 +66,35 @@ const mockTokens: Token[] = [
 
 export function TokenList() {
   const { wallets, connected } = useWallet()
+  const { portfolio, loading, refreshing, refreshPortfolio, lastUpdated } = usePortfolio()
 
   return (
     <DashboardCard className="p-6 col-span-full lg:col-span-5">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-foreground">Token Holdings</h3>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">Token Holdings</h3>
+          {lastUpdated && (
+            <p className="text-xs text-muted-foreground">
+              Last updated: {lastUpdated.toLocaleString()}
+            </p>
+          )}
+        </div>
         <div className="flex items-center space-x-2">
+          {connected && wallets.length > 0 && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={refreshPortfolio}
+              disabled={refreshing}
+              className="text-primary hover:text-primary"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </Button>
+          )}
           <div className="hidden sm:block">
             <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-4 !py-2" />
           </div>
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
-            <ExternalLink className="w-4 h-4 mr-2" />
-            View All
-          </Button>
         </div>
       </div>
 
@@ -94,27 +111,56 @@ export function TokenList() {
             <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-6 !py-3" />
           </div>
         </div>
+      ) : loading ? (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted-foreground">Loading portfolio...</p>
+        </div>
+      ) : portfolio.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-cyber flex items-center justify-center">
+            <span className="text-background font-bold text-xl">₿</span>
+          </div>
+          <h4 className="text-lg font-semibold text-foreground mb-2">No Holdings Found</h4>
+          <p className="text-muted-foreground mb-6">
+            Click refresh to fetch your latest token holdings
+          </p>
+          <Button 
+            variant="primary" 
+            onClick={refreshPortfolio}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh Portfolio'}
+          </Button>
+        </div>
       ) : (
         <div className="space-y-4 max-h-80 overflow-y-auto dashboard-scrollbar">
-          {mockTokens.map((token, index) => (
+          {portfolio.map((token) => (
             <div
-              key={token.symbol}
+              key={`${token.wallet_address}-${token.token_mint}`}
               className="flex items-center justify-between p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 border border-border/30"
             >
               <div className="flex items-center space-x-4">
                 {/* Token Icon */}
                 <div className="w-10 h-10 rounded-full bg-gradient-cyber flex items-center justify-center text-background font-bold text-sm">
-                  {token.symbol.slice(0, 2)}
+                  {token.token_symbol.slice(0, 2)}
                 </div>
                 
                 {/* Token Info */}
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-foreground">{token.symbol}</span>
-                    <span className="text-xs text-muted-foreground">{token.name}</span>
+                    <span className="font-semibold text-foreground">{token.token_symbol}</span>
+                    <span className="text-xs text-muted-foreground">{token.token_name}</span>
                   </div>
                   <div className="text-sm text-muted-foreground font-mono">
-                    {token.balance} • {token.allocation}%
+                    {token.balance.toLocaleString(undefined, { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 6 
+                    })}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {token.wallet_address.slice(0, 4)}...{token.wallet_address.slice(-4)}
                   </div>
                 </div>
               </div>
@@ -122,19 +168,10 @@ export function TokenList() {
               {/* Token Stats */}
               <div className="text-right">
                 <div className="font-semibold font-mono text-foreground">
-                  {token.value}
+                  ${token.usd_value?.toFixed(2) || '0.00'}
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  {token.change24h >= 0 ? (
-                    <TrendingUp className="w-3 h-3 text-primary" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3 text-destructive" />
-                  )}
-                  <span className={`text-xs font-medium ${
-                    token.change24h >= 0 ? "text-primary" : "text-destructive"
-                  }`}>
-                    {token.change24h >= 0 ? "+" : ""}{token.change24h.toFixed(2)}%
-                  </span>
+                <div className="text-xs text-muted-foreground">
+                  Price feed coming soon
                 </div>
               </div>
             </div>
