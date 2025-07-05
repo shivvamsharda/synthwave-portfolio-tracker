@@ -159,6 +159,10 @@ export function usePortfolio() {
       })
 
       if (portfolioData.length > 0) {
+        console.log('Attempting to insert portfolio data:', portfolioData.length, 'items')
+        console.log('User ID:', user.id)
+        console.log('Sample portfolio item:', portfolioData[0])
+        
         const { error } = await supabase
           .from('portfolio')
           .insert(portfolioData)
@@ -167,7 +171,7 @@ export function usePortfolio() {
           console.error('Error saving portfolio:', error)
           toast({
             title: "Error",
-            description: "Failed to save portfolio data",
+            description: `Failed to save portfolio data: ${error.message}`,
             variant: "destructive",
           })
         } else {
