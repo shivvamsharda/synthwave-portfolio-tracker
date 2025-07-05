@@ -30,26 +30,30 @@ export class BlockchainMetadataService {
    */
   static async getTokenMetadata(mintAddress: string): Promise<BlockchainTokenMetadata | null> {
     try {
+      console.log(`🔍 Getting metadata for token: ${mintAddress}`)
+      
       // First, check database cache
       const cached = await this.getFromDatabase(mintAddress)
       if (cached) {
-        console.log(`Found cached metadata for ${mintAddress}`)
+        console.log(`✅ Found cached metadata for ${mintAddress}:`, cached)
         return cached
       }
 
       // If not in cache, fetch from blockchain
-      console.log(`Fetching metadata from blockchain for ${mintAddress}`)
+      console.log(`🚀 Fetching metadata from blockchain for ${mintAddress}`)
       const blockchainData = await this.fetchFromBlockchain(mintAddress)
       
       if (blockchainData) {
+        console.log(`✅ Successfully fetched blockchain metadata:`, blockchainData)
         // Save to database for future use
         await this.saveToDatabase(blockchainData)
         return blockchainData
       }
 
+      console.log(`❌ No metadata found for ${mintAddress}`)
       return null
     } catch (error) {
-      console.error('Error getting token metadata:', error)
+      console.error(`❌ Error getting token metadata for ${mintAddress}:`, error)
       return null
     }
   }
@@ -126,16 +130,28 @@ export class BlockchainMetadataService {
    */
   private static async fetchFromBlockchain(mintAddress: string): Promise<BlockchainTokenMetadata | null> {
     try {
+      console.log(`🔗 Connecting to blockchain for ${mintAddress}`)
+      
+      // Check if Buffer is available
+      if (typeof Buffer === 'undefined') {
+        console.error('❌ Buffer is not defined - polyfill may not be working')
+        return null
+      }
+      
       const mintPubkey = new PublicKey(mintAddress)
+      console.log(`📊 Getting token supply for ${mintAddress}`)
       
       // Get token supply info for decimals
       const tokenSupply = await this.connection.getTokenSupply(mintPubkey)
       const decimals = tokenSupply.value.decimals
+      console.log(`✅ Token decimals: ${decimals}`)
 
       // Try to get metadata from Metaplex Token Metadata Program
+      console.log(`🎯 Attempting to fetch Metaplex metadata for ${mintAddress}`)
       const metadataAccount = await this.getMetaplexMetadata(mintAddress)
       
       if (metadataAccount) {
+        console.log(`✅ Got Metaplex metadata:`, metadataAccount)
         return {
           mint: mintAddress,
           symbol: metadataAccount.symbol || mintAddress.slice(0, 4) + '...',
@@ -150,6 +166,7 @@ export class BlockchainMetadataService {
       }
 
       // Fallback: basic metadata with decimals
+      console.log(`⚠️ No Metaplex metadata found, returning basic info for ${mintAddress}`)
       return {
         mint: mintAddress,
         symbol: mintAddress.slice(0, 4) + '...',
@@ -159,10 +176,11 @@ export class BlockchainMetadataService {
       }
 
     } catch (error) {
-      console.error(`Error fetching blockchain metadata for ${mintAddress}:`, error)
+      console.error(`❌ Error fetching blockchain metadata for ${mintAddress}:`, error)
       
       // Return basic fallback even on error to prevent complete failure
       try {
+        console.log(`🔄 Attempting fallback for ${mintAddress}`)
         const mintPubkey = new PublicKey(mintAddress)
         const tokenSupply = await this.connection.getTokenSupply(mintPubkey)
         return {
@@ -173,7 +191,7 @@ export class BlockchainMetadataService {
           is_verified: false
         }
       } catch (fallbackError) {
-        console.error(`Complete fallback failed for ${mintAddress}:`, fallbackError)
+        console.error(`❌ Complete fallback failed for ${mintAddress}:`, fallbackError)
         return null
       }
     }
@@ -184,9 +202,12 @@ export class BlockchainMetadataService {
    */
   private static async getMetaplexMetadata(mintAddress: string): Promise<any> {
     try {
+      console.log(`🎭 Getting Metaplex metadata for ${mintAddress}`)
+      
       // Derive metadata account address  
       const mintPubkey = new PublicKey(mintAddress)
       
+      console.log(`🔑 Deriving metadata account address...`)
       const [metadataAddress] = PublicKey.findProgramAddressSync(
         [
           Buffer.from('metadata'),
@@ -195,32 +216,46 @@ export class BlockchainMetadataService {
         ],
         TOKEN_METADATA_PROGRAM_ID
       )
+      console.log(`📍 Metadata account address: ${metadataAddress.toString()}`)
 
       // Get metadata account
+      console.log(`📡 Fetching metadata account info...`)
       const metadataAccount = await this.connection.getAccountInfo(metadataAddress)
       
       if (metadataAccount) {
+        console.log(`✅ Found metadata account, parsing data...`)
         // Parse metadata (simplified - in production you'd use @metaplex-foundation/mpl-token-metadata)
         const metadata = this.parseMetadataAccount(metadataAccount.data)
+        console.log(`🔍 Parsed metadata:`, metadata)
         
         // If metadata has URI, fetch JSON metadata
         if (metadata.uri) {
-          const response = await fetch(metadata.uri)
-          if (response.ok) {
-            const jsonMetadata = await response.json()
-            return {
-              ...metadata,
-              ...jsonMetadata
+          console.log(`🌐 Fetching JSON metadata from URI: ${metadata.uri}`)
+          try {
+            const response = await fetch(metadata.uri)
+            if (response.ok) {
+              const jsonMetadata = await response.json()
+              console.log(`✅ Got JSON metadata:`, jsonMetadata)
+              return {
+                ...metadata,
+                ...jsonMetadata
+              }
+            } else {
+              console.log(`⚠️ Failed to fetch JSON metadata, status: ${response.status}`)
             }
+          } catch (fetchError) {
+            console.error(`❌ Error fetching JSON metadata:`, fetchError)
           }
         }
         
         return metadata
+      } else {
+        console.log(`❌ No metadata account found for ${mintAddress}`)
       }
 
       return null
     } catch (error) {
-      console.error('Error fetching Metaplex metadata:', error)
+      console.error(`❌ Error fetching Metaplex metadata for ${mintAddress}:`, error)
       return null
     }
   }
