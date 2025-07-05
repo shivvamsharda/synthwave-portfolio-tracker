@@ -187,14 +187,14 @@ export function TokenList({ onNavigate }: TokenListProps) {
       </div>
 
       {/* Token Stats */}
-      <div className="text-right">
-        <div className="font-semibold font-mono text-foreground">
-          ${token.usd_value?.toFixed(2) || '0.00'}
-        </div>
-        <div className="text-xs text-muted-foreground">
-          Price feed coming soon
-        </div>
-      </div>
+              <div className="text-right">
+                <div className="font-semibold font-mono text-foreground">
+                  ${token.usd_value?.toFixed(2) || '0.00'}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {token.balance.toLocaleString()} tokens
+                </div>
+              </div>
     </div>
   )
 

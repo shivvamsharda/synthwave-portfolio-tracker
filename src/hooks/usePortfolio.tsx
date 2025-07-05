@@ -3,6 +3,7 @@ import { useAuth } from './useAuth'
 import { useWallet } from './useWallet'
 import { supabase } from '@/integrations/supabase/client'
 import { solanaService, WalletHoldings } from '@/services/solanaService'
+import { priceService } from '@/services/priceService'
 import { useToast } from './use-toast'
 
 interface PortfolioToken {
@@ -145,6 +146,16 @@ export function usePortfolio() {
           })
           totalTokensFound++
         })
+      })
+
+      // Fetch prices for all tokens
+      const allMints = portfolioData.map(p => p.token_mint)
+      const prices = await priceService.getPrices(allMints)
+      
+      // Update portfolio data with prices
+      portfolioData.forEach(item => {
+        const price = prices[item.token_mint]?.usdPrice || 0
+        item.usd_value = priceService.calculateUsdValue(item.balance, price)
       })
 
       if (portfolioData.length > 0) {
