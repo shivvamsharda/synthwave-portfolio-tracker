@@ -123,6 +123,8 @@ export function usePortfolio() {
             token_name: 'Solana',
             balance: holdings.solBalance,
             usd_value: 0, // Will be updated with prices below
+            token_price: 0, // Will be updated with prices below
+            price_change_24h: 0, // Will be updated with prices below
             last_updated: new Date().toISOString()
           })
           totalTokensFound++
@@ -138,6 +140,8 @@ export function usePortfolio() {
             token_name: token.name,
             balance: token.uiAmount,
             usd_value: 0, // Will be updated with prices below
+            token_price: 0, // Will be updated with prices below
+            price_change_24h: 0, // Will be updated with prices below
             last_updated: new Date().toISOString()
           })
           totalTokensFound++

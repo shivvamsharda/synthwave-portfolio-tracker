@@ -14,8 +14,10 @@ export type Database = {
           balance: number | null
           id: string
           last_updated: string | null
+          price_change_24h: number | null
           token_mint: string
           token_name: string | null
+          token_price: number | null
           token_symbol: string | null
           usd_value: number | null
           user_id: string
@@ -25,8 +27,10 @@ export type Database = {
           balance?: number | null
           id?: string
           last_updated?: string | null
+          price_change_24h?: number | null
           token_mint: string
           token_name?: string | null
+          token_price?: number | null
           token_symbol?: string | null
           usd_value?: number | null
           user_id: string
@@ -36,8 +40,10 @@ export type Database = {
           balance?: number | null
           id?: string
           last_updated?: string | null
+          price_change_24h?: number | null
           token_mint?: string
           token_name?: string | null
+          token_price?: number | null
           token_symbol?: string | null
           usd_value?: number | null
           user_id?: string

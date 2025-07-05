@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
-import { RefreshCw, Wallet, ChevronDown, Filter, BarChart3, Plus } from "lucide-react"
+import { RefreshCw, Wallet, ChevronDown, Filter, BarChart3, Plus, TrendingUp, TrendingDown } from "lucide-react"
 import { useState, useMemo } from "react"
 
 interface Token {
@@ -186,14 +186,41 @@ export function TokenList({ onNavigate }: TokenListProps) {
       </div>
 
       {/* Token Stats */}
-              <div className="text-right">
-                <div className="font-semibold font-mono text-foreground">
-                  ${token.usd_value?.toFixed(2) || '0.00'}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {token.balance.toLocaleString()} tokens
-                </div>
-              </div>
+      <div className="text-right">
+        {/* Individual Token Price with Trend */}
+        <div className="flex items-center justify-end space-x-1 mb-1">
+          <span className="text-sm font-medium text-foreground">
+            ${token.token_price?.toFixed(4) || '0.0000'}
+          </span>
+          {token.price_change_24h !== undefined && token.price_change_24h !== 0 && (
+            <div className={`flex items-center space-x-1 ${
+              token.price_change_24h > 0 ? 'text-green-500' : 'text-red-500'
+            }`}>
+              {token.price_change_24h > 0 ? (
+                <TrendingUp className="w-3 h-3" />
+              ) : (
+                <TrendingDown className="w-3 h-3" />
+              )}
+              <span className="text-xs font-medium">
+                {Math.abs(token.price_change_24h).toFixed(2)}%
+              </span>
+            </div>
+          )}
+        </div>
+        
+        {/* Total Value */}
+        <div className="font-semibold font-mono text-lg text-foreground">
+          ${token.usd_value?.toFixed(2) || '0.00'}
+        </div>
+        
+        {/* Token Balance */}
+        <div className="text-xs text-muted-foreground">
+          {token.balance.toLocaleString(undefined, { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 6 
+          })} tokens
+        </div>
+      </div>
     </div>
   )
 
