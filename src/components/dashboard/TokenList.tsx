@@ -1,4 +1,4 @@
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, ExternalLink } from "lucide-react"
 
@@ -63,16 +63,16 @@ const mockTokens: Token[] = [
 
 export function TokenList() {
   return (
-    <GlassCard className="p-6 col-span-full lg:col-span-5">
+    <DashboardCard className="p-6 col-span-full lg:col-span-5">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-glow-primary">Token Holdings</h3>
-        <Button variant="ghost" size="sm" className="text-primary hover:text-primary-glow">
+        <h3 className="text-lg font-semibold text-foreground">Token Holdings</h3>
+        <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
           <ExternalLink className="w-4 h-4 mr-2" />
           View All
         </Button>
       </div>
 
-      <div className="space-y-4 max-h-80 overflow-y-auto custom-scrollbar">
+      <div className="space-y-4 max-h-80 overflow-y-auto dashboard-scrollbar">
         {mockTokens.map((token, index) => (
           <div
             key={token.symbol}
@@ -117,6 +117,6 @@ export function TokenList() {
           </div>
         ))}
       </div>
-    </GlassCard>
+    </DashboardCard>
   )
 }

@@ -1,6 +1,6 @@
 import React from "react"
 import { Header } from "@/components/layout/Header"
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Plus, Wallet, Copy, ExternalLink, Trash2 } from "lucide-react"
 
@@ -56,7 +56,7 @@ function WalletCard({ wallet }: { wallet: WalletInfo }) {
   }
 
   return (
-    <GlassCard className="p-6 hover:shadow-neon-primary/20 transition-all duration-300">
+    <DashboardCard className="p-6 hover:shadow-lg transition-all duration-300">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 rounded-full bg-gradient-cyber flex items-center justify-center">
@@ -97,7 +97,7 @@ function WalletCard({ wallet }: { wallet: WalletInfo }) {
           <span className="text-foreground font-medium">{wallet.assets}</span>
         </div>
       </div>
-    </GlassCard>
+    </DashboardCard>
   )
 }
 
@@ -113,7 +113,7 @@ export function WalletsPage({ onNavigate }: WalletsPageProps) {
             <p className="text-muted-foreground">Manage your crypto wallets across all chains</p>
           </div>
           
-          <Button variant="neonPrimary" className="flex items-center space-x-2">
+          <Button variant="primary" className="flex items-center space-x-2">
             <Plus className="w-4 h-4" />
             <span>Connect Wallet</span>
           </Button>
@@ -126,7 +126,7 @@ export function WalletsPage({ onNavigate }: WalletsPageProps) {
         </div>
 
         {/* Add Wallet Section */}
-        <GlassCard className="p-8 text-center">
+        <DashboardCard className="p-8 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-cyber flex items-center justify-center">
             <Plus className="w-8 h-8 text-background" />
           </div>
@@ -135,12 +135,12 @@ export function WalletsPage({ onNavigate }: WalletsPageProps) {
             Connect additional wallets to track all your crypto assets in one place
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="neonPrimary">Connect Ethereum</Button>
-            <Button variant="neonSecondary">Connect Solana</Button>
-            <Button variant="neonAccent">Connect Polygon</Button>
-            <Button variant="glass">More Chains</Button>
+            <Button variant="primary">Connect Ethereum</Button>
+            <Button variant="secondary">Connect Solana</Button>
+            <Button variant="outline">Connect Polygon</Button>
+            <Button variant="ghost">More Chains</Button>
           </div>
-        </GlassCard>
+        </DashboardCard>
       </main>
     </div>
   )

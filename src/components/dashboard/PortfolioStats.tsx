@@ -1,4 +1,4 @@
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 
 interface StatCardProps {
   title: string
@@ -10,13 +10,13 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, changeType, icon }: StatCardProps) {
   return (
-    <GlassCard className="p-6 hover:shadow-neon-primary/20 transition-all duration-300">
+    <DashboardCard className="p-6 hover:shadow-lg transition-all duration-200">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold font-mono text-glow-primary">{value}</p>
+          <p className="text-2xl font-bold text-foreground">{value}</p>
           <p className={`text-sm font-medium ${
-            changeType === "positive" ? "text-primary" : "text-destructive"
+            changeType === "positive" ? "status-positive" : "status-negative"
           }`}>
             {change}
           </p>
@@ -27,7 +27,7 @@ function StatCard({ title, value, change, changeType, icon }: StatCardProps) {
           </div>
         )}
       </div>
-    </GlassCard>
+    </DashboardCard>
   )
 }
 

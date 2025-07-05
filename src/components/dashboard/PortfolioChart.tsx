@@ -1,4 +1,4 @@
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 import { TrendingUp, TrendingDown } from "lucide-react"
 
 // Mock chart data - would be replaced with real chart library like Recharts
@@ -22,21 +22,21 @@ export function PortfolioChart() {
   const changePercent = (change / previousValue) * 100
 
   return (
-    <GlassCard className="p-6 col-span-full lg:col-span-8">
+    <DashboardCard className="p-6 col-span-full lg:col-span-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-glow-primary">Portfolio Value</h3>
-          <p className="text-3xl font-bold font-mono text-primary">
+          <h3 className="text-lg font-semibold text-foreground">Portfolio Value</h3>
+          <p className="text-3xl font-bold text-primary">
             ${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <div className="flex items-center space-x-2 mt-1">
             {change >= 0 ? (
-              <TrendingUp className="w-4 h-4 text-primary" />
+              <TrendingUp className="w-4 h-4 text-success" />
             ) : (
               <TrendingDown className="w-4 h-4 text-destructive" />
             )}
             <span className={`text-sm font-medium ${
-              change >= 0 ? "text-primary" : "text-destructive"
+              change >= 0 ? "status-positive" : "status-negative"
             }`}>
               {change >= 0 ? "+" : ""}${change.toFixed(2)} ({changePercent.toFixed(2)}%)
             </span>
@@ -44,7 +44,7 @@ export function PortfolioChart() {
         </div>
         
         <div className="flex space-x-2">
-          <button className="px-3 py-1 text-xs bg-primary/20 text-primary rounded-md border border-primary/30">
+          <button className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-md font-medium">
             24H
           </button>
           <button className="px-3 py-1 text-xs text-muted-foreground hover:text-primary transition-colors">
@@ -102,6 +102,6 @@ export function PortfolioChart() {
           ))}
         </div>
       </div>
-    </GlassCard>
+    </DashboardCard>
   )
 }

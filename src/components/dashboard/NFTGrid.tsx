@@ -1,4 +1,4 @@
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Star } from "lucide-react"
 
@@ -53,7 +53,7 @@ const mockNFTs: NFT[] = [
 
 export function NFTGrid() {
   return (
-    <GlassCard className="p-6 col-span-full lg:col-span-7">
+    <DashboardCard className="p-6 col-span-full lg:col-span-7">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-glow-primary">NFT Collection</h3>
         <Button variant="ghost" size="sm" className="text-primary hover:text-primary-glow">
@@ -116,7 +116,7 @@ export function NFTGrid() {
             </div>
           </div>
         ))}
-      </div>
-    </GlassCard>
+        </div>
+    </DashboardCard>
   )
 }

@@ -18,11 +18,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",  
-        // Degen neon variants
-        neonPrimary: "btn-neon-primary rounded-lg px-6 py-3",
-        neonSecondary: "btn-neon-secondary rounded-lg px-6 py-3", 
-        neonAccent: "btn-neon-accent rounded-lg px-6 py-3",
-        glass: "glass-card hover:shadow-neon-primary/20 transition-all duration-300"
+        // Professional dashboard variants
+        primary: "btn-primary px-4 py-2 rounded-md",
+        dashboardSecondary: "btn-secondary px-4 py-2 rounded-md"
       },
       size: {
         default: "h-10 px-4 py-2",

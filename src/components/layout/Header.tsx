@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Wallet, Settings, Menu, X } from "lucide-react"
 
 interface HeaderProps {
@@ -22,53 +22,45 @@ export function Header({ onNavigate }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 backdrop-blur-md bg-background/80">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate("dashboard")}>
-          <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg font-mono">₿</span>
+        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate("dashboard")}>
+          <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-sm">
+            <span className="text-primary-foreground font-bold text-lg">₿</span>
           </div>
-          <span className="text-xl font-bold text-glow-primary font-mono">
-            CRYPTOFOLIO
-          </span>
+          <div>
+            <span className="text-xl font-bold text-foreground">
+              CryptoFolio
+            </span>
+            <div className="text-xs text-muted-foreground">Portfolio Dashboard</div>
+          </div>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <button 
-            onClick={() => navigate("dashboard")}
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
+        <nav className="hidden md:flex items-center space-x-1">
+          <Button variant="ghost" onClick={() => navigate("dashboard")} className="font-medium">
             Dashboard
-          </button>
-          <button 
-            onClick={() => navigate("wallets")}
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("wallets")} className="font-medium">
             Wallets
-          </button>
-          <button 
-            onClick={() => navigate("nfts")}
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("nfts")} className="font-medium">
             NFTs
-          </button>
-          <button 
-            onClick={() => navigate("yield")}
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("yield")} className="font-medium">
             Yield
-          </button>
+          </Button>
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           {/* Wallet Connection */}
           <Button
             onClick={handleConnectWallet}
-            className={isConnected ? "btn-neon-primary" : "btn-neon-accent"}
+            variant={isConnected ? "default" : "outline"}
             size="sm"
+            className="font-medium"
           >
             <Wallet className="w-4 h-4 mr-2" />
             {isConnected ? "0x1234...5678" : "Connect Wallet"}
@@ -98,41 +90,26 @@ export function Header({ onNavigate }: HeaderProps) {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <GlassCard className="md:hidden m-4 p-4 animate-slide-up">
-          <nav className="flex flex-col space-y-4">
-            <button 
-              onClick={() => navigate("dashboard")}
-              className="text-muted-foreground hover:text-primary transition-colors text-left"
-            >
+        <DashboardCard className="md:hidden m-4 p-4 animate-slide-up">
+          <nav className="flex flex-col space-y-2">
+            <Button variant="ghost" onClick={() => navigate("dashboard")} className="justify-start">
               Dashboard
-            </button>
-            <button 
-              onClick={() => navigate("wallets")}
-              className="text-muted-foreground hover:text-primary transition-colors text-left"
-            >
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("wallets")} className="justify-start">
               Wallets
-            </button>
-            <button 
-              onClick={() => navigate("nfts")}
-              className="text-muted-foreground hover:text-primary transition-colors text-left"
-            >
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("nfts")} className="justify-start">
               NFTs
-            </button>
-            <button 
-              onClick={() => navigate("yield")}
-              className="text-muted-foreground hover:text-primary transition-colors text-left"
-            >
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("yield")} className="justify-start">
               Yield
-            </button>
-            <button 
-              onClick={() => navigate("settings")}
-              className="text-muted-foreground hover:text-primary transition-colors text-left flex items-center"
-            >
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("settings")} className="justify-start">
               <Settings className="w-4 h-4 mr-2" />
               Settings
-            </button>
+            </Button>
           </nav>
-        </GlassCard>
+        </DashboardCard>
       )}
     </header>
   )

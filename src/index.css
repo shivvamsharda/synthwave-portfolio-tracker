@@ -1,70 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Degen Crypto Portfolio Design System - Synthwave/Cyberpunk Theme */
+/* Professional Dashboard Design System - Clean White & Blue Theme */
 
 @layer base {
   :root {
-    /* Core Degen Palette */
-    --background: 220 30% 5%;           /* Deep space #0b0e14 */
-    --foreground: 120 100% 85%;         /* Bright cyber green */
+    /* Clean Professional Palette */
+    --background: 0 0% 100%;             /* Pure white */
+    --foreground: 222 47% 11%;           /* Dark navy text */
     
-    --card: 220 25% 8%;                 /* Dark glass cards */
-    --card-foreground: 120 100% 90%;
+    --card: 0 0% 100%;                   /* White cards */
+    --card-foreground: 222 47% 11%;
     
-    --popover: 220 25% 8%;
-    --popover-foreground: 120 100% 90%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
     
-    /* Electric Neon Primary - Cyber Green #00ffa3 */
-    --primary: 158 100% 50%;
-    --primary-foreground: 220 30% 5%;
-    --primary-glow: 158 100% 60%;
+    /* Professional Blue Primary */
+    --primary: 221 83% 53%;              /* Professional blue #2563eb */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 221 83% 95%;        /* Light blue background */
     
-    /* Electric Pink Secondary - #ff29e6 */
-    --secondary: 309 100% 58%;
-    --secondary-foreground: 220 30% 5%;
-    --secondary-glow: 309 100% 68%;
+    /* Clean Gray Secondary */
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222 47% 11%;
     
-    /* Cyber Blue Accent - #00d0ff */
-    --accent: 191 100% 50%;
-    --accent-foreground: 220 30% 5%;
-    --accent-glow: 191 100% 60%;
+    /* Subtle Blue Accent */
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
     
-    /* Muted space grays */
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 65%;
+    /* Professional grays */
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
     
-    /* Danger red with neon */
-    --destructive: 0 100% 60%;
-    --destructive-foreground: 220 30% 5%;
+    /* Danger red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     
-    /* Glass borders and inputs */
-    --border: 220 20% 20%;
-    --input: 220 20% 12%;
-    --ring: 158 100% 50%;
+    /* Success green */
+    --success: 142 69% 58%;
+    --success-foreground: 0 0% 100%;
     
-    /* Enhanced radius for futuristic look */
-    --radius: 0.75rem;
+    /* Clean borders and inputs */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
     
-    /* Custom Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
-    --gradient-cyber: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary)));
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    /* Standard radius */
+    --radius: 0.5rem;
     
-    /* Shadows with neon glow */
-    --shadow-neon-primary: 0 0 20px hsl(var(--primary) / 0.5);
-    --shadow-neon-secondary: 0 0 20px hsl(var(--secondary) / 0.5);
-    --shadow-neon-accent: 0 0 20px hsl(var(--accent) / 0.5);
-    --shadow-glass: 0 8px 32px rgba(0,0,0,0.4);
+    /* Professional Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 98%), hsl(210 40% 94%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 99%));
     
-    /* Animations */
-    --transition-cyber: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-glow: box-shadow 0.3s ease-in-out;
+    /* Clean shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Professional transitions */
+    --transition-smooth: all 0.2s ease-in-out;
 
     --sidebar-background: 0 0% 98%;
 
@@ -84,33 +82,25 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 84% 5%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
+    --card: 222 84% 5%;
     --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 84% 5%;
     --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 217 92% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 92% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -131,92 +121,85 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
   }
-  
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
-  }
 }
 
 @layer components {
-  /* Degen Glass Card */
-  .glass-card {
-    @apply bg-card/80 backdrop-blur-md border border-border/50 rounded-lg;
-    box-shadow: var(--shadow-glass);
+  /* Professional Dashboard Card */
+  .dashboard-card {
+    @apply bg-card border border-border rounded-lg shadow-md;
+    transition: var(--transition-smooth);
   }
   
-  /* Neon Button Variants */
-  .btn-neon-primary {
-    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-medium;
-    box-shadow: var(--shadow-neon-primary);
-    transition: var(--transition-glow);
+  .dashboard-card:hover {
+    @apply shadow-lg;
   }
   
-  .btn-neon-primary:hover {
-    box-shadow: var(--shadow-neon-primary), 0 0 30px hsl(var(--primary) / 0.7);
+  /* Professional Button Variants */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-medium rounded-md;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-smooth);
   }
   
-  .btn-neon-secondary {
-    @apply bg-gradient-to-r from-secondary to-secondary-glow text-secondary-foreground font-medium;
-    box-shadow: var(--shadow-neon-secondary);
-    transition: var(--transition-glow);
+  .btn-primary:hover {
+    @apply bg-primary/90;
+    box-shadow: var(--shadow-md);
   }
   
-  .btn-neon-secondary:hover {
-    box-shadow: var(--shadow-neon-secondary), 0 0 30px hsl(var(--secondary) / 0.7);
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground font-medium rounded-md border border-border;
+    transition: var(--transition-smooth);
   }
   
-  .btn-neon-accent {
-    @apply bg-gradient-to-r from-accent to-accent-glow text-accent-foreground font-medium;
-    box-shadow: var(--shadow-neon-accent);
-    transition: var(--transition-glow);
+  .btn-secondary:hover {
+    @apply bg-secondary/80;
   }
   
-  .btn-neon-accent:hover {
-    box-shadow: var(--shadow-neon-accent), 0 0 30px hsl(var(--accent) / 0.7);
+  /* Status indicators */
+  .status-positive {
+    @apply text-success;
   }
   
-  /* Cyber Text Effects */
-  .text-glow-primary {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.8);
+  .status-negative {
+    @apply text-destructive;
   }
   
-  .text-glow-secondary {
-    text-shadow: 0 0 10px hsl(var(--secondary) / 0.8);
-  }
-  
-  .text-glow-accent {
-    text-shadow: 0 0 10px hsl(var(--accent) / 0.8);
-  }
-  
-  /* Animated Elements */
-  .pulse-neon {
-    animation: pulse-neon 2s ease-in-out infinite alternate;
-  }
-  
-  @keyframes pulse-neon {
-    from {
-      text-shadow: 0 0 5px hsl(var(--primary) / 0.5);
-    }
-    to {
-      text-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.6);
-    }
-  }
-  
-  /* Scrollbar Styling */
-  .custom-scrollbar::-webkit-scrollbar {
+  /* Clean scrollbar */
+  .dashboard-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
   
-  .custom-scrollbar::-webkit-scrollbar-track {
+  .dashboard-scrollbar::-webkit-scrollbar-track {
     background: hsl(var(--muted));
   }
   
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.6);
+  .dashboard-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
     border-radius: 3px;
   }
   
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.8);
+  .dashboard-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+  
+  /* Dashboard metrics */
+  .metric-card {
+    @apply dashboard-card p-6;
+  }
+  
+  .metric-value {
+    @apply text-2xl font-semibold text-foreground;
+  }
+  
+  .metric-label {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  .metric-change-positive {
+    @apply text-success text-sm font-medium;
+  }
+  
+  .metric-change-negative {
+    @apply text-destructive text-sm font-medium;
   }
 }
