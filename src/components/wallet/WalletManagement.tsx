@@ -55,7 +55,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
         .select('*')
         .eq('user_id', user.id)
         .eq('wallet_address', newWalletAddress.trim())
-        .single()
+        .maybeSingle()
 
       if (existingWallet) {
         toast({
@@ -126,7 +126,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   }
 
   const openExplorer = (address: string) => {
-    const url = `https://explorer.solana.com/address/${address}?cluster=devnet`
+    const url = `https://explorer.solana.com/address/${address}`
     window.open(url, '_blank')
   }
 
