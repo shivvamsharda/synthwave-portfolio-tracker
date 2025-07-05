@@ -106,13 +106,7 @@ export function usePortfolio() {
         throw error
       }
       
-      // Clear existing portfolio data for this user
-      await supabase
-        .from('portfolio')
-        .delete()
-        .eq('user_id', user.id)
-
-      // Insert new portfolio data
+      // Update portfolio data using upsert to handle duplicates
       const portfolioData: any[] = []
       let totalTokensFound = 0
       
@@ -126,7 +120,7 @@ export function usePortfolio() {
             token_symbol: 'SOL',
             token_name: 'Solana',
             balance: holdings.solBalance,
-            usd_value: 0, // Will be updated when we add price feeds
+            usd_value: 0, // Will be updated with prices below
             last_updated: new Date().toISOString()
           })
           totalTokensFound++
@@ -141,7 +135,7 @@ export function usePortfolio() {
             token_symbol: token.symbol,
             token_name: token.name,
             balance: token.uiAmount,
-            usd_value: 0, // Will be updated when we add price feeds
+            usd_value: 0, // Will be updated with prices below
             last_updated: new Date().toISOString()
           })
           totalTokensFound++
@@ -159,13 +153,16 @@ export function usePortfolio() {
       })
 
       if (portfolioData.length > 0) {
-        console.log('Attempting to insert portfolio data:', portfolioData.length, 'items')
+        console.log('Attempting to upsert portfolio data:', portfolioData.length, 'items')
         console.log('User ID:', user.id)
         console.log('Sample portfolio item:', portfolioData[0])
         
+        // Use upsert to handle duplicate entries
         const { error } = await supabase
           .from('portfolio')
-          .insert(portfolioData)
+          .upsert(portfolioData, {
+            onConflict: 'user_id,wallet_address,token_mint'
+          })
 
         if (error) {
           console.error('Error saving portfolio:', error)
