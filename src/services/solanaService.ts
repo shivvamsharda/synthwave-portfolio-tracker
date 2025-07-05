@@ -1,4 +1,5 @@
 import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js'
+import { tokenMetadataService } from './tokenMetadataService'
 
 // Solana mainnet RPC endpoint
 const SOLANA_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
@@ -12,6 +13,9 @@ export interface TokenBalance {
   decimals: number
   uiAmount: number
   logoURI?: string
+  description?: string
+  website?: string
+  twitter?: string
 }
 
 export interface WalletHoldings {
@@ -97,7 +101,7 @@ export class SolanaService {
   }
 
   /**
-   * Get all SPL token balances for a wallet
+   * Get all SPL token balances for a wallet with enhanced metadata
    */
   async getTokenBalances(walletAddress: string): Promise<TokenBalance[]> {
     try {
@@ -110,7 +114,22 @@ export class SolanaService {
       )
 
       const tokens: TokenBalance[] = []
+      const tokenMints: string[] = []
 
+      // Collect all token mints first
+      for (const tokenAccount of tokenAccounts.value) {
+        const accountData = tokenAccount.account.data as ParsedAccountData
+        const tokenInfo = accountData.parsed.info
+
+        if (tokenInfo.tokenAmount.uiAmount > 0) {
+          tokenMints.push(tokenInfo.mint)
+        }
+      }
+
+      // Fetch metadata for all tokens at once
+      const metadataMap = await tokenMetadataService.getTokensMetadata(tokenMints)
+
+      // Build token list with enhanced metadata
       for (const tokenAccount of tokenAccounts.value) {
         const accountData = tokenAccount.account.data as ParsedAccountData
         const tokenInfo = accountData.parsed.info
@@ -118,15 +137,19 @@ export class SolanaService {
         if (tokenInfo.tokenAmount.uiAmount > 0) {
           const mint = tokenInfo.mint
           const knownToken = KNOWN_TOKENS[mint]
+          const metadata = metadataMap[mint]
           
           tokens.push({
             mint,
-            symbol: knownToken?.symbol || mint.slice(0, 4) + '...',
-            name: knownToken?.name || 'Unknown Token',
+            symbol: metadata?.symbol || knownToken?.symbol || mint.slice(0, 4) + '...',
+            name: metadata?.name || knownToken?.name || 'Unknown Token',
             balance: tokenInfo.tokenAmount.amount,
             decimals: tokenInfo.tokenAmount.decimals,
             uiAmount: tokenInfo.tokenAmount.uiAmount,
-            logoURI: knownToken?.logoURI
+            logoURI: metadata?.logoURI || knownToken?.logoURI,
+            description: metadata?.description || metadata?.extensions?.description,
+            website: metadata?.website || metadata?.extensions?.website,
+            twitter: metadata?.twitter || metadata?.extensions?.twitter
           })
         }
       }
