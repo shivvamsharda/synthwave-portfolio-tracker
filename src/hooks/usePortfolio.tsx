@@ -14,6 +14,8 @@ interface PortfolioToken {
   token_name: string
   balance: number
   usd_value: number
+  token_price?: number
+  price_change_24h?: number
   last_updated: string
 }
 
@@ -146,10 +148,13 @@ export function usePortfolio() {
       const allMints = portfolioData.map(p => p.token_mint)
       const prices = await priceService.getPrices(allMints)
       
-      // Update portfolio data with prices
+      // Update portfolio data with prices and price changes
       portfolioData.forEach(item => {
-        const price = prices[item.token_mint]?.usdPrice || 0
+        const priceData = prices[item.token_mint]
+        const price = priceData?.usdPrice || 0
         item.usd_value = priceService.calculateUsdValue(item.balance, price)
+        item.token_price = price
+        item.price_change_24h = priceData?.priceChange24h || 0
       })
 
       if (portfolioData.length > 0) {
