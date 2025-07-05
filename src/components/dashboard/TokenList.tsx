@@ -280,7 +280,7 @@ export function TokenList({ onNavigate }: TokenListProps) {
   )
 
   return (
-    <DashboardCard className="p-6 col-span-full lg:col-span-5">
+    <DashboardCard className="p-6 col-span-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Token Holdings</h3>

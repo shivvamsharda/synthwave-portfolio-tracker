@@ -26,33 +26,33 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           {/* Portfolio Chart */}
           <PortfolioChart />
           
-          {/* Token List */}
+          {/* Token List - Expanded */}
           <TokenList onNavigate={onNavigate} />
-          
-          {/* Quick Actions */}
-          <div className="col-span-full lg:col-span-7 dashboard-card p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => onNavigate?.("wallets")}
-                className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30"
-              >
-                <div className="text-primary font-semibold">Manage Wallets</div>
-                <div className="text-sm text-muted-foreground">Add or remove wallets</div>
-              </button>
-              <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-secondary/30">
-                <div className="text-primary font-semibold">Export Data</div>
-                <div className="text-sm text-muted-foreground">Download CSV</div>
-              </button>
-              <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
-                <div className="text-primary font-semibold">Share Portfolio</div>
-                <div className="text-sm text-muted-foreground">Create public link</div>
-              </button>
-              <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
-                <div className="text-primary font-semibold">Analytics</div>
-                <div className="text-sm text-muted-foreground">Deep insights</div>
-              </button>
-            </div>
+        </div>
+
+        {/* Quick Actions - Moved before footer */}
+        <div className="dashboard-card p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button 
+              onClick={() => onNavigate?.("wallets")}
+              className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30"
+            >
+              <div className="text-primary font-semibold">Manage Wallets</div>
+              <div className="text-sm text-muted-foreground">Add or remove wallets</div>
+            </button>
+            <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-secondary/30">
+              <div className="text-primary font-semibold">Export Data</div>
+              <div className="text-sm text-muted-foreground">Download CSV</div>
+            </button>
+            <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
+              <div className="text-primary font-semibold">Share Portfolio</div>
+              <div className="text-sm text-muted-foreground">Create public link</div>
+            </button>
+            <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
+              <div className="text-primary font-semibold">Analytics</div>
+              <div className="text-sm text-muted-foreground">Deep insights</div>
+            </button>
           </div>
         </div>
 
