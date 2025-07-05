@@ -25,57 +25,87 @@ export interface WalletHoldings {
   totalUsdValue: number
 }
 
-// Known SPL tokens for mainnet with logos and metadata
-const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: string }> = {
+// Known SPL tokens for mainnet with logos and metadata - Extended list
+const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: string; description?: string; website?: string; twitter?: string }> = {
   'So11111111111111111111111111111111111111112': {
     symbol: 'SOL',
     name: 'Solana',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+    description: 'Solana is a high-performance blockchain platform for decentralized applications and crypto-currencies.',
+    website: 'https://solana.com',
+    twitter: 'https://twitter.com/solana'
   },
   'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': {
     symbol: 'USDC',
     name: 'USD Coin',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+    description: 'USDC is a fully collateralized US dollar stablecoin.',
+    website: 'https://www.centre.io/',
+    twitter: 'https://twitter.com/centre_io'
   },
   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': {
     symbol: 'USDT',
     name: 'Tether USD',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg',
+    description: 'Tether USD is a stablecoin pegged to the US dollar.',
+    website: 'https://tether.to/',
+    twitter: 'https://twitter.com/Tether_to'
   },
   'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': {
     symbol: 'mSOL',
     name: 'Marinade staked SOL',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So/logo.png',
+    description: 'Liquid staking token representing staked SOL in Marinade Finance.',
+    website: 'https://marinade.finance/',
+    twitter: 'https://twitter.com/MarinadeFinance'
   },
   '7dHbWXmci3dT6jZmpyS8J2h7V4k8EG1XaBtFr9TvQw4o': {
     symbol: 'JITO',
     name: 'Jito Staked SOL',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT6jZmpyS8J2h7V4k8EG1XaBtFr9TvQw4o/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT6jZmpyS8J2h7V4k8EG1XaBtFr9TvQw4o/logo.png',
+    description: 'Jito staked SOL token for MEV-optimized staking.',
+    website: 'https://www.jito.wtf/',
+    twitter: 'https://twitter.com/jito_sol'
   },
   'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263': {
     symbol: 'BONK',
     name: 'Bonk',
-    logoURI: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY58'
+    logoURI: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY58',
+    description: 'The first Solana dog coin for the people, by the people.',
+    website: 'https://bonkcoin.com/',
+    twitter: 'https://twitter.com/bonk_inu'
   },
   'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN': {
     symbol: 'JUP',
     name: 'Jupiter',
-    logoURI: 'https://static.jup.ag/jup/icon.png'
+    logoURI: 'https://static.jup.ag/jup/icon.png',
+    description: 'Jupiter is the key liquidity aggregator for Solana.',
+    website: 'https://jup.ag/',
+    twitter: 'https://twitter.com/JupiterExchange'
   },
   'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn': {
     symbol: 'jitoSOL',
     name: 'Jito Staked SOL',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn/logo.png',
+    description: 'Liquid staking token from Jito.',
+    website: 'https://www.jito.wtf/',
+    twitter: 'https://twitter.com/jito_sol'
   },
   'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1': {
     symbol: 'bSOL',
     name: 'BlazeStake Staked SOL',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1/logo.png',
+    description: 'Liquid staking token from BlazeStake.',
+    website: 'https://stake.solblaze.org/',
+    twitter: 'https://twitter.com/SolBlazeOrg'
   },
   'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3': {
     symbol: 'PYTH',
     name: 'Pyth Network',
-    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png'
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png',
+    description: 'Pyth delivers real-time market data to smart contracts.',
+    website: 'https://pyth.network/',
+    twitter: 'https://twitter.com/PythNetwork'
   }
 }
 
@@ -114,22 +144,8 @@ export class SolanaService {
       )
 
       const tokens: TokenBalance[] = []
-      const tokenMints: string[] = []
 
-      // Collect all token mints first
-      for (const tokenAccount of tokenAccounts.value) {
-        const accountData = tokenAccount.account.data as ParsedAccountData
-        const tokenInfo = accountData.parsed.info
-
-        if (tokenInfo.tokenAmount.uiAmount > 0) {
-          tokenMints.push(tokenInfo.mint)
-        }
-      }
-
-      // Fetch metadata for all tokens at once
-      const metadataMap = await tokenMetadataService.getTokensMetadata(tokenMints)
-
-      // Build token list with enhanced metadata
+      // Build token list with enhanced metadata - prioritize known tokens first
       for (const tokenAccount of tokenAccounts.value) {
         const accountData = tokenAccount.account.data as ParsedAccountData
         const tokenInfo = accountData.parsed.info
@@ -137,19 +153,28 @@ export class SolanaService {
         if (tokenInfo.tokenAmount.uiAmount > 0) {
           const mint = tokenInfo.mint
           const knownToken = KNOWN_TOKENS[mint]
-          const metadata = metadataMap[mint]
+          
+          // Try to get metadata from external API, but fallback to known tokens
+          let metadata: any = null
+          try {
+            if (!knownToken) {
+              metadata = await tokenMetadataService.getTokenMetadata(mint)
+            }
+          } catch (error) {
+            console.log(`Failed to fetch metadata for ${mint}, using fallback`)
+          }
           
           tokens.push({
             mint,
-            symbol: metadata?.symbol || knownToken?.symbol || mint.slice(0, 4) + '...',
-            name: metadata?.name || knownToken?.name || 'Unknown Token',
+            symbol: knownToken?.symbol || metadata?.symbol || mint.slice(0, 4) + '...',
+            name: knownToken?.name || metadata?.name || 'Unknown Token',
             balance: tokenInfo.tokenAmount.amount,
             decimals: tokenInfo.tokenAmount.decimals,
             uiAmount: tokenInfo.tokenAmount.uiAmount,
-            logoURI: metadata?.logoURI || knownToken?.logoURI,
-            description: metadata?.description || metadata?.extensions?.description,
-            website: metadata?.website || metadata?.extensions?.website,
-            twitter: metadata?.twitter || metadata?.extensions?.twitter
+            logoURI: knownToken?.logoURI || metadata?.logoURI,
+            description: knownToken?.description || metadata?.description || metadata?.extensions?.description,
+            website: knownToken?.website || metadata?.website || metadata?.extensions?.website,
+            twitter: knownToken?.twitter || metadata?.twitter || metadata?.extensions?.twitter
           })
         }
       }
