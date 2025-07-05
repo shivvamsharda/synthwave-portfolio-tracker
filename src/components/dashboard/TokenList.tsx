@@ -3,10 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
-import { TrendingUp, TrendingDown, ExternalLink, RefreshCw, Wallet, ChevronDown, Filter, BarChart3 } from "lucide-react"
+import { RefreshCw, Wallet, ChevronDown, Filter, BarChart3 } from "lucide-react"
 import { useState, useMemo } from "react"
 
 interface Token {
@@ -73,7 +72,7 @@ interface TokenListProps {
 }
 
 export function TokenList({ onNavigate }: TokenListProps) {
-  const { wallets, connected } = useWallet()
+  const { wallets } = useWallet()
   const { portfolio, loading, refreshing, refreshPortfolio, lastUpdated } = usePortfolio()
   
   const [sortBy, setSortBy] = useState<'balance' | 'value' | 'symbol'>('value')
@@ -217,7 +216,7 @@ export function TokenList({ onNavigate }: TokenListProps) {
           )}
         </div>
         <div className="flex items-center space-x-2">
-          {connected && wallets.length > 0 && (
+          {wallets.length > 0 && (
             <Button 
               variant="ghost" 
               size="sm" 
@@ -229,9 +228,6 @@ export function TokenList({ onNavigate }: TokenListProps) {
               {refreshing ? 'Refreshing...' : 'Refresh'}
             </Button>
           )}
-          <div className="hidden sm:block">
-            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-4 !py-2" />
-          </div>
         </div>
       </div>
 
@@ -278,18 +274,22 @@ export function TokenList({ onNavigate }: TokenListProps) {
       )}
 
       {/* Content */}
-      {!connected || wallets.length === 0 ? (
+      {wallets.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-cyber flex items-center justify-center">
             <span className="text-background font-bold text-xl">₿</span>
           </div>
-          <h4 className="text-lg font-semibold text-foreground mb-2">No Wallet Connected</h4>
+          <h4 className="text-lg font-semibold text-foreground mb-2">No Wallets Added</h4>
           <p className="text-muted-foreground mb-6">
-            Connect your Solana wallet to view your token holdings
+            Add your Solana wallets to start tracking your token holdings
           </p>
-          <div className="sm:hidden">
-            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-6 !py-3" />
-          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => onNavigate?.("wallets")}
+          >
+            <Wallet className="w-4 h-4 mr-2" />
+            Add Wallets
+          </Button>
         </div>
       ) : loading ? (
         <div className="text-center py-12">

@@ -92,6 +92,9 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
       
       // Refresh wallets
       await refreshWallets()
+      
+      // Automatically fetch portfolio data for the new wallet
+      await refreshPortfolio()
 
     } catch (error) {
       console.error('Error adding wallet:', error)
