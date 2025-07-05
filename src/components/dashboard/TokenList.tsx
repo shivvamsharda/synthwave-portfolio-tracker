@@ -71,10 +71,10 @@ export function TokenList() {
             variant="outline" 
             size="sm" 
             className="text-primary hover:text-primary"
-            onClick={() => {/* Add wallet functionality */}}
+            onClick={() => {/* Add Solana wallet functionality */}}
           >
             <span className="text-lg mr-1">+</span>
-            Add Wallet
+            Add Solana Wallet
           </Button>
           <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
             <ExternalLink className="w-4 h-4 mr-2" />

@@ -22,24 +22,12 @@ function LoginScreen() {
           Welcome to CryptoFolio
         </h1>
         <p className="text-muted-foreground mb-8">
-          Connect your wallet to start tracking your crypto portfolio
+          Connect your Solana wallet to start tracking your crypto portfolio
         </p>
         
         <div className="space-y-4">
           <Button 
             variant="primary" 
-            className="w-full"
-            onClick={() => {
-              // This will be replaced with real wallet connection
-              console.log("Connect Ethereum wallet")
-            }}
-          >
-            <Wallet className="w-4 h-4 mr-2" />
-            Connect Ethereum Wallet
-          </Button>
-          
-          <Button 
-            variant="outline" 
             className="w-full"
             onClick={() => {
               // This will be replaced with real Solana wallet connection
@@ -52,7 +40,7 @@ function LoginScreen() {
         </div>
         
         <p className="text-xs text-muted-foreground mt-6">
-          Your private keys never leave your device. We only read public wallet addresses.
+          Your private keys never leave your device. We only read your public wallet address.
         </p>
       </DashboardCard>
     </div>

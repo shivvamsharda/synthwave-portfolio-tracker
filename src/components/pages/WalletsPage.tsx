@@ -130,15 +130,13 @@ export function WalletsPage({ onNavigate }: WalletsPageProps) {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-cyber flex items-center justify-center">
             <Plus className="w-8 h-8 text-background" />
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">Add New Wallet</h3>
+          <h3 className="text-xl font-semibold text-foreground mb-2">Add New Solana Wallet</h3>
           <p className="text-muted-foreground mb-6">
-            Connect additional wallets to track all your crypto assets in one place
+            Connect additional Solana wallets to track all your SPL tokens in one place
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="primary">Connect Ethereum</Button>
-            <Button variant="secondary">Connect Solana</Button>
-            <Button variant="outline">Connect Polygon</Button>
-            <Button variant="ghost">More Chains</Button>
+            <Button variant="primary">Connect Solana Wallet</Button>
+            <Button variant="outline">More Solana Wallets</Button>
           </div>
         </DashboardCard>
       </main>
