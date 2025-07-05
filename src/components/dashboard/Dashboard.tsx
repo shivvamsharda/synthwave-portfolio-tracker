@@ -33,9 +33,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <div className="col-span-full lg:col-span-7 dashboard-card p-6">
             <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-4">
-              <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
-                <div className="text-primary font-semibold">Add Solana Wallet</div>
-                <div className="text-sm text-muted-foreground">Connect new wallet</div>
+              <button 
+                onClick={() => onNavigate?.("wallets")}
+                className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30"
+              >
+                <div className="text-primary font-semibold">Manage Wallets</div>
+                <div className="text-sm text-muted-foreground">Add or remove wallets</div>
               </button>
               <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-secondary/30">
                 <div className="text-primary font-semibold">Export Data</div>
