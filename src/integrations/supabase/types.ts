@@ -63,6 +63,39 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_history: {
+        Row: {
+          created_at: string
+          id: string
+          snapshot_date: string
+          total_assets: number | null
+          total_value: number
+          total_value_change_24h: number | null
+          total_value_change_percentage_24h: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          snapshot_date?: string
+          total_assets?: number | null
+          total_value?: number
+          total_value_change_24h?: number | null
+          total_value_change_percentage_24h?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          snapshot_date?: string
+          total_assets?: number | null
+          total_value?: number
+          total_value_change_24h?: number | null
+          total_value_change_percentage_24h?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -170,7 +203,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_portfolio_stats: {
+        Args: { user_uuid: string }
+        Returns: {
+          total_value: number
+          total_value_24h_ago: number
+          total_value_7d_ago: number
+          value_change_24h: number
+          value_change_24h_percentage: number
+          value_change_7d: number
+          value_change_7d_percentage: number
+          total_assets: number
+          total_unique_tokens: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

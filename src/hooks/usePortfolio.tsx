@@ -4,6 +4,7 @@ import { useWallet } from './useWallet'
 import { supabase } from '@/integrations/supabase/client'
 import { solanaService, WalletHoldings } from '@/services/solanaService'
 import { priceService } from '@/services/priceService'
+import { PortfolioHistoryService } from '@/services/portfolioHistoryService'
 import { useToast } from './use-toast'
 
 interface PortfolioToken {
@@ -194,6 +195,15 @@ export function usePortfolio() {
           })
         } else {
           const uniqueTokens = new Set(portfolioData.map(p => p.token_mint)).size
+          const totalValue = portfolioData.reduce((sum, token) => sum + (token.usd_value || 0), 0)
+          
+          // Save portfolio snapshot for historical tracking
+          await PortfolioHistoryService.savePortfolioSnapshot(
+            user.id,
+            totalValue,
+            totalTokensFound
+          )
+          
           toast({
             title: "Success",
             description: `Updated portfolio: ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`,

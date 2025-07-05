@@ -1,23 +1,49 @@
 import { DashboardCard } from "@/components/ui/dashboard-card"
+import { usePortfolioStats } from "@/hooks/usePortfolioStats"
+import { TrendingUp, TrendingDown, DollarSign, Package } from "lucide-react"
 
 interface StatCardProps {
   title: string
   value: string
   change: string
-  changeType: "positive" | "negative"
+  changeType: "positive" | "negative" | "neutral"
   icon?: React.ReactNode
+  loading?: boolean
 }
 
-function StatCard({ title, value, change, changeType, icon }: StatCardProps) {
+function StatCard({ title, value, change, changeType, icon, loading }: StatCardProps) {
+  if (loading) {
+    return (
+      <DashboardCard className="p-6 hover:shadow-lg transition-all duration-200">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="h-4 bg-muted/20 rounded animate-pulse mb-2"></div>
+            <div className="h-8 bg-muted/20 rounded animate-pulse mb-2"></div>
+            <div className="h-4 bg-muted/20 rounded animate-pulse w-20"></div>
+          </div>
+          {icon && (
+            <div className="text-primary/60 animate-pulse">
+              {icon}
+            </div>
+          )}
+        </div>
+      </DashboardCard>
+    )
+  }
+
   return (
     <DashboardCard className="p-6 hover:shadow-lg transition-all duration-200">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{title}</p>
           <p className="text-2xl font-bold text-foreground">{value}</p>
-          <p className={`text-sm font-medium ${
-            changeType === "positive" ? "status-positive" : "status-negative"
+          <p className={`text-sm font-medium flex items-center gap-1 ${
+            changeType === "positive" ? "status-positive" : 
+            changeType === "negative" ? "status-negative" : 
+            "text-muted-foreground"
           }`}>
+            {changeType === "positive" && <TrendingUp className="w-3 h-3" />}
+            {changeType === "negative" && <TrendingDown className="w-3 h-3" />}
             {change}
           </p>
         </div>
@@ -32,43 +58,89 @@ function StatCard({ title, value, change, changeType, icon }: StatCardProps) {
 }
 
 export function PortfolioStats() {
-  // Mock data - will be replaced with real portfolio data
-  const stats = [
+  const { stats, loading, error } = usePortfolioStats()
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount)
+  }
+
+  const formatPercentage = (percentage: number) => {
+    const sign = percentage >= 0 ? '+' : ''
+    return `${sign}${percentage.toFixed(2)}%`
+  }
+
+  const formatChange = (value: number, percentage: number) => {
+    const valueFormatted = formatCurrency(Math.abs(value))
+    const percentageFormatted = formatPercentage(percentage)
+    const sign = value >= 0 ? '+' : '-'
+    return `${sign}${valueFormatted} (${percentageFormatted})`
+  }
+
+  const getChangeType = (value: number): "positive" | "negative" | "neutral" => {
+    if (value > 0) return "positive"
+    if (value < 0) return "negative"
+    return "neutral"
+  }
+
+  if (error) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <DashboardCard className="p-6 col-span-full">
+          <div className="text-center text-red-500">
+            <p>Error loading portfolio stats: {error}</p>
+          </div>
+        </DashboardCard>
+      </div>
+    )
+  }
+
+  const statsData = [
     {
       title: "Total Portfolio Value",
-      value: "$127,456.78",
-      change: "+$12,345 (10.7%)",
-      changeType: "positive" as const
+      value: stats ? formatCurrency(stats.totalValue) : "$0.00",
+      change: stats ? formatChange(stats.valueChange24h, stats.valueChange24hPercentage) : "$0.00 (0%)",
+      changeType: stats ? getChangeType(stats.valueChange24h) : "neutral" as const,
+      icon: <DollarSign className="w-6 h-6" />
     },
     {
       title: "24h P&L",
-      value: "+$3,421.12",
-      change: "+2.8%",
-      changeType: "positive" as const
+      value: stats ? formatCurrency(stats.valueChange24h) : "$0.00",
+      change: stats ? formatPercentage(stats.valueChange24hPercentage) : "0%",
+      changeType: stats ? getChangeType(stats.valueChange24h) : "neutral" as const,
+      icon: <TrendingUp className="w-6 h-6" />
     },
     {
-      title: "7d P&L",
-      value: "+$8,967.45",
-      change: "+7.6%",
-      changeType: "positive" as const
+      title: "7d P&L",  
+      value: stats ? formatCurrency(stats.valueChange7d) : "$0.00",
+      change: stats ? formatPercentage(stats.valueChange7dPercentage) : "0%",
+      changeType: stats ? getChangeType(stats.valueChange7d) : "neutral" as const,
+      icon: <TrendingUp className="w-6 h-6" />
     },
     {
       title: "Total Assets",
-      value: "24",
-      change: "+3 this week",
-      changeType: "positive" as const
+      value: stats ? stats.totalAssets.toString() : "0",
+      change: stats ? `${stats.totalUniqueTokens} unique tokens` : "0 tokens",
+      changeType: "neutral" as const,
+      icon: <Package className="w-6 h-6" />
     }
   ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {stats.map((stat, index) => (
+      {statsData.map((stat, index) => (
         <StatCard
           key={index}
           title={stat.title}
           value={stat.value}
           change={stat.change}
           changeType={stat.changeType}
+          icon={stat.icon}
+          loading={loading}
         />
       ))}
     </div>

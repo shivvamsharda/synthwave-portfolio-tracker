@@ -1,25 +1,75 @@
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { TrendingUp, TrendingDown } from "lucide-react"
+import { usePortfolioChart } from "@/hooks/usePortfolioChart"
+import { usePortfolioStats } from "@/hooks/usePortfolioStats"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts"
+import { useState } from "react"
 
-// Mock chart data - would be replaced with real chart library like Recharts
-const generateMockData = () => {
-  const data = []
-  const now = Date.now()
-  for (let i = 0; i < 24; i++) {
-    data.push({
-      time: now - (23 - i) * 60 * 60 * 1000,
-      value: 127000 + Math.random() * 10000 - 5000 + i * 200
-    })
-  }
-  return data
-}
+const timeRanges = [
+  { label: "24H", days: 1 },
+  { label: "7D", days: 7 },
+  { label: "30D", days: 30 }
+]
 
 export function PortfolioChart() {
-  const data = generateMockData()
-  const currentValue = data[data.length - 1].value
-  const previousValue = data[data.length - 2].value
-  const change = currentValue - previousValue
-  const changePercent = (change / previousValue) * 100
+  const [selectedRange, setSelectedRange] = useState(30)
+  const { chartData, loading: chartLoading } = usePortfolioChart(selectedRange)
+  const { stats, loading: statsLoading } = usePortfolioStats()
+
+  // Prepare chart data
+  const processedChartData = chartData.map(point => ({
+    ...point,
+    date: new Date(point.date).toLocaleDateString(),
+    time: new Date(point.date).getTime(),
+    formattedValue: point.value.toFixed(2)
+  }))
+
+  const currentValue = stats?.totalValue || 0
+  const change24h = stats?.valueChange24h || 0
+  const changePercent24h = stats?.valueChange24hPercentage || 0
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value)
+  }
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 shadow-lg">
+          <p className="text-sm text-muted-foreground">{label}</p>
+          <p className="text-base font-semibold text-foreground">
+            {formatCurrency(payload[0].value)}
+          </p>
+        </div>
+      )
+    }
+    return null
+  }
+
+  if (statsLoading || chartLoading) {
+    return (
+      <DashboardCard className="p-6 col-span-full lg:col-span-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="h-6 bg-muted/20 rounded animate-pulse mb-2 w-32"></div>
+            <div className="h-8 bg-muted/20 rounded animate-pulse mb-2 w-48"></div>
+            <div className="h-4 bg-muted/20 rounded animate-pulse w-40"></div>
+          </div>
+          <div className="flex space-x-2">
+            {timeRanges.map((range) => (
+              <div key={range.label} className="w-12 h-6 bg-muted/20 rounded animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+        <div className="h-64 bg-muted/10 rounded animate-pulse"></div>
+      </DashboardCard>
+    )
+  }
 
   return (
     <DashboardCard className="p-6 col-span-full lg:col-span-8">
@@ -27,80 +77,91 @@ export function PortfolioChart() {
         <div>
           <h3 className="text-lg font-semibold text-foreground">Portfolio Value</h3>
           <p className="text-3xl font-bold text-primary">
-            ${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatCurrency(currentValue)}
           </p>
           <div className="flex items-center space-x-2 mt-1">
-            {change >= 0 ? (
+            {change24h >= 0 ? (
               <TrendingUp className="w-4 h-4 text-success" />
             ) : (
               <TrendingDown className="w-4 h-4 text-destructive" />
             )}
             <span className={`text-sm font-medium ${
-              change >= 0 ? "status-positive" : "status-negative"
+              change24h >= 0 ? "status-positive" : "status-negative"
             }`}>
-              {change >= 0 ? "+" : ""}${change.toFixed(2)} ({changePercent.toFixed(2)}%)
+              {change24h >= 0 ? "+" : ""}{formatCurrency(change24h)} ({changePercent24h.toFixed(2)}%)
             </span>
           </div>
         </div>
         
         <div className="flex space-x-2">
-          <button className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-md font-medium">
-            24H
-          </button>
-          <button className="px-3 py-1 text-xs text-muted-foreground hover:text-primary transition-colors">
-            7D
-          </button>
-          <button className="px-3 py-1 text-xs text-muted-foreground hover:text-primary transition-colors">
-            30D
-          </button>
+          {timeRanges.map((range) => (
+            <button
+              key={range.label}
+              onClick={() => setSelectedRange(range.days)}
+              className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+                selectedRange === range.days
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-primary hover:bg-muted/20"
+              }`}
+            >
+              {range.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Mock Chart Visualization */}
-      <div className="relative h-64 w-full">
-        <svg className="w-full h-full" viewBox="0 0 800 200">
-          <defs>
-            <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          
-          {/* Chart line */}
-          <polyline
-            fill="none"
-            stroke="hsl(var(--primary))"
-            strokeWidth="2"
-            points={data.map((point, index) => 
-              `${(index / (data.length - 1)) * 800},${200 - ((point.value - 120000) / 15000) * 200}`
-            ).join(' ')}
-            className="drop-shadow-sm"
-            style={{ filter: 'drop-shadow(0 0 4px hsl(var(--primary) / 0.6))' }}
-          />
-          
-          {/* Chart area fill */}
-          <polygon
-            fill="url(#chartGradient)"
-            points={[
-              ...data.map((point, index) => 
-                `${(index / (data.length - 1)) * 800},${200 - ((point.value - 120000) / 15000) * 200}`
-              ),
-              '800,200',
-              '0,200'
-            ].join(' ')}
-          />
-        </svg>
-        
-        {/* Grid lines */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="absolute w-full border-t border-border/30"
-              style={{ top: `${i * 25}%` }}
-            />
-          ))}
-        </div>
+      {/* Real Chart */}
+      <div className="h-64 w-full">
+        {processedChartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={processedChartData}>
+              <defs>
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+              <XAxis 
+                dataKey="date" 
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#colorValue)"
+                dot={false}
+                activeDot={{ 
+                  r: 4, 
+                  fill: "hsl(var(--primary))",
+                  stroke: "hsl(var(--background))",
+                  strokeWidth: 2
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="text-center">
+              <TrendingUp className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>No historical data available</p>
+              <p className="text-sm">Data will appear as you use the app</p>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardCard>
   )
