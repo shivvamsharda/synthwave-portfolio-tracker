@@ -1,7 +1,7 @@
 import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js'
 
-// Solana devnet RPC endpoint
-const SOLANA_RPC_URL = 'https://api.devnet.solana.com'
+// Solana mainnet RPC endpoint
+const SOLANA_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
 const connection = new Connection(SOLANA_RPC_URL, 'confirmed')
 
 export interface TokenBalance {
@@ -21,7 +21,7 @@ export interface WalletHoldings {
   totalUsdValue: number
 }
 
-// Known SPL tokens for devnet (you can expand this list)
+// Known SPL tokens for mainnet (you can expand this list)
 const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: string }> = {
   'So11111111111111111111111111111111111111112': {
     symbol: 'SOL',
