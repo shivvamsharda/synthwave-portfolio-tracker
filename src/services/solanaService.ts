@@ -1,5 +1,6 @@
 import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js'
 import { tokenMetadataService } from './tokenMetadataService'
+import { blockchainMetadataService } from './blockchainMetadataService'
 
 // Solana mainnet RPC endpoint
 const SOLANA_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
@@ -144,8 +145,9 @@ export class SolanaService {
       )
 
       const tokens: TokenBalance[] = []
+      const unknownMints: string[] = []
 
-      // Build token list with enhanced metadata - prioritize known tokens first
+      // First pass: identify tokens and collect unknown mints
       for (const tokenAccount of tokenAccounts.value) {
         const accountData = tokenAccount.account.data as ParsedAccountData
         const tokenInfo = accountData.parsed.info
@@ -154,27 +156,40 @@ export class SolanaService {
           const mint = tokenInfo.mint
           const knownToken = KNOWN_TOKENS[mint]
           
-          // Try to get metadata from external API, but fallback to known tokens
-          let metadata: any = null
-          try {
-            if (!knownToken) {
-              metadata = await tokenMetadataService.getTokenMetadata(mint)
-            }
-          } catch (error) {
-            console.log(`Failed to fetch metadata for ${mint}, using fallback`)
+          if (!knownToken) {
+            unknownMints.push(mint)
           }
+        }
+      }
+
+      // Fetch metadata for unknown tokens (checks database first, then blockchain)
+      let blockchainMetadata: Record<string, any> = {}
+      if (unknownMints.length > 0) {
+        console.log(`Fetching metadata for ${unknownMints.length} unknown tokens`)
+        blockchainMetadata = await blockchainMetadataService.getMultipleTokenMetadata(unknownMints)
+      }
+
+      // Second pass: build token list with all metadata
+      for (const tokenAccount of tokenAccounts.value) {
+        const accountData = tokenAccount.account.data as ParsedAccountData
+        const tokenInfo = accountData.parsed.info
+
+        if (tokenInfo.tokenAmount.uiAmount > 0) {
+          const mint = tokenInfo.mint
+          const knownToken = KNOWN_TOKENS[mint]
+          const blockchainData = blockchainMetadata[mint]
           
           tokens.push({
             mint,
-            symbol: knownToken?.symbol || metadata?.symbol || mint.slice(0, 4) + '...',
-            name: knownToken?.name || metadata?.name || 'Unknown Token',
+            symbol: knownToken?.symbol || blockchainData?.symbol || mint.slice(0, 4) + '...',
+            name: knownToken?.name || blockchainData?.name || 'Unknown Token',
             balance: tokenInfo.tokenAmount.amount,
             decimals: tokenInfo.tokenAmount.decimals,
             uiAmount: tokenInfo.tokenAmount.uiAmount,
-            logoURI: knownToken?.logoURI || metadata?.logoURI,
-            description: knownToken?.description || metadata?.description || metadata?.extensions?.description,
-            website: knownToken?.website || metadata?.website || metadata?.extensions?.website,
-            twitter: knownToken?.twitter || metadata?.twitter || metadata?.extensions?.twitter
+            logoURI: knownToken?.logoURI || blockchainData?.logo_uri,
+            description: knownToken?.description || blockchainData?.description,
+            website: knownToken?.website || blockchainData?.website,
+            twitter: knownToken?.twitter || blockchainData?.twitter
           })
         }
       }

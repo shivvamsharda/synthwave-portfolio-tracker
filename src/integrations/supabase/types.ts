@@ -90,6 +90,51 @@ export type Database = {
         }
         Relationships: []
       }
+      token_metadata: {
+        Row: {
+          created_at: string | null
+          decimals: number | null
+          description: string | null
+          id: string
+          is_verified: boolean | null
+          logo_uri: string | null
+          name: string | null
+          symbol: string | null
+          token_mint: string
+          twitter: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          decimals?: number | null
+          description?: string | null
+          id?: string
+          is_verified?: boolean | null
+          logo_uri?: string | null
+          name?: string | null
+          symbol?: string | null
+          token_mint: string
+          twitter?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          decimals?: number | null
+          description?: string | null
+          id?: string
+          is_verified?: boolean | null
+          logo_uri?: string | null
+          name?: string | null
+          symbol?: string | null
+          token_mint?: string
+          twitter?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       wallets: {
         Row: {
           created_at: string
