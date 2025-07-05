@@ -1,6 +1,6 @@
 import React from "react"
 import { Header } from "@/components/layout/Header"
-import { GlassCard } from "@/components/ui/glass-card"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Clock, Zap, Gift } from "lucide-react"
 
@@ -70,7 +70,7 @@ function YieldCard({ position }: { position: YieldPosition }) {
   }
 
   return (
-    <GlassCard className="p-6 hover:shadow-neon-primary/20 transition-all duration-300">
+    <DashboardCard className="p-6 hover:shadow-lg transition-all duration-300">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="font-semibold text-foreground text-lg">{position.protocol}</h3>
@@ -110,16 +110,16 @@ function YieldCard({ position }: { position: YieldPosition }) {
 
         <div className="pt-4 flex space-x-2">
           {position.status === "claimable" && (
-            <Button variant="neonPrimary" size="sm" className="flex-1">
+            <Button variant="primary" size="sm" className="flex-1">
               Claim Rewards
             </Button>
           )}
-          <Button variant="glass" size="sm" className="flex-1">
+          <Button variant="secondary" size="sm" className="flex-1">
             View Details
           </Button>
         </div>
       </div>
-    </GlassCard>
+    </DashboardCard>
   )
 }
 
@@ -134,13 +134,13 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
       
       <main className="container px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-glow-primary mb-2">Yield Farming</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Yield Farming</h1>
           <p className="text-muted-foreground">Manage your staking positions and claim rewards</p>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <GlassCard className="p-6">
+          <DashboardCard className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Staked</p>
@@ -150,9 +150,9 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
                 <Zap className="w-8 h-8" />
               </div>
             </div>
-          </GlassCard>
+          </DashboardCard>
           
-          <GlassCard className="p-6">
+          <DashboardCard className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Pending Rewards</p>
@@ -162,9 +162,9 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
                 <Gift className="w-8 h-8" />
               </div>
             </div>
-          </GlassCard>
+          </DashboardCard>
           
-          <GlassCard className="p-6">
+          <DashboardCard className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Average APR</p>
@@ -174,14 +174,14 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
                 <TrendingUp className="w-8 h-8" />
               </div>
             </div>
-          </GlassCard>
+          </DashboardCard>
         </div>
 
         {/* Active Positions */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold">Active Positions</h2>
-            <Button variant="neonAccent">
+            <Button variant="outline">
               Discover Opportunities
             </Button>
           </div>
@@ -194,7 +194,7 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
         </div>
 
         {/* Available Opportunities */}
-        <GlassCard className="p-8">
+        <DashboardCard className="p-8">
           <h2 className="text-xl font-semibold text-foreground mb-4">Top Yield Opportunities</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -211,11 +211,11 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
             ))}
           </div>
           <div className="text-center mt-6">
-            <Button variant="neonPrimary">
+            <Button variant="primary">
               Explore All Opportunities
             </Button>
           </div>
-        </GlassCard>
+        </DashboardCard>
       </main>
     </div>
   )
