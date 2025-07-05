@@ -157,9 +157,9 @@ export function TokenList({ onNavigate }: TokenListProps) {
       <div className="flex items-center space-x-4">
         {/* Token Icon/Logo */}
         <div className="w-10 h-10 rounded-full bg-gradient-cyber flex items-center justify-center text-background font-bold text-sm overflow-hidden">
-          {token.logoURI ? (
+          {token.logo_uri ? (
             <img 
-              src={token.logoURI} 
+              src={token.logo_uri} 
               alt={`${token.token_symbol} logo`}
               className="w-full h-full object-cover rounded-full"
               onError={(e) => {

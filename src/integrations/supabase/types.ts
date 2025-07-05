@@ -12,42 +12,54 @@ export type Database = {
       portfolio: {
         Row: {
           balance: number | null
+          description: string | null
           id: string
           last_updated: string | null
+          logo_uri: string | null
           price_change_24h: number | null
           token_mint: string
           token_name: string | null
           token_price: number | null
           token_symbol: string | null
+          twitter: string | null
           usd_value: number | null
           user_id: string
           wallet_address: string
+          website: string | null
         }
         Insert: {
           balance?: number | null
+          description?: string | null
           id?: string
           last_updated?: string | null
+          logo_uri?: string | null
           price_change_24h?: number | null
           token_mint: string
           token_name?: string | null
           token_price?: number | null
           token_symbol?: string | null
+          twitter?: string | null
           usd_value?: number | null
           user_id: string
           wallet_address: string
+          website?: string | null
         }
         Update: {
           balance?: number | null
+          description?: string | null
           id?: string
           last_updated?: string | null
+          logo_uri?: string | null
           price_change_24h?: number | null
           token_mint?: string
           token_name?: string | null
           token_price?: number | null
           token_symbol?: string | null
+          twitter?: string | null
           usd_value?: number | null
           user_id?: string
           wallet_address?: string
+          website?: string | null
         }
         Relationships: []
       }

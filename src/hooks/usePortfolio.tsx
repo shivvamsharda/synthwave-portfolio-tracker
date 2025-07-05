@@ -16,6 +16,10 @@ interface PortfolioToken {
   usd_value: number
   token_price?: number
   price_change_24h?: number
+  logo_uri?: string
+  description?: string
+  website?: string
+  twitter?: string
   last_updated: string
 }
 
@@ -125,12 +129,16 @@ export function usePortfolio() {
             usd_value: 0, // Will be updated with prices below
             token_price: 0, // Will be updated with prices below
             price_change_24h: 0, // Will be updated with prices below
+            logo_uri: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+            description: 'Solana is a high-performance blockchain platform for decentralized applications and crypto-currencies.',
+            website: 'https://solana.com',
+            twitter: 'https://twitter.com/solana',
             last_updated: new Date().toISOString()
           })
           totalTokensFound++
         }
 
-        // Add SPL tokens
+        // Add SPL tokens with metadata
         holdings.tokens.forEach(token => {
           portfolioData.push({
             user_id: user.id,
@@ -142,6 +150,10 @@ export function usePortfolio() {
             usd_value: 0, // Will be updated with prices below
             token_price: 0, // Will be updated with prices below
             price_change_24h: 0, // Will be updated with prices below
+            logo_uri: token.logoURI,
+            description: token.description,
+            website: token.website,
+            twitter: token.twitter,
             last_updated: new Date().toISOString()
           })
           totalTokensFound++
