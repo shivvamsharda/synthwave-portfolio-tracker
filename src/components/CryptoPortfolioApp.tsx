@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { AuthGuard } from "@/components/auth/AuthGuard"
 import { Dashboard } from "@/components/dashboard/Dashboard"
 import { WalletsPage } from "@/components/pages/WalletsPage"
 import { YieldPage } from "@/components/pages/YieldPage"
@@ -21,11 +22,11 @@ export function CryptoPortfolioApp() {
         return (
           <div className="min-h-screen bg-background flex items-center justify-center">
             <div className="text-center space-y-4">
-              <h1 className="text-4xl font-bold text-glow-primary">NFT Gallery</h1>
+              <h1 className="text-4xl font-bold text-primary">NFT Gallery</h1>
               <p className="text-muted-foreground">Coming Soon - Your NFT collection showcase</p>
               <button 
                 onClick={() => setCurrentPage("dashboard")}
-                className="btn-neon-primary px-6 py-3 rounded-lg font-medium"
+                className="btn-primary px-6 py-3 rounded-lg font-medium"
               >
                 Back to Dashboard
               </button>
@@ -36,11 +37,11 @@ export function CryptoPortfolioApp() {
         return (
           <div className="min-h-screen bg-background flex items-center justify-center">
             <div className="text-center space-y-4">
-              <h1 className="text-4xl font-bold text-glow-accent">Settings</h1>
+              <h1 className="text-4xl font-bold text-primary">Settings</h1>
               <p className="text-muted-foreground">Customize your crypto portfolio experience</p>
               <button 
                 onClick={() => setCurrentPage("dashboard")}
-                className="btn-neon-accent px-6 py-3 rounded-lg font-medium"
+                className="btn-primary px-6 py-3 rounded-lg font-medium"
               >
                 Back to Dashboard
               </button>
@@ -53,15 +54,17 @@ export function CryptoPortfolioApp() {
   }
 
   return (
-    <div className="relative">
-      {/* Hero Background */}
-      <div 
-        className="fixed inset-0 z-0 opacity-20 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
-      <div className="relative z-10">
-        {renderPage()}
+    <AuthGuard>
+      <div className="relative">
+        {/* Hero Background */}
+        <div 
+          className="fixed inset-0 z-0 opacity-10 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        <div className="relative z-10">
+          {renderPage()}
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   )
 }

@@ -66,10 +66,21 @@ export function TokenList() {
     <DashboardCard className="p-6 col-span-full lg:col-span-5">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-foreground">Token Holdings</h3>
-        <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
-          <ExternalLink className="w-4 h-4 mr-2" />
-          View All
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-primary hover:text-primary"
+            onClick={() => {/* Add wallet functionality */}}
+          >
+            <span className="text-lg mr-1">+</span>
+            Add Wallet
+          </Button>
+          <Button variant="ghost" size="sm" className="text-primary hover:text-primary">
+            <ExternalLink className="w-4 h-4 mr-2" />
+            View All
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4 max-h-80 overflow-y-auto dashboard-scrollbar">
