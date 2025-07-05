@@ -1,9 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DashboardCard } from "@/components/ui/dashboard-card"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useAuth } from "@/hooks/useAuth"
-import { useWallet } from "@/hooks/useWallet"
 import { Settings, Menu, X, LogOut } from "lucide-react"
 
 interface HeaderProps {
@@ -13,7 +11,6 @@ interface HeaderProps {
 export function Header({ onNavigate }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { signOut } = useAuth()
-  const { publicKey } = useWallet()
 
   const navigate = (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => {
     onNavigate?.(page)
@@ -58,11 +55,6 @@ export function Header({ onNavigate }: HeaderProps) {
 
         {/* Actions */}
         <div className="flex items-center space-x-3">
-          {/* Wallet Connection */}
-          <div className="hidden sm:block">
-            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-4 !py-2" />
-          </div>
-
           {/* Sign Out */}
           <Button 
             variant="ghost" 
@@ -99,11 +91,6 @@ export function Header({ onNavigate }: HeaderProps) {
       {isMobileMenuOpen && (
         <DashboardCard className="md:hidden m-4 p-4 animate-slide-up">
           <nav className="flex flex-col space-y-2">
-            {/* Mobile Wallet Connection */}
-            <div className="sm:hidden mb-4">
-              <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-4 !py-2 !w-full" />
-            </div>
-            
             <Button variant="ghost" onClick={() => navigate("dashboard")} className="justify-start">
               Dashboard
             </Button>

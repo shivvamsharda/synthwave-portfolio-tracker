@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
-import { RefreshCw, Wallet, ChevronDown, Filter, BarChart3 } from "lucide-react"
+import { RefreshCw, Wallet, ChevronDown, Filter, BarChart3, Plus } from "lucide-react"
 import { useState, useMemo } from "react"
 
 interface Token {
@@ -216,6 +216,15 @@ export function TokenList({ onNavigate }: TokenListProps) {
           )}
         </div>
         <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onNavigate?.("wallets")}
+            className="text-primary hover:text-primary"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Wallet
+          </Button>
           {wallets.length > 0 && (
             <Button 
               variant="ghost" 
