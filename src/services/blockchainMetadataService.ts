@@ -1,8 +1,14 @@
 import { Connection, PublicKey } from '@solana/web3.js'
 import { supabase } from '@/integrations/supabase/client'
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
-import { publicKey } from '@metaplex-foundation/umi'
-import { mplTokenMetadata, fetchMetadata } from '@metaplex-foundation/mpl-token-metadata'
+import { Buffer } from 'buffer'
+
+// Ensure Buffer is available globally for browser compatibility
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer
+}
+
+// Metaplex Token Metadata Program ID
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s')
 
 interface BlockchainTokenMetadata {
   mint: string
@@ -18,7 +24,6 @@ interface BlockchainTokenMetadata {
 
 export class BlockchainMetadataService {
   private static connection = new Connection('https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15', 'confirmed')
-  private static umi = createUmi('https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15').use(mplTokenMetadata())
 
   /**
    * Get token metadata from database cache first, then blockchain if not found
@@ -121,19 +126,28 @@ export class BlockchainMetadataService {
   }
 
   /**
-   * Fetch token metadata directly from Solana blockchain using UMI
+   * Fetch token metadata directly from Solana blockchain
    */
   private static async fetchFromBlockchain(mintAddress: string): Promise<BlockchainTokenMetadata | null> {
     try {
-      console.log(`🔗 Fetching metadata for ${mintAddress} using UMI`)
+      console.log(`🔗 Connecting to blockchain for ${mintAddress}`)
+      
+      // Check if Buffer is available
+      if (typeof Buffer === 'undefined') {
+        console.error('❌ Buffer is not defined - polyfill may not be working')
+        return null
+      }
+      
+      const mintPubkey = new PublicKey(mintAddress)
+      console.log(`📊 Getting token supply for ${mintAddress}`)
       
       // Get token supply info for decimals
-      const mintPubkey = new PublicKey(mintAddress)
       const tokenSupply = await this.connection.getTokenSupply(mintPubkey)
       const decimals = tokenSupply.value.decimals
       console.log(`✅ Token decimals: ${decimals}`)
 
-      // Try to get metadata using UMI
+      // Try to get metadata from Metaplex Token Metadata Program
+      console.log(`🎯 Attempting to fetch Metaplex metadata for ${mintAddress}`)
       const metadataAccount = await this.getMetaplexMetadata(mintAddress)
       
       if (metadataAccount) {
@@ -164,8 +178,9 @@ export class BlockchainMetadataService {
     } catch (error) {
       console.error(`❌ Error fetching blockchain metadata for ${mintAddress}:`, error)
       
-      // Return basic fallback even on error
+      // Return basic fallback even on error to prevent complete failure
       try {
+        console.log(`🔄 Attempting fallback for ${mintAddress}`)
         const mintPubkey = new PublicKey(mintAddress)
         const tokenSupply = await this.connection.getTokenSupply(mintPubkey)
         return {
@@ -183,49 +198,132 @@ export class BlockchainMetadataService {
   }
 
   /**
-   * Get metadata from Metaplex Token Metadata Program using UMI
+   * Get metadata from Metaplex Token Metadata Program
    */
   private static async getMetaplexMetadata(mintAddress: string): Promise<any> {
     try {
-      console.log(`🎭 Getting Metaplex metadata for ${mintAddress} using UMI`)
+      console.log(`🎭 Getting Metaplex metadata for ${mintAddress}`)
       
-      // Fetch metadata using UMI
-      const metadata = await fetchMetadata(this.umi, publicKey(mintAddress))
-      console.log(`✅ Found metadata account:`, metadata)
+      // Derive metadata account address  
+      const mintPubkey = new PublicKey(mintAddress)
       
-      // If metadata has URI, fetch JSON metadata
-      if (metadata.uri) {
-        console.log(`🌐 Fetching JSON metadata from URI: ${metadata.uri}`)
-        try {
-          const response = await fetch(metadata.uri)
-          if (response.ok) {
-            const jsonMetadata = await response.json()
-            console.log(`✅ Got JSON metadata:`, jsonMetadata)
-            return {
-              name: metadata.name,
-              symbol: metadata.symbol,
-              uri: metadata.uri,
-              ...jsonMetadata
+      console.log(`🔑 Deriving metadata account address...`)
+      const [metadataAddress] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from('metadata'),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          mintPubkey.toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      )
+      console.log(`📍 Metadata account address: ${metadataAddress.toString()}`)
+
+      // Get metadata account
+      console.log(`📡 Fetching metadata account info...`)
+      const metadataAccount = await this.connection.getAccountInfo(metadataAddress)
+      
+      if (metadataAccount) {
+        console.log(`✅ Found metadata account, parsing data...`)
+        // Parse metadata (simplified - in production you'd use @metaplex-foundation/mpl-token-metadata)
+        const metadata = this.parseMetadataAccount(metadataAccount.data)
+        console.log(`🔍 Parsed metadata:`, metadata)
+        
+        // If metadata has URI, fetch JSON metadata
+        if (metadata.uri) {
+          console.log(`🌐 Fetching JSON metadata from URI: ${metadata.uri}`)
+          try {
+            const response = await fetch(metadata.uri)
+            if (response.ok) {
+              const jsonMetadata = await response.json()
+              console.log(`✅ Got JSON metadata:`, jsonMetadata)
+              return {
+                ...metadata,
+                ...jsonMetadata
+              }
+            } else {
+              console.log(`⚠️ Failed to fetch JSON metadata, status: ${response.status}`)
             }
-          } else {
-            console.log(`⚠️ Failed to fetch JSON metadata, status: ${response.status}`)
+          } catch (fetchError) {
+            console.error(`❌ Error fetching JSON metadata:`, fetchError)
           }
-        } catch (fetchError) {
-          console.error(`❌ Error fetching JSON metadata:`, fetchError)
         }
+        
+        return metadata
+      } else {
+        console.log(`❌ No metadata account found for ${mintAddress}`)
       }
-      
-      return {
-        name: metadata.name,
-        symbol: metadata.symbol,
-        uri: metadata.uri
-      }
+
+      return null
     } catch (error) {
       console.error(`❌ Error fetching Metaplex metadata for ${mintAddress}:`, error)
       return null
     }
   }
 
+  /**
+   * Simple metadata account parser (simplified version)
+   */
+  private static parseMetadataAccount(data: Buffer): any {
+    try {
+      // This is a simplified parser - in production use @metaplex-foundation/mpl-token-metadata
+      let offset = 1 // Skip discriminator
+      
+      // Ensure we have enough data
+      if (data.length < 43) {
+        console.warn('Metadata account data too short')
+        return {}
+      }
+      
+      // Read name (32 bytes, null-terminated)
+      const nameBytes = data.slice(offset, offset + 32)
+      const name = this.safeDecodeString(nameBytes)
+      offset += 32
+      
+      // Read symbol (10 bytes, null-terminated)
+      const symbolBytes = data.slice(offset, offset + 10)
+      const symbol = this.safeDecodeString(symbolBytes)
+      offset += 10
+      
+      // Read URI (200 bytes, null-terminated) - check bounds
+      if (data.length >= offset + 200) {
+        const uriBytes = data.slice(offset, offset + 200)
+        const uri = this.safeDecodeString(uriBytes)
+        
+        return {
+          name: name || null,
+          symbol: symbol || null,
+          uri: uri || null
+        }
+      }
+      
+      return {
+        name: name || null,
+        symbol: symbol || null,
+        uri: null
+      }
+    } catch (error) {
+      console.error('Error parsing metadata account:', error)
+      return {}
+    }
+  }
+
+  /**
+   * Safely decode string from bytes with error handling
+   */
+  private static safeDecodeString(bytes: Buffer): string {
+    try {
+      // Try UTF-8 first
+      return bytes.toString('utf8').replace(/\0/g, '').trim()
+    } catch (error) {
+      try {
+        // Fallback to latin1
+        return bytes.toString('latin1').replace(/\0/g, '').trim()
+      } catch (fallbackError) {
+        console.warn('String decode failed:', fallbackError)
+        return ''
+      }
+    }
+  }
 
   /**
    * Get token metadata from database
