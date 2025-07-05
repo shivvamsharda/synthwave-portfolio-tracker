@@ -9,7 +9,99 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      portfolio: {
+        Row: {
+          balance: number | null
+          id: string
+          last_updated: string | null
+          token_mint: string
+          token_name: string | null
+          token_symbol: string | null
+          usd_value: number | null
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          balance?: number | null
+          id?: string
+          last_updated?: string | null
+          token_mint: string
+          token_name?: string | null
+          token_symbol?: string | null
+          usd_value?: number | null
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          balance?: number | null
+          id?: string
+          last_updated?: string | null
+          token_mint?: string
+          token_name?: string | null
+          token_symbol?: string | null
+          usd_value?: number | null
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          updated_at: string
+          user_id: string
+          wallet_address: string
+          wallet_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+          wallet_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+          wallet_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

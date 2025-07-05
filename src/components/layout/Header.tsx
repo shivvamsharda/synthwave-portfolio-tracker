@@ -1,24 +1,27 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DashboardCard } from "@/components/ui/dashboard-card"
-import { Wallet, Settings, Menu, X } from "lucide-react"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { useAuth } from "@/hooks/useAuth"
+import { useWallet } from "@/hooks/useWallet"
+import { Settings, Menu, X, LogOut } from "lucide-react"
 
 interface HeaderProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => void
 }
 
 export function Header({ onNavigate }: HeaderProps) {
-  const [isConnected, setIsConnected] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  const handleConnectWallet = () => {
-    // Mock wallet connection - will integrate with real wallet adapters
-    setIsConnected(!isConnected)
-  }
+  const { signOut } = useAuth()
+  const { publicKey } = useWallet()
 
   const navigate = (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => {
     onNavigate?.(page)
     setIsMobileMenuOpen(false)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
   }
 
   return (
@@ -56,14 +59,18 @@ export function Header({ onNavigate }: HeaderProps) {
         {/* Actions */}
         <div className="flex items-center space-x-3">
           {/* Wallet Connection */}
-          <Button
-            onClick={handleConnectWallet}
-            variant={isConnected ? "default" : "outline"}
-            size="sm"
-            className="font-medium"
+          <div className="hidden sm:block">
+            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-4 !py-2" />
+          </div>
+
+          {/* Sign Out */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="hidden md:flex text-muted-foreground hover:text-foreground"
+            onClick={handleSignOut}
           >
-            <Wallet className="w-4 h-4 mr-2" />
-            {isConnected ? "0x1234...5678" : "Connect Wallet"}
+            <LogOut className="w-4 h-4" />
           </Button>
 
           {/* Settings */}
@@ -92,6 +99,11 @@ export function Header({ onNavigate }: HeaderProps) {
       {isMobileMenuOpen && (
         <DashboardCard className="md:hidden m-4 p-4 animate-slide-up">
           <nav className="flex flex-col space-y-2">
+            {/* Mobile Wallet Connection */}
+            <div className="sm:hidden mb-4">
+              <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-md !text-sm !font-medium !px-4 !py-2 !w-full" />
+            </div>
+            
             <Button variant="ghost" onClick={() => navigate("dashboard")} className="justify-start">
               Dashboard
             </Button>
@@ -107,6 +119,10 @@ export function Header({ onNavigate }: HeaderProps) {
             <Button variant="ghost" onClick={() => navigate("settings")} className="justify-start">
               <Settings className="w-4 h-4 mr-2" />
               Settings
+            </Button>
+            <Button variant="ghost" onClick={handleSignOut} className="justify-start text-muted-foreground">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
             </Button>
           </nav>
         </DashboardCard>

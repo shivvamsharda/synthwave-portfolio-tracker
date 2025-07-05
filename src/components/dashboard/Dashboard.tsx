@@ -2,12 +2,15 @@ import { Header } from "@/components/layout/Header"
 import { PortfolioStats } from "./PortfolioStats"
 import { PortfolioChart } from "./PortfolioChart"
 import { TokenList } from "./TokenList"
+import { useWallet } from "@/hooks/useWallet"
 
 interface DashboardProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => void
 }
 
 export function Dashboard({ onNavigate }: DashboardProps) {
+  const { wallets } = useWallet()
+  
   return (
     <div className="min-h-screen bg-background">
       <Header onNavigate={onNavigate} />
@@ -51,15 +54,15 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {/* Bottom Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
           <div className="dashboard-card p-6 text-center">
-            <div className="text-2xl font-bold text-primary">24</div>
+            <div className="text-2xl font-bold text-primary">{wallets.length}</div>
             <div className="text-sm text-muted-foreground">Connected Wallets</div>
           </div>
           <div className="dashboard-card p-6 text-center">
-            <div className="text-2xl font-bold text-primary">156</div>
-            <div className="text-sm text-muted-foreground">Total Assets</div>
+            <div className="text-2xl font-bold text-primary">--</div>
+            <div className="text-sm text-muted-foreground">SPL Tokens</div>
           </div>
           <div className="dashboard-card p-6 text-center">
-            <div className="text-2xl font-bold text-primary">8</div>
+            <div className="text-2xl font-bold text-primary">1</div>
             <div className="text-sm text-muted-foreground">Active Chains</div>
           </div>
         </div>
