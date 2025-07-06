@@ -4,10 +4,12 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, TrendingUp, Users, ArrowRightLeft, Eye } from "lucide-react"
+import { Search, TrendingUp, Users, ArrowRightLeft, Eye, Info } from "lucide-react"
 import { HolderMovementAnalysis } from "@/components/analytics/HolderMovementAnalysis"
 import { WhaleTracker } from "@/components/analytics/WhaleTracker"
 import { TokenFlowVisualization } from "@/components/analytics/TokenFlowVisualization"
+import { TokenOverview } from "@/components/analytics/TokenOverview"
+import { jupiterUltraService, JupiterTokenData } from "@/services/jupiterUltraService"
 
 interface TokenAnalyticsPageProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -16,6 +18,25 @@ interface TokenAnalyticsPageProps {
 export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
   const [selectedToken, setSelectedToken] = useState<string>("")
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const [searchResults, setSearchResults] = useState<JupiterTokenData[]>([])
+  const [searching, setSearching] = useState(false)
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return
+    
+    setSearching(true)
+    try {
+      const results = await jupiterUltraService.searchToken(searchQuery)
+      setSearchResults(results)
+      if (results.length > 0) {
+        setSelectedToken(results[0].id)
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setSearching(false)
+    }
+  }
 
   const popularTokens = [
     { mint: "So11111111111111111111111111111111111111112", symbol: "SOL", name: "Solana" },
@@ -56,10 +77,10 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
                   />
                 </div>
                 <Button 
-                  onClick={() => setSelectedToken(searchQuery)}
-                  disabled={!searchQuery.trim()}
+                  onClick={handleSearch}
+                  disabled={!searchQuery.trim() || searching}
                 >
-                  Analyze
+                  {searching ? "Searching..." : "Analyze"}
                 </Button>
               </div>
 
@@ -88,8 +109,12 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
         </div>
 
         {selectedToken ? (
-          <Tabs defaultValue="holder-movement" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                Overview
+              </TabsTrigger>
               <TabsTrigger value="holder-movement" className="flex items-center gap-2">
                 <ArrowRightLeft className="w-4 h-4" />
                 Holder Movement
@@ -103,6 +128,10 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
                 Token Flows
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="overview">
+              <TokenOverview tokenMint={selectedToken} />
+            </TabsContent>
 
             <TabsContent value="holder-movement">
               <HolderMovementAnalysis tokenMint={selectedToken} />
