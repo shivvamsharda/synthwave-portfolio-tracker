@@ -4,7 +4,7 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, TrendingUp, Users, ArrowRightLeft, Eye, Info } from "lucide-react"
+import { Search, TrendingUp, Users, ArrowRightLeft, Eye, Info, RefreshCw } from "lucide-react"
 import { HolderMovementAnalysis } from "@/components/analytics/HolderMovementAnalysis"
 import { WhaleTracker } from "@/components/analytics/WhaleTracker"
 import { TokenFlowVisualization } from "@/components/analytics/TokenFlowVisualization"
@@ -20,6 +20,7 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [searchResults, setSearchResults] = useState<JupiterTokenData[]>([])
   const [searching, setSearching] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
@@ -35,6 +36,24 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
       console.error('Search error:', error)
     } finally {
       setSearching(false)
+    }
+  }
+
+  const handleRefresh = async () => {
+    if (!selectedToken) return
+    
+    setRefreshing(true)
+    try {
+      // Clear the cache
+      jupiterUltraService.clearCache()
+      
+      // Refetch the current token data
+      const results = await jupiterUltraService.searchToken(selectedToken)
+      setSearchResults(results)
+    } catch (error) {
+      console.error('Refresh error:', error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -109,42 +128,58 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
         </div>
 
         {selectedToken ? (
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <Info className="w-4 h-4" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="holder-movement" className="flex items-center gap-2">
-                <ArrowRightLeft className="w-4 h-4" />
-                Holder Movement
-              </TabsTrigger>
-              <TabsTrigger value="whale-tracker" className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Whale Tracker
-              </TabsTrigger>
-              <TabsTrigger value="token-flows" className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Token Flows
-              </TabsTrigger>
-            </TabsList>
+          <div className="space-y-6">
+            {/* Refresh Button */}
+            <div className="flex justify-end">
+              <Button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                {refreshing ? 'Refreshing...' : 'Refresh Data'}
+              </Button>
+            </div>
 
-            <TabsContent value="overview">
-              <TokenOverview tokenMint={selectedToken} />
-            </TabsContent>
+            <Tabs defaultValue="overview" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="overview" className="flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="holder-movement" className="flex items-center gap-2">
+                  <ArrowRightLeft className="w-4 h-4" />
+                  Holder Movement
+                </TabsTrigger>
+                <TabsTrigger value="whale-tracker" className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Whale Tracker
+                </TabsTrigger>
+                <TabsTrigger value="token-flows" className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Token Flows
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="holder-movement">
-              <HolderMovementAnalysis tokenMint={selectedToken} />
-            </TabsContent>
+              <TabsContent value="overview">
+                <TokenOverview tokenMint={selectedToken} />
+              </TabsContent>
 
-            <TabsContent value="whale-tracker">
-              <WhaleTracker tokenMint={selectedToken} />
-            </TabsContent>
+              <TabsContent value="holder-movement">
+                <HolderMovementAnalysis tokenMint={selectedToken} />
+              </TabsContent>
 
-            <TabsContent value="token-flows">
-              <TokenFlowVisualization tokenMint={selectedToken} />
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="whale-tracker">
+                <WhaleTracker tokenMint={selectedToken} />
+              </TabsContent>
+
+              <TabsContent value="token-flows">
+                <TokenFlowVisualization tokenMint={selectedToken} />
+              </TabsContent>
+            </Tabs>
+          </div>
         ) : (
           <DashboardCard className="p-12 text-center">
             <div className="space-y-4">
