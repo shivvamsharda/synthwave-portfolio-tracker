@@ -326,6 +326,307 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
           </div>
         </div>
       </DashboardCard>
+
+      {/* Complete Jupiter API Data */}
+      <DashboardCard className="p-6">
+        <h4 className="font-semibold text-foreground mb-4">Complete Token Data (Jupiter Ultra API)</h4>
+        
+        {/* Basic Token Info */}
+        <div className="space-y-6">
+          <div>
+            <h5 className="font-medium text-foreground mb-3">Token Information</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Contract Address:</span>
+                <div className="font-mono text-xs break-all bg-muted/20 p-2 rounded mt-1">{tokenData.id}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Decimals:</span>
+                <div className="font-medium">{tokenData.decimals}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Token Program:</span>
+                <div className="font-mono text-xs break-all bg-muted/20 p-2 rounded mt-1">{tokenData.tokenProgram}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Developer:</span>
+                <div className="font-mono text-xs break-all bg-muted/20 p-2 rounded mt-1">{tokenData.dev}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Launchpad:</span>
+                <div className="font-medium">{tokenData.launchpad || 'N/A'}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Last Updated:</span>
+                <div className="font-medium">{new Date(tokenData.updatedAt).toLocaleString()}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Supply Information */}
+          <div>
+            <h5 className="font-medium text-foreground mb-3">Supply Information</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Circulating Supply:</span>
+                <div className="font-medium">{formatNumber(tokenData.circSupply)}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Total Supply:</span>
+                <div className="font-medium">{formatNumber(tokenData.totalSupply)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Pool Information */}
+          {tokenData.firstPool && (
+            <div>
+              <h5 className="font-medium text-foreground mb-3">Pool Information</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">First Pool ID:</span>
+                  <div className="font-mono text-xs break-all bg-muted/20 p-2 rounded mt-1">{tokenData.firstPool.id}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Pool Created:</span>
+                  <div className="font-medium">{new Date(tokenData.firstPool.createdAt).toLocaleString()}</div>
+                </div>
+                {tokenData.graduatedPool && (
+                  <>
+                    <div>
+                      <span className="text-muted-foreground">Graduated Pool:</span>
+                      <div className="font-mono text-xs break-all bg-muted/20 p-2 rounded mt-1">{tokenData.graduatedPool}</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Graduated At:</span>
+                      <div className="font-medium">{tokenData.graduatedAt ? new Date(tokenData.graduatedAt).toLocaleString() : 'N/A'}</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Detailed Statistics */}
+          <div>
+            <h5 className="font-medium text-foreground mb-3">Time-based Statistics</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* 5 Minutes */}
+              <div className="space-y-2">
+                <h6 className="font-medium text-sm text-primary">5 Minutes</h6>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Price Change:</span>
+                    <span className={tokenData.stats5m.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats5m.priceChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Holder Change:</span>
+                    <span className={tokenData.stats5m.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats5m.holderChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Volume Change:</span>
+                    <span>{tokenData.stats5m.volumeChange.toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Buy Volume:</span>
+                    <span>${formatNumber(tokenData.stats5m.buyVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Sell Volume:</span>
+                    <span>${formatNumber(tokenData.stats5m.sellVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Buy Vol:</span>
+                    <span>${formatNumber(tokenData.stats5m.buyOrganicVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Sell Vol:</span>
+                    <span>${formatNumber(tokenData.stats5m.sellOrganicVolume)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1 Hour */}
+              <div className="space-y-2">
+                <h6 className="font-medium text-sm text-primary">1 Hour</h6>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Price Change:</span>
+                    <span className={tokenData.stats1h.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats1h.priceChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Holder Change:</span>
+                    <span className={tokenData.stats1h.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats1h.holderChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Volume Change:</span>
+                    <span>{tokenData.stats1h.volumeChange.toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Buy Volume:</span>
+                    <span>${formatNumber(tokenData.stats1h.buyVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Sell Volume:</span>
+                    <span>${formatNumber(tokenData.stats1h.sellVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Buy Vol:</span>
+                    <span>${formatNumber(tokenData.stats1h.buyOrganicVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Sell Vol:</span>
+                    <span>${formatNumber(tokenData.stats1h.sellOrganicVolume)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 6 Hours */}
+              <div className="space-y-2">
+                <h6 className="font-medium text-sm text-primary">6 Hours</h6>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Price Change:</span>
+                    <span className={tokenData.stats6h.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats6h.priceChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Holder Change:</span>
+                    <span className={tokenData.stats6h.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats6h.holderChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Volume Change:</span>
+                    <span>{tokenData.stats6h.volumeChange.toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Buy Volume:</span>
+                    <span>${formatNumber(tokenData.stats6h.buyVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Sell Volume:</span>
+                    <span>${formatNumber(tokenData.stats6h.sellVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Buy Vol:</span>
+                    <span>${formatNumber(tokenData.stats6h.buyOrganicVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Sell Vol:</span>
+                    <span>${formatNumber(tokenData.stats6h.sellOrganicVolume)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 24 Hours */}
+              <div className="space-y-2">
+                <h6 className="font-medium text-sm text-primary">24 Hours</h6>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Price Change:</span>
+                    <span className={tokenData.stats24h.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats24h.priceChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Holder Change:</span>
+                    <span className={tokenData.stats24h.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
+                      {tokenData.stats24h.holderChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Volume Change:</span>
+                    <span>{tokenData.stats24h.volumeChange.toFixed(2)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Buy Volume:</span>
+                    <span>${formatNumber(tokenData.stats24h.buyVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Sell Volume:</span>
+                    <span>${formatNumber(tokenData.stats24h.sellVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Buy Vol:</span>
+                    <span>${formatNumber(tokenData.stats24h.buyOrganicVolume)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Organic Sell Vol:</span>
+                    <span>${formatNumber(tokenData.stats24h.sellOrganicVolume)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Trading Activity Summary */}
+          <div>
+            <h5 className="font-medium text-foreground mb-3">Trading Activity Summary</h5>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="space-y-4">
+                <div>
+                  <span className="text-muted-foreground">24h Traders:</span>
+                  <div className="font-medium">{tokenData.stats24h.numTraders}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">24h Organic Buyers:</span>
+                  <div className="font-medium">{tokenData.stats24h.numOrganicBuyers}</div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-muted-foreground">24h Net Buyers:</span>
+                  <div className="font-medium">{tokenData.stats24h.numNetBuyers}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">CT Likes:</span>
+                  <div className="font-medium">{tokenData.ctLikes}</div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-muted-foreground">Smart CT Likes:</span>
+                  <div className="font-medium">{tokenData.smartCtLikes}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Price Block ID:</span>
+                  <div className="font-medium">{tokenData.priceBlockId}</div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-muted-foreground">Dev Migrations:</span>
+                  <div className="font-medium">{tokenData.audit.devMigrations}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tags */}
+          {tokenData.tags.length > 0 && (
+            <div>
+              <h5 className="font-medium text-foreground mb-3">Tags</h5>
+              <div className="flex flex-wrap gap-2">
+                {tokenData.tags.map((tag, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </DashboardCard>
     </div>
   )
 }
