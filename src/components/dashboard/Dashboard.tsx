@@ -6,7 +6,7 @@ import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
 
 interface DashboardProps {
-  onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => void
+  onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
 }
 
 export function Dashboard({ onNavigate }: DashboardProps) {

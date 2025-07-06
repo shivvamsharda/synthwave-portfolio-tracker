@@ -5,14 +5,14 @@ import { useAuth } from "@/hooks/useAuth"
 import { Settings, Menu, X, LogOut } from "lucide-react"
 
 interface HeaderProps {
-  onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => void
+  onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
 }
 
 export function Header({ onNavigate }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { signOut } = useAuth()
 
-  const navigate = (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => {
+  const navigate = (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => {
     onNavigate?.(page)
     setIsMobileMenuOpen(false)
   }
@@ -44,6 +44,9 @@ export function Header({ onNavigate }: HeaderProps) {
           </Button>
           <Button variant="ghost" onClick={() => navigate("wallets")} className="font-medium">
             Wallets
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("analytics")} className="font-medium">
+            Analytics
           </Button>
           <Button variant="ghost" onClick={() => navigate("nfts")} className="font-medium">
             NFTs
@@ -96,6 +99,9 @@ export function Header({ onNavigate }: HeaderProps) {
             </Button>
             <Button variant="ghost" onClick={() => navigate("wallets")} className="justify-start">
               Wallets
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("analytics")} className="justify-start">
+              Analytics
             </Button>
             <Button variant="ghost" onClick={() => navigate("nfts")} className="justify-start">
               NFTs
