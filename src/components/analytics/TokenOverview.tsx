@@ -120,7 +120,7 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
               </div>
               <p className="text-lg text-muted-foreground">${tokenData.symbol}</p>
               <div className="flex items-center gap-2 mt-2">
-                <Badge variant="outline">{tokenData.launchpad || 'Unknown'}</Badge>
+                <Badge variant="outline">{tokenData.launchpad || '0'}</Badge>
                 <Badge 
                   variant="outline"
                   className={`${
@@ -356,7 +356,7 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
               </div>
               <div>
                 <span className="text-muted-foreground">Launchpad:</span>
-                <div className="font-medium">{tokenData.launchpad || 'N/A'}</div>
+                <div className="font-medium">{tokenData.launchpad || '0'}</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Last Updated:</span>
@@ -401,7 +401,7 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
                     </div>
                     <div>
                       <span className="text-muted-foreground">Graduated At:</span>
-                      <div className="font-medium">{tokenData.graduatedAt ? new Date(tokenData.graduatedAt).toLocaleString() : 'N/A'}</div>
+                      <div className="font-medium">{tokenData.graduatedAt ? new Date(tokenData.graduatedAt).toLocaleString() : '0'}</div>
                     </div>
                   </>
                 )}
