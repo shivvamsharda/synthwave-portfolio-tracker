@@ -81,6 +81,7 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
 
   const sentiment = jupiterUltraService.getMarketSentiment(tokenData)
   const formatNumber = (num: number) => {
+    if (num === undefined || num === null || isNaN(num)) return '0'
     if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`
     if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`
     if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`
@@ -88,6 +89,7 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
   }
 
   const formatCurrency = (amount: number) => {
+    if (amount === undefined || amount === null || isNaN(amount)) return '$0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -127,7 +129,7 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
                     'text-muted-foreground'
                   }`}
                 >
-                  Organic Score: {tokenData.organicScore.toFixed(0)}
+                  Organic Score: {(tokenData.organicScore ?? 0).toFixed(0)}
                 </Badge>
               </div>
             </div>
@@ -179,14 +181,14 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
               {formatCurrency(tokenData.usdPrice)}
             </div>
             <div className={`text-xs flex items-center gap-1 ${
-              tokenData.stats24h.priceChange >= 0 ? 'status-positive' : 'status-negative'
+              (tokenData.stats24h?.priceChange ?? 0) >= 0 ? 'status-positive' : 'status-negative'
             }`}>
-              {tokenData.stats24h.priceChange >= 0 ? (
+              {(tokenData.stats24h?.priceChange ?? 0) >= 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
                 <TrendingDown className="w-3 h-3" />
               )}
-              {tokenData.stats24h.priceChange.toFixed(2)}% (24h)
+              {(tokenData.stats24h?.priceChange ?? 0).toFixed(2)}% (24h)
             </div>
           </div>
 
@@ -212,14 +214,14 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
               {formatNumber(tokenData.holderCount)}
             </div>
             <div className={`text-xs flex items-center gap-1 ${
-              tokenData.stats24h.holderChange >= 0 ? 'status-positive' : 'status-negative'
+              (tokenData.stats24h?.holderChange ?? 0) >= 0 ? 'status-positive' : 'status-negative'
             }`}>
-              {tokenData.stats24h.holderChange >= 0 ? (
+              {(tokenData.stats24h?.holderChange ?? 0) >= 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
                 <TrendingDown className="w-3 h-3" />
               )}
-              {tokenData.stats24h.holderChange.toFixed(2)}% (24h)
+              {(tokenData.stats24h?.holderChange ?? 0).toFixed(2)}% (24h)
             </div>
           </div>
 
@@ -232,14 +234,14 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
               ${formatNumber(tokenData.liquidity)}
             </div>
             <div className={`text-xs flex items-center gap-1 ${
-              tokenData.stats24h.liquidityChange >= 0 ? 'status-positive' : 'status-negative'
+              (tokenData.stats24h?.liquidityChange ?? 0) >= 0 ? 'status-positive' : 'status-negative'
             }`}>
-              {tokenData.stats24h.liquidityChange >= 0 ? (
+              {(tokenData.stats24h?.liquidityChange ?? 0) >= 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
                 <TrendingDown className="w-3 h-3" />
               )}
-              {tokenData.stats24h.liquidityChange.toFixed(2)}% (24h)
+              {(tokenData.stats24h?.liquidityChange ?? 0).toFixed(2)}% (24h)
             </div>
           </div>
         </div>
@@ -252,15 +254,15 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Buys/Sells</span>
-              <span className="text-foreground">{tokenData.stats5m.numBuys}/{tokenData.stats5m.numSells}</span>
+              <span className="text-foreground">{tokenData.stats5m?.numBuys ?? 0}/{tokenData.stats5m?.numSells ?? 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Volume</span>
-              <span className="text-foreground">${formatNumber(tokenData.stats5m.buyVolume + tokenData.stats5m.sellVolume)}</span>
+              <span className="text-foreground">${formatNumber((tokenData.stats5m?.buyVolume ?? 0) + (tokenData.stats5m?.sellVolume ?? 0))}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Net Buyers</span>
-              <span className="text-foreground">{tokenData.stats5m.numNetBuyers}</span>
+              <span className="text-foreground">{tokenData.stats5m?.numNetBuyers ?? 0}</span>
             </div>
           </div>
         </DashboardCard>
@@ -270,15 +272,15 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Buys/Sells</span>
-              <span className="text-foreground">{tokenData.stats1h.numBuys}/{tokenData.stats1h.numSells}</span>
+              <span className="text-foreground">{tokenData.stats1h?.numBuys ?? 0}/{tokenData.stats1h?.numSells ?? 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Volume</span>
-              <span className="text-foreground">${formatNumber(tokenData.stats1h.buyVolume + tokenData.stats1h.sellVolume)}</span>
+              <span className="text-foreground">${formatNumber((tokenData.stats1h?.buyVolume ?? 0) + (tokenData.stats1h?.sellVolume ?? 0))}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Organic Buyers</span>
-              <span className="text-foreground">{tokenData.stats1h.numOrganicBuyers}</span>
+              <span className="text-foreground">{tokenData.stats1h?.numOrganicBuyers ?? 0}</span>
             </div>
           </div>
         </DashboardCard>
@@ -288,15 +290,15 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Buys/Sells</span>
-              <span className="text-foreground">{tokenData.stats24h.numBuys}/{tokenData.stats24h.numSells}</span>
+              <span className="text-foreground">{tokenData.stats24h?.numBuys ?? 0}/{tokenData.stats24h?.numSells ?? 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Volume</span>
-              <span className="text-foreground">${formatNumber(tokenData.stats24h.buyVolume + tokenData.stats24h.sellVolume)}</span>
+              <span className="text-foreground">${formatNumber((tokenData.stats24h?.buyVolume ?? 0) + (tokenData.stats24h?.sellVolume ?? 0))}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Traders</span>
-              <span className="text-foreground">{tokenData.stats24h.numTraders}</span>
+              <span className="text-foreground">{tokenData.stats24h?.numTraders ?? 0}</span>
             </div>
           </div>
         </DashboardCard>
@@ -318,11 +320,11 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Top Holders</span>
-            <span className="text-sm font-medium">{tokenData.audit.topHoldersPercentage.toFixed(2)}%</span>
+            <span className="text-sm font-medium">{(tokenData.audit?.topHoldersPercentage ?? 0).toFixed(2)}%</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Dev Balance</span>
-            <span className="text-sm font-medium">{tokenData.audit.devBalancePercentage.toFixed(4)}%</span>
+            <span className="text-sm font-medium">{(tokenData.audit?.devBalancePercentage ?? 0).toFixed(4)}%</span>
           </div>
         </div>
       </DashboardCard>
@@ -417,35 +419,35 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Price Change:</span>
-                    <span className={tokenData.stats5m.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats5m.priceChange.toFixed(2)}%
+                    <span className={(tokenData.stats5m?.priceChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats5m?.priceChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Holder Change:</span>
-                    <span className={tokenData.stats5m.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats5m.holderChange.toFixed(2)}%
+                    <span className={(tokenData.stats5m?.holderChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats5m?.holderChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Volume Change:</span>
-                    <span>{tokenData.stats5m.volumeChange.toFixed(2)}%</span>
+                    <span>{(tokenData.stats5m?.volumeChange ?? 0).toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Buy Volume:</span>
-                    <span>${formatNumber(tokenData.stats5m.buyVolume)}</span>
+                    <span>${formatNumber(tokenData.stats5m?.buyVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Sell Volume:</span>
-                    <span>${formatNumber(tokenData.stats5m.sellVolume)}</span>
+                    <span>${formatNumber(tokenData.stats5m?.sellVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Buy Vol:</span>
-                    <span>${formatNumber(tokenData.stats5m.buyOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats5m?.buyOrganicVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Sell Vol:</span>
-                    <span>${formatNumber(tokenData.stats5m.sellOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats5m?.sellOrganicVolume ?? 0)}</span>
                   </div>
                 </div>
               </div>
@@ -456,35 +458,35 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Price Change:</span>
-                    <span className={tokenData.stats1h.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats1h.priceChange.toFixed(2)}%
+                    <span className={(tokenData.stats1h?.priceChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats1h?.priceChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Holder Change:</span>
-                    <span className={tokenData.stats1h.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats1h.holderChange.toFixed(2)}%
+                    <span className={(tokenData.stats1h?.holderChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats1h?.holderChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Volume Change:</span>
-                    <span>{tokenData.stats1h.volumeChange.toFixed(2)}%</span>
+                    <span>{(tokenData.stats1h?.volumeChange ?? 0).toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Buy Volume:</span>
-                    <span>${formatNumber(tokenData.stats1h.buyVolume)}</span>
+                    <span>${formatNumber(tokenData.stats1h?.buyVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Sell Volume:</span>
-                    <span>${formatNumber(tokenData.stats1h.sellVolume)}</span>
+                    <span>${formatNumber(tokenData.stats1h?.sellVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Buy Vol:</span>
-                    <span>${formatNumber(tokenData.stats1h.buyOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats1h?.buyOrganicVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Sell Vol:</span>
-                    <span>${formatNumber(tokenData.stats1h.sellOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats1h?.sellOrganicVolume ?? 0)}</span>
                   </div>
                 </div>
               </div>
@@ -495,35 +497,35 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Price Change:</span>
-                    <span className={tokenData.stats6h.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats6h.priceChange.toFixed(2)}%
+                    <span className={(tokenData.stats6h?.priceChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats6h?.priceChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Holder Change:</span>
-                    <span className={tokenData.stats6h.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats6h.holderChange.toFixed(2)}%
+                    <span className={(tokenData.stats6h?.holderChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats6h?.holderChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Volume Change:</span>
-                    <span>{tokenData.stats6h.volumeChange.toFixed(2)}%</span>
+                    <span>{(tokenData.stats6h?.volumeChange ?? 0).toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Buy Volume:</span>
-                    <span>${formatNumber(tokenData.stats6h.buyVolume)}</span>
+                    <span>${formatNumber(tokenData.stats6h?.buyVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Sell Volume:</span>
-                    <span>${formatNumber(tokenData.stats6h.sellVolume)}</span>
+                    <span>${formatNumber(tokenData.stats6h?.sellVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Buy Vol:</span>
-                    <span>${formatNumber(tokenData.stats6h.buyOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats6h?.buyOrganicVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Sell Vol:</span>
-                    <span>${formatNumber(tokenData.stats6h.sellOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats6h?.sellOrganicVolume ?? 0)}</span>
                   </div>
                 </div>
               </div>
@@ -534,35 +536,35 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Price Change:</span>
-                    <span className={tokenData.stats24h.priceChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats24h.priceChange.toFixed(2)}%
+                    <span className={(tokenData.stats24h?.priceChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats24h?.priceChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Holder Change:</span>
-                    <span className={tokenData.stats24h.holderChange >= 0 ? 'text-success' : 'text-destructive'}>
-                      {tokenData.stats24h.holderChange.toFixed(2)}%
+                    <span className={(tokenData.stats24h?.holderChange ?? 0) >= 0 ? 'text-success' : 'text-destructive'}>
+                      {(tokenData.stats24h?.holderChange ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Volume Change:</span>
-                    <span>{tokenData.stats24h.volumeChange.toFixed(2)}%</span>
+                    <span>{(tokenData.stats24h?.volumeChange ?? 0).toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Buy Volume:</span>
-                    <span>${formatNumber(tokenData.stats24h.buyVolume)}</span>
+                    <span>${formatNumber(tokenData.stats24h?.buyVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Sell Volume:</span>
-                    <span>${formatNumber(tokenData.stats24h.sellVolume)}</span>
+                    <span>${formatNumber(tokenData.stats24h?.sellVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Buy Vol:</span>
-                    <span>${formatNumber(tokenData.stats24h.buyOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats24h?.buyOrganicVolume ?? 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Organic Sell Vol:</span>
-                    <span>${formatNumber(tokenData.stats24h.sellOrganicVolume)}</span>
+                    <span>${formatNumber(tokenData.stats24h?.sellOrganicVolume ?? 0)}</span>
                   </div>
                 </div>
               </div>
@@ -576,37 +578,37 @@ export function TokenOverview({ tokenMint }: TokenOverviewProps) {
               <div className="space-y-4">
                 <div>
                   <span className="text-muted-foreground">24h Traders:</span>
-                  <div className="font-medium">{tokenData.stats24h.numTraders}</div>
+                  <div className="font-medium">{tokenData.stats24h?.numTraders ?? 0}</div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">24h Organic Buyers:</span>
-                  <div className="font-medium">{tokenData.stats24h.numOrganicBuyers}</div>
+                  <div className="font-medium">{tokenData.stats24h?.numOrganicBuyers ?? 0}</div>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
                   <span className="text-muted-foreground">24h Net Buyers:</span>
-                  <div className="font-medium">{tokenData.stats24h.numNetBuyers}</div>
+                  <div className="font-medium">{tokenData.stats24h?.numNetBuyers ?? 0}</div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">CT Likes:</span>
-                  <div className="font-medium">{tokenData.ctLikes}</div>
+                  <div className="font-medium">{tokenData.ctLikes ?? 0}</div>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
                   <span className="text-muted-foreground">Smart CT Likes:</span>
-                  <div className="font-medium">{tokenData.smartCtLikes}</div>
+                  <div className="font-medium">{tokenData.smartCtLikes ?? 0}</div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Price Block ID:</span>
-                  <div className="font-medium">{tokenData.priceBlockId}</div>
+                  <div className="font-medium">{tokenData.priceBlockId ?? 0}</div>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
                   <span className="text-muted-foreground">Dev Migrations:</span>
-                  <div className="font-medium">{tokenData.audit.devMigrations}</div>
+                  <div className="font-medium">{tokenData.audit?.devMigrations ?? 0}</div>
                 </div>
               </div>
             </div>
