@@ -3,6 +3,7 @@ import { AuthGuard } from "@/components/auth/AuthGuard"
 import { Dashboard } from "@/components/dashboard/Dashboard"
 import { WalletsPage } from "@/components/pages/WalletsPage"
 import { YieldPage } from "@/components/pages/YieldPage"
+import { TokenAnalyticsPage } from "@/components/pages/TokenAnalyticsPage"
 import heroImage from "@/assets/crypto-hero.jpg"
 
 type PageType = "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings"
@@ -19,20 +20,7 @@ export function CryptoPortfolioApp() {
       case "yield":
         return <YieldPage onNavigate={setCurrentPage} />
       case "analytics":
-        return (
-          <div className="min-h-screen bg-background flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <h1 className="text-4xl font-bold text-primary">Token Analytics</h1>
-              <p className="text-muted-foreground">Advanced analytics and insights for your tokens</p>
-              <button 
-                onClick={() => setCurrentPage("dashboard")}
-                className="btn-primary px-6 py-3 rounded-lg font-medium"
-              >
-                Back to Dashboard
-              </button>
-            </div>
-          </div>
-        )
+        return <TokenAnalyticsPage onNavigate={setCurrentPage} />
       case "nfts":
         return (
           <div className="min-h-screen bg-background flex items-center justify-center">

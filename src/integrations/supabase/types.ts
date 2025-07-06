@@ -123,6 +123,81 @@ export type Database = {
         }
         Relationships: []
       }
+      token_flow_analysis: {
+        Row: {
+          analysis_date: string
+          created_at: string
+          destination_token: string | null
+          flow_direction: string
+          id: string
+          source_token: string | null
+          time_period: string
+          token_mint: string
+          total_volume: number
+          unique_wallets: number
+        }
+        Insert: {
+          analysis_date: string
+          created_at?: string
+          destination_token?: string | null
+          flow_direction: string
+          id?: string
+          source_token?: string | null
+          time_period: string
+          token_mint: string
+          total_volume: number
+          unique_wallets: number
+        }
+        Update: {
+          analysis_date?: string
+          created_at?: string
+          destination_token?: string | null
+          flow_direction?: string
+          id?: string
+          source_token?: string | null
+          time_period?: string
+          token_mint?: string
+          total_volume?: number
+          unique_wallets?: number
+        }
+        Relationships: []
+      }
+      token_holders: {
+        Row: {
+          balance: number
+          created_at: string
+          holder_rank: number | null
+          id: string
+          last_updated: string
+          percentage_of_supply: number | null
+          token_mint: string
+          usd_value: number | null
+          wallet_address: string
+        }
+        Insert: {
+          balance: number
+          created_at?: string
+          holder_rank?: number | null
+          id?: string
+          last_updated?: string
+          percentage_of_supply?: number | null
+          token_mint: string
+          usd_value?: number | null
+          wallet_address: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          holder_rank?: number | null
+          id?: string
+          last_updated?: string
+          percentage_of_supply?: number | null
+          token_mint?: string
+          usd_value?: number | null
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       token_metadata: {
         Row: {
           created_at: string | null
@@ -165,6 +240,81 @@ export type Database = {
           twitter?: string | null
           updated_at?: string | null
           website?: string | null
+        }
+        Relationships: []
+      }
+      token_transactions: {
+        Row: {
+          amount_from: number | null
+          amount_to: number | null
+          block_height: number | null
+          created_at: string
+          id: string
+          timestamp: string
+          token_mint_from: string | null
+          token_mint_to: string | null
+          transaction_hash: string
+          transaction_type: string
+          wallet_address: string
+        }
+        Insert: {
+          amount_from?: number | null
+          amount_to?: number | null
+          block_height?: number | null
+          created_at?: string
+          id?: string
+          timestamp: string
+          token_mint_from?: string | null
+          token_mint_to?: string | null
+          transaction_hash: string
+          transaction_type: string
+          wallet_address: string
+        }
+        Update: {
+          amount_from?: number | null
+          amount_to?: number | null
+          block_height?: number | null
+          created_at?: string
+          id?: string
+          timestamp?: string
+          token_mint_from?: string | null
+          token_mint_to?: string | null
+          transaction_hash?: string
+          transaction_type?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      wallet_snapshots: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          snapshot_date: string
+          token_mint: string
+          transaction_hash: string | null
+          usd_value: number | null
+          wallet_address: string
+        }
+        Insert: {
+          balance: number
+          created_at?: string
+          id?: string
+          snapshot_date: string
+          token_mint: string
+          transaction_hash?: string | null
+          usd_value?: number | null
+          wallet_address: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          snapshot_date?: string
+          token_mint?: string
+          transaction_hash?: string | null
+          usd_value?: number | null
+          wallet_address?: string
         }
         Relationships: []
       }
