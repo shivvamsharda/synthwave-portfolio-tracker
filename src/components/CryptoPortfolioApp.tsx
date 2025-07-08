@@ -4,6 +4,7 @@ import { Dashboard } from "@/components/dashboard/Dashboard"
 import { WalletsPage } from "@/components/pages/WalletsPage"
 import { YieldPage } from "@/components/pages/YieldPage"
 import { TokenAnalyticsPage } from "@/components/pages/TokenAnalyticsPage"
+import { MultiSourceAnalyticsPage } from "@/components/pages/MultiSourceAnalyticsPage"
 import heroImage from "@/assets/crypto-hero.jpg"
 
 type PageType = "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings"
