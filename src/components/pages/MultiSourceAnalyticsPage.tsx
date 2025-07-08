@@ -25,6 +25,7 @@ import { birdeyeService } from "@/services/birdeyeService"
 import { coingeckoService } from "@/services/coingeckoService"
 import { santimentService } from "@/services/santimentService"
 import { lunarcrushService } from "@/services/lunarcrushService"
+import { useApiKeys } from "@/hooks/useApiKeys"
 
 interface MultiSourceAnalyticsPageProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -52,15 +53,31 @@ export function MultiSourceAnalyticsPage({ onNavigate }: MultiSourceAnalyticsPag
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [searching, setSearching] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  const [apiStatus, setApiStatus] = useState<ApiStatus>({
-    helius: 'missing-key',
-    birdeye: 'missing-key', 
-    coingecko: 'ready',
-    santiment: 'missing-key',
-    lunarcrush: 'missing-key'
-  })
   const [analyticsData, setAnalyticsData] = useState<TokenAnalyticsData>({})
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>('7d')
+  
+  const { apiKeys, hasApiKey, getApiKey, loading: apiKeysLoading } = useApiKeys()
+
+  const [apiStatus, setApiStatus] = useState<ApiStatus>({
+    helius: 'loading',
+    birdeye: 'loading', 
+    coingecko: 'ready',
+    santiment: 'loading',
+    lunarcrush: 'loading'
+  })
+
+  // Update API status based on available keys
+  useEffect(() => {
+    if (!apiKeysLoading) {
+      setApiStatus({
+        helius: hasApiKey('helius') ? 'ready' : 'missing-key',
+        birdeye: hasApiKey('birdeye') ? 'ready' : 'missing-key',
+        coingecko: 'ready', // CoinGecko has free tier
+        santiment: hasApiKey('santiment') ? 'ready' : 'missing-key',
+        lunarcrush: hasApiKey('lunarcrush') ? 'ready' : 'missing-key'
+      })
+    }
+  }, [apiKeys, apiKeysLoading, hasApiKey])
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
@@ -89,18 +106,18 @@ export function MultiSourceAnalyticsPage({ onNavigate }: MultiSourceAnalyticsPag
     const promises = []
 
     // Helius data (if API key available)
-    if (apiStatus.helius === 'ready') {
+    if (apiStatus.helius === 'ready' && hasApiKey('helius')) {
       promises.push(
-        heliusService.getTokenMetadata(mintAddress, 'YOUR_API_KEY')
+        heliusService.getTokenMetadata(mintAddress, getApiKey('helius')!)
           .then(data => setAnalyticsData(prev => ({ ...prev, helius: data })))
           .catch(() => setApiStatus(prev => ({ ...prev, helius: 'error' })))
       )
     }
 
     // Birdeye data (if API key available)
-    if (apiStatus.birdeye === 'ready') {
+    if (apiStatus.birdeye === 'ready' && hasApiKey('birdeye')) {
       promises.push(
-        birdeyeService.getTokenOverview(mintAddress, 'YOUR_API_KEY')
+        birdeyeService.getTokenOverview(mintAddress, getApiKey('birdeye')!)
           .then(data => setAnalyticsData(prev => ({ ...prev, birdeye: data })))
           .catch(() => setApiStatus(prev => ({ ...prev, birdeye: 'error' })))
       )
@@ -108,24 +125,24 @@ export function MultiSourceAnalyticsPage({ onNavigate }: MultiSourceAnalyticsPag
 
     // CoinGecko data (free tier)
     promises.push(
-      coingeckoService.getTokenByContract(mintAddress, 'solana')
+      coingeckoService.getTokenByContract(mintAddress, 'solana', getApiKey('coingecko'))
         .then(data => setAnalyticsData(prev => ({ ...prev, coingecko: data })))
         .catch(() => setApiStatus(prev => ({ ...prev, coingecko: 'error' })))
     )
 
     // Santiment data (if API key available)
-    if (apiStatus.santiment === 'ready') {
+    if (apiStatus.santiment === 'ready' && hasApiKey('santiment')) {
       promises.push(
-        santimentService.getSocialMetrics(`solana-${symbol.toLowerCase()}`, 'YOUR_API_KEY', selectedTimeframe)
+        santimentService.getSocialMetrics(`solana-${symbol.toLowerCase()}`, getApiKey('santiment')!, selectedTimeframe)
           .then(data => setAnalyticsData(prev => ({ ...prev, santiment: data })))
           .catch(() => setApiStatus(prev => ({ ...prev, santiment: 'error' })))
       )
     }
 
     // LunarCrush data (if API key available)
-    if (apiStatus.lunarcrush === 'ready') {
+    if (apiStatus.lunarcrush === 'ready' && hasApiKey('lunarcrush')) {
       promises.push(
-        lunarcrushService.getTokenData(symbol, 'YOUR_API_KEY')
+        lunarcrushService.getTokenData(symbol, getApiKey('lunarcrush')!)
           .then(data => setAnalyticsData(prev => ({ ...prev, lunarcrush: data })))
           .catch(() => setApiStatus(prev => ({ ...prev, lunarcrush: 'error' })))
       )
