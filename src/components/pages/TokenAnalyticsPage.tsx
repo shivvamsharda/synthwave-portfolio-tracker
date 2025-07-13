@@ -9,18 +9,61 @@ import { HolderMovementAnalysis } from "@/components/analytics/HolderMovementAna
 import { WhaleTracker } from "@/components/analytics/WhaleTracker"
 import { TokenFlowVisualization } from "@/components/analytics/TokenFlowVisualization"
 import { TokenOverview } from "@/components/analytics/TokenOverview"
+import { TrendingTokensDashboard } from "@/components/analytics/TrendingTokensDashboard"
 import { jupiterUltraService, JupiterTokenData } from "@/services/jupiterUltraService"
+import { TrendingToken } from "@/services/jupiterTrendingService"
 
 interface TokenAnalyticsPageProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
 }
 
 export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
-  const [selectedToken, setSelectedToken] = useState<string>("")
+  const [selectedToken, setSelectedToken] = useState<JupiterTokenData | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [searchResults, setSearchResults] = useState<JupiterTokenData[]>([])
   const [searching, setSearching] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+
+  const handleTrendingTokenSelect = (token: TrendingToken) => {
+    const jupiterToken: JupiterTokenData = {
+      id: token.id,
+      name: token.name,
+      symbol: token.symbol,
+      icon: token.icon,
+      decimals: token.decimals,
+      twitter: token.twitter,
+      dev: token.dev,
+      circSupply: token.circSupply,
+      totalSupply: token.totalSupply,
+      tokenProgram: token.tokenProgram || "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      holderCount: token.holderCount,
+      audit: {
+        mintAuthorityDisabled: token.audit?.mintAuthorityDisabled || true,
+        freezeAuthorityDisabled: token.audit?.freezeAuthorityDisabled || true,
+        topHoldersPercentage: token.audit?.topHoldersPercentage || 0,
+        devBalancePercentage: 0,
+        devMigrations: 0
+      },
+      organicScore: token.organicScore,
+      organicScoreLabel: token.organicScoreLabel,
+      isVerified: token.isVerified,
+      tags: token.tags,
+      fdv: token.fdv,
+      mcap: token.mcap,
+      usdPrice: token.usdPrice,
+      priceBlockId: token.priceBlockId || 0,
+      liquidity: token.liquidity,
+      stats5m: token.stats5m,
+      stats1h: token.stats1h,
+      stats6h: token.stats6h,
+      stats24h: token.stats24h,
+      ctLikes: token.ctLikes || 0,
+      smartCtLikes: token.smartCtLikes || 0,
+      updatedAt: new Date().toISOString()
+    };
+    setSelectedToken(jupiterToken);
+    setSearchQuery(token.symbol);
+  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
@@ -30,7 +73,7 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
       const results = await jupiterUltraService.searchToken(searchQuery)
       setSearchResults(results)
       if (results.length > 0) {
-        setSelectedToken(results[0].id)
+        setSelectedToken(results[0])
       }
     } catch (error) {
       console.error('Search error:', error)
@@ -48,8 +91,11 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
       jupiterUltraService.clearCache()
       
       // Refetch the current token data
-      const results = await jupiterUltraService.searchToken(selectedToken)
+      const results = await jupiterUltraService.searchToken(selectedToken.symbol)
       setSearchResults(results)
+      if (results.length > 0) {
+        setSelectedToken(results[0])
+      }
     } catch (error) {
       console.error('Refresh error:', error)
     } finally {
@@ -80,6 +126,17 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
               <h1 className="text-3xl font-bold text-foreground">Token Analytics</h1>
               <p className="text-muted-foreground">Deep insights into token holder behavior and market movements</p>
             </div>
+          </div>
+        </div>
+
+        {/* Trending Tokens Section */}
+        <TrendingTokensDashboard onTokenSelect={handleTrendingTokenSelect} />
+
+        {/* Custom Token Search Section */}
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-2xl font-semibold">Custom Token Analysis</h2>
+            <p className="text-muted-foreground">Search for a specific token to view detailed analytics</p>
           </div>
 
           {/* Token Search */}
@@ -113,7 +170,42 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setSelectedToken(token.mint)
+                        const jupiterToken: JupiterTokenData = {
+                          id: token.mint,
+                          name: token.name,
+                          symbol: token.symbol,
+                          icon: "",
+                          decimals: 9,
+                          dev: "",
+                          circSupply: 0,
+                          totalSupply: 0,
+                          tokenProgram: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                          holderCount: 0,
+                          audit: {
+                            mintAuthorityDisabled: true,
+                            freezeAuthorityDisabled: true,
+                            topHoldersPercentage: 0,
+                            devBalancePercentage: 0,
+                            devMigrations: 0
+                          },
+                          organicScore: 0,
+                          organicScoreLabel: "unknown",
+                          isVerified: false,
+                          tags: [],
+                          fdv: 0,
+                          mcap: 0,
+                          usdPrice: 0,
+                          priceBlockId: 0,
+                          liquidity: 0,
+                          stats5m: { priceChange: 0, holderChange: 0, liquidityChange: 0, volumeChange: 0, buyVolume: 0, sellVolume: 0, buyOrganicVolume: 0, sellOrganicVolume: 0, numBuys: 0, numSells: 0, numTraders: 0, numOrganicBuyers: 0, numNetBuyers: 0 },
+                          stats1h: { priceChange: 0, holderChange: 0, liquidityChange: 0, volumeChange: 0, buyVolume: 0, sellVolume: 0, buyOrganicVolume: 0, sellOrganicVolume: 0, numBuys: 0, numSells: 0, numTraders: 0, numOrganicBuyers: 0, numNetBuyers: 0 },
+                          stats6h: { priceChange: 0, holderChange: 0, liquidityChange: 0, volumeChange: 0, buyVolume: 0, sellVolume: 0, buyOrganicVolume: 0, sellOrganicVolume: 0, numBuys: 0, numSells: 0, numTraders: 0, numOrganicBuyers: 0, numNetBuyers: 0 },
+                          stats24h: { priceChange: 0, holderChange: 0, liquidityChange: 0, volumeChange: 0, buyVolume: 0, sellVolume: 0, buyOrganicVolume: 0, sellOrganicVolume: 0, numBuys: 0, numSells: 0, numTraders: 0, numOrganicBuyers: 0, numNetBuyers: 0 },
+                          ctLikes: 0,
+                          smartCtLikes: 0,
+                          updatedAt: new Date().toISOString()
+                        };
+                        setSelectedToken(jupiterToken)
                         setSearchQuery(token.symbol)
                       }}
                       className="text-xs"
@@ -164,19 +256,19 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
               </TabsList>
 
               <TabsContent value="overview">
-                <TokenOverview tokenMint={selectedToken} />
+                <TokenOverview tokenMint={selectedToken.id} />
               </TabsContent>
 
               <TabsContent value="holder-movement">
-                <HolderMovementAnalysis tokenMint={selectedToken} />
+                <HolderMovementAnalysis tokenMint={selectedToken.id} />
               </TabsContent>
 
               <TabsContent value="whale-tracker">
-                <WhaleTracker tokenMint={selectedToken} />
+                <WhaleTracker tokenMint={selectedToken.id} />
               </TabsContent>
 
               <TabsContent value="token-flows">
-                <TokenFlowVisualization tokenMint={selectedToken} />
+                <TokenFlowVisualization tokenMint={selectedToken.id} />
               </TabsContent>
             </Tabs>
           </div>
