@@ -29,7 +29,7 @@ export interface SolscanTokenTransfers {
 }
 
 class SolscanService {
-  private baseUrl = 'https://api.solscan.io'
+  private proxyUrl = 'https://iktftsxuuiyeabxgdxzo.supabase.co/functions/v1/solscan-proxy'
   private cache = new Map<string, { data: any, timestamp: number }>()
   private cacheTimeout = 60000 // 1 minute
 
@@ -47,7 +47,7 @@ class SolscanService {
 
     try {
       const response = await fetch(
-        `${this.baseUrl}/token/holders?tokenAddress=${tokenAddress}&limit=${limit}&offset=${offset}`,
+        `${this.proxyUrl}?endpoint=holders&tokenAddress=${tokenAddress}&limit=${limit}&offset=${offset}`,
         {
           headers: {
             'Accept': 'application/json'
@@ -84,7 +84,7 @@ class SolscanService {
     }
 
     try {
-      let url = `${this.baseUrl}/token/transfer?tokenAddress=${tokenAddress}&limit=${limit}&offset=${offset}`
+      let url = `${this.proxyUrl}?endpoint=transfer&tokenAddress=${tokenAddress}&limit=${limit}&offset=${offset}`
       
       if (fromTime) url += `&fromTime=${fromTime}`
       if (toTime) url += `&toTime=${toTime}`
@@ -118,7 +118,7 @@ class SolscanService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/token/meta?tokenAddress=${tokenAddress}`, {
+      const response = await fetch(`${this.proxyUrl}?endpoint=meta&tokenAddress=${tokenAddress}`, {
         headers: {
           'Accept': 'application/json'
         }

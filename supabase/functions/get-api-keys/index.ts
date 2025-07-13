@@ -13,7 +13,7 @@ serve(async (req) => {
   try {
     // Get API keys from Deno environment (Supabase secrets)
     const apiKeys = {
-      helius: Deno.env.get('HELIUS_API_KEY'),
+      helius: Deno.env.get('HELIUS_API_KEY') || '4489f099-8307-4b7f-b48c-8ea926316e15',
       birdeye: Deno.env.get('BIRDEYE_API_KEY'),
       coingecko: Deno.env.get('COINGECKO_API_KEY'),
       santiment: Deno.env.get('SANTIMENT_API_KEY'),
