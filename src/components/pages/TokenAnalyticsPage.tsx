@@ -4,7 +4,7 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, TrendingUp, Users, ArrowRightLeft, Eye, Info, RefreshCw } from "lucide-react"
+import { Search, TrendingUp, Users, ArrowRightLeft, Eye, Info, RefreshCw, X } from "lucide-react"
 import { HolderMovementAnalysis } from "@/components/analytics/HolderMovementAnalysis"
 import { WhaleTracker } from "@/components/analytics/WhaleTracker"
 import { TokenFlowVisualization } from "@/components/analytics/TokenFlowVisualization"
@@ -103,6 +103,12 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
     }
   }
 
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSelectedToken(null);
+    setSearchResults([]);
+  };
+
   const popularTokens = [
     { mint: "So11111111111111111111111111111111111111112", symbol: "SOL", name: "Solana" },
     { mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", symbol: "USDC", name: "USD Coin" },
@@ -138,24 +144,32 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
 
           {/* Token Search */}
           <DashboardCard className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search token by mint address or symbol..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search token by mint address or symbol..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-10"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={handleClearSearch}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <Button 
+                    onClick={handleSearch}
+                    disabled={!searchQuery.trim() || searching}
+                  >
+                    {searching ? "Searching..." : "Analyze"}
+                  </Button>
                 </div>
-                <Button 
-                  onClick={handleSearch}
-                  disabled={!searchQuery.trim() || searching}
-                >
-                  {searching ? "Searching..." : "Analyze"}
-                </Button>
-              </div>
 
               {/* Popular Tokens */}
               <div className="space-y-2">
