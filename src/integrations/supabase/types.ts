@@ -128,6 +128,272 @@ export type Database = {
         }
         Relationships: []
       }
+      solana_pool_data: {
+        Row: {
+          apy_30d: number | null
+          apy_7d: number | null
+          created_at: string
+          id: string
+          is_active: boolean
+          last_updated: string
+          pool_address: string
+          pool_name: string
+          protocol_id: string
+          rewards_apy: number | null
+          rewards_token_mint: string | null
+          rewards_token_symbol: string | null
+          token_a_mint: string
+          token_a_symbol: string
+          token_b_mint: string | null
+          token_b_symbol: string | null
+          total_liquidity_usd: number | null
+          volume_24h_usd: number | null
+        }
+        Insert: {
+          apy_30d?: number | null
+          apy_7d?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_updated?: string
+          pool_address: string
+          pool_name: string
+          protocol_id: string
+          rewards_apy?: number | null
+          rewards_token_mint?: string | null
+          rewards_token_symbol?: string | null
+          token_a_mint: string
+          token_a_symbol: string
+          token_b_mint?: string | null
+          token_b_symbol?: string | null
+          total_liquidity_usd?: number | null
+          volume_24h_usd?: number | null
+        }
+        Update: {
+          apy_30d?: number | null
+          apy_7d?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_updated?: string
+          pool_address?: string
+          pool_name?: string
+          protocol_id?: string
+          rewards_apy?: number | null
+          rewards_token_mint?: string | null
+          rewards_token_symbol?: string | null
+          token_a_mint?: string
+          token_a_symbol?: string
+          token_b_mint?: string | null
+          token_b_symbol?: string | null
+          total_liquidity_usd?: number | null
+          volume_24h_usd?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_pool_data_protocol_id_fkey"
+            columns: ["protocol_id"]
+            isOneToOne: false
+            referencedRelation: "solana_yield_protocols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_yield_positions: {
+        Row: {
+          created_at: string
+          current_value_usd: number | null
+          entry_date: string
+          id: string
+          last_harvest_date: string | null
+          pending_rewards: number | null
+          pending_rewards_usd: number | null
+          pool_id: string
+          position_address: string
+          protocol_id: string
+          rewards_token_mint: string | null
+          rewards_token_symbol: string | null
+          staked_amount: number
+          staked_token_mint: string
+          staked_token_symbol: string
+          status: string
+          updated_at: string
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          current_value_usd?: number | null
+          entry_date?: string
+          id?: string
+          last_harvest_date?: string | null
+          pending_rewards?: number | null
+          pending_rewards_usd?: number | null
+          pool_id: string
+          position_address: string
+          protocol_id: string
+          rewards_token_mint?: string | null
+          rewards_token_symbol?: string | null
+          staked_amount?: number
+          staked_token_mint: string
+          staked_token_symbol: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          current_value_usd?: number | null
+          entry_date?: string
+          id?: string
+          last_harvest_date?: string | null
+          pending_rewards?: number | null
+          pending_rewards_usd?: number | null
+          pool_id?: string
+          position_address?: string
+          protocol_id?: string
+          rewards_token_mint?: string | null
+          rewards_token_symbol?: string | null
+          staked_amount?: number
+          staked_token_mint?: string
+          staked_token_symbol?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_yield_positions_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "solana_pool_data"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solana_yield_positions_protocol_id_fkey"
+            columns: ["protocol_id"]
+            isOneToOne: false
+            referencedRelation: "solana_yield_protocols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_yield_protocols: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          program_id: string
+          protocol_type: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          program_id: string
+          protocol_type: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          program_id?: string
+          protocol_type?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      solana_yield_transactions: {
+        Row: {
+          amount: number | null
+          amount_usd: number | null
+          block_time: string
+          created_at: string
+          id: string
+          position_id: string | null
+          protocol_id: string
+          rewards_claimed: number | null
+          rewards_claimed_usd: number | null
+          rewards_token_mint: string | null
+          rewards_token_symbol: string | null
+          token_mint: string | null
+          token_symbol: string | null
+          transaction_hash: string
+          transaction_type: string
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          amount?: number | null
+          amount_usd?: number | null
+          block_time: string
+          created_at?: string
+          id?: string
+          position_id?: string | null
+          protocol_id: string
+          rewards_claimed?: number | null
+          rewards_claimed_usd?: number | null
+          rewards_token_mint?: string | null
+          rewards_token_symbol?: string | null
+          token_mint?: string | null
+          token_symbol?: string | null
+          transaction_hash: string
+          transaction_type: string
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          amount?: number | null
+          amount_usd?: number | null
+          block_time?: string
+          created_at?: string
+          id?: string
+          position_id?: string | null
+          protocol_id?: string
+          rewards_claimed?: number | null
+          rewards_claimed_usd?: number | null
+          rewards_token_mint?: string | null
+          rewards_token_symbol?: string | null
+          token_mint?: string | null
+          token_symbol?: string | null
+          transaction_hash?: string
+          transaction_type?: string
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_yield_transactions_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "solana_yield_positions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solana_yield_transactions_protocol_id_fkey"
+            columns: ["protocol_id"]
+            isOneToOne: false
+            referencedRelation: "solana_yield_protocols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       token_flow_analysis: {
         Row: {
           analysis_date: string
