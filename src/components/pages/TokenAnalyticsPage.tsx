@@ -129,10 +129,7 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
           </div>
         </div>
 
-        {/* Trending Tokens Section */}
-        <TrendingTokensDashboard onTokenSelect={handleTrendingTokenSelect} />
-
-        {/* Custom Token Search Section */}
+        {/* Custom Token Search Section - Now at top */}
         <div className="space-y-4">
           <div>
             <h2 className="text-2xl font-semibold">Custom Token Analysis</h2>
@@ -272,7 +269,12 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
               </TabsContent>
             </Tabs>
           </div>
-        ) : (
+        ) : null}
+
+        {/* Trending Tokens Section - Now appears below search or token analysis */}
+        {!selectedToken && <TrendingTokensDashboard onTokenSelect={handleTrendingTokenSelect} />}
+
+        {!selectedToken && (
           <DashboardCard className="p-12 text-center">
             <div className="space-y-4">
               <div className="w-16 h-16 bg-muted/20 rounded-lg flex items-center justify-center mx-auto">
@@ -281,7 +283,7 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
               <div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">Select a Token to Analyze</h3>
                 <p className="text-muted-foreground">
-                  Search for a token above or select from popular tokens to start analyzing holder movements and whale activity.
+                  Search for a token above or select from trending tokens below to start analyzing holder movements and whale activity.
                 </p>
               </div>
             </div>
