@@ -10,8 +10,12 @@ import { WhaleTracker } from "@/components/analytics/WhaleTracker"
 import { TokenFlowVisualization } from "@/components/analytics/TokenFlowVisualization"
 import { TokenOverview } from "@/components/analytics/TokenOverview"
 import { TrendingTokensDashboard } from "@/components/analytics/TrendingTokensDashboard"
+import { TokenRiskScore } from "@/components/analytics/TokenRiskScore"
 import { jupiterUltraService, JupiterTokenData } from "@/services/jupiterUltraService"
 import { TrendingToken } from "@/services/jupiterTrendingService"
+import { useApiKeys } from "@/hooks/useApiKeys"
+import { useHolderMovement } from "@/hooks/useHolderMovement"
+import { useTokenRiskScore } from "@/hooks/useTokenRiskScore"
 
 interface TokenAnalyticsPageProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -23,6 +27,22 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
   const [searchResults, setSearchResults] = useState<JupiterTokenData[]>([])
   const [searching, setSearching] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+
+  const { apiKeys } = useApiKeys()
+  const { 
+    metrics, 
+    activities, 
+    flowPatterns, 
+    loading: holderLoading, 
+    analyzeToken,
+    refreshData 
+  } = useHolderMovement()
+  const { 
+    riskScore, 
+    loading: riskLoading, 
+    calculateRiskScore, 
+    clearRiskScore 
+  } = useTokenRiskScore()
 
   const handleTrendingTokenSelect = (token: TrendingToken) => {
     const jupiterToken: JupiterTokenData = {
@@ -63,6 +83,8 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
     };
     setSelectedToken(jupiterToken);
     setSearchQuery(token.symbol);
+    // Calculate risk score for trending token
+    calculateRiskScore(jupiterToken.id, apiKeys);
   };
 
   const handleSearch = async () => {
@@ -74,6 +96,8 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
       setSearchResults(results)
       if (results.length > 0) {
         setSelectedToken(results[0])
+        // Calculate risk score for the selected token
+        await calculateRiskScore(results[0].id, apiKeys)
       }
     } catch (error) {
       console.error('Search error:', error)
@@ -95,6 +119,8 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
       setSearchResults(results)
       if (results.length > 0) {
         setSelectedToken(results[0])
+        // Recalculate risk score for the refreshed token
+        await calculateRiskScore(results[0].id, apiKeys)
       }
     } catch (error) {
       console.error('Refresh error:', error)
@@ -107,6 +133,7 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
     setSearchQuery("");
     setSelectedToken(null);
     setSearchResults([]);
+    clearRiskScore();
   };
 
   const popularTokens = [
@@ -218,6 +245,8 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
                         };
                         setSelectedToken(jupiterToken)
                         setSearchQuery(token.symbol)
+                        // Calculate risk score for popular token
+                        calculateRiskScore(token.mint, apiKeys)
                       }}
                       className="text-xs"
                     >
@@ -232,6 +261,11 @@ export function TokenAnalyticsPage({ onNavigate }: TokenAnalyticsPageProps) {
 
         {selectedToken ? (
           <div className="space-y-6">
+            {/* AI Risk Score - Show at top */}
+            {riskScore && (
+              <TokenRiskScore riskScore={riskScore} loading={riskLoading} />
+            )}
+
             {/* Refresh Button */}
             <div className="flex justify-end">
               <Button
