@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { TrendingUp, Clock, Zap, Gift, RefreshCw, Wallet, AlertCircle } from "lucide-react"
 import { useSolanaYield } from "@/hooks/useSolanaYield"
 import { SolanaYieldPosition, SolanaPoolData } from "@/services/solanaYieldService"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
+import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react"
 
 interface YieldPageProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "settings") => void
@@ -156,6 +158,9 @@ function YieldOpportunityCard({ opportunity }: { opportunity: SolanaPoolData }) 
 }
 
 export function YieldPage({ onNavigate }: YieldPageProps) {
+  const { setVisible } = useWalletModal()
+  const { connecting } = useSolanaWallet()
+  
   const {
     protocols,
     yieldOpportunities,
@@ -176,6 +181,10 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(amount)
+  }
+
+  const handleConnectWallet = () => {
+    setVisible(true)
   }
 
   return (
@@ -223,8 +232,8 @@ export function YieldPage({ onNavigate }: YieldPageProps) {
                   Connect your Solana wallet to view your yield farming positions
                 </p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => onNavigate?.('wallets')}>
-                Connect Wallet
+              <Button variant="outline" size="sm" onClick={handleConnectWallet} disabled={connecting}>
+                {connecting ? 'Connecting...' : 'Connect Wallet'}
               </Button>
             </div>
           </DashboardCard>
