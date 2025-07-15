@@ -176,7 +176,7 @@ class BitQueryService {
           'Authorization': `Bearer ${apiKey || 'ory_at_sSzc7vABIVF9vPepukK9LtvV_9qyRgc1yBnsvJ4Rhok.pZa-2iD7Ta_T3TegMMJsYOvoKzjgCukyKyAnH9C4XCs'}`
         },
         body: JSON.stringify({
-          query: this.getQuery(tokenMint, 200)
+          query: this.getQuery(tokenMint, 100)
         })
       })
 
