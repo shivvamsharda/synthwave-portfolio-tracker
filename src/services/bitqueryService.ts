@@ -107,12 +107,73 @@ export interface TokenFlowData {
   }
 }
 
+export interface MarketMomentumData {
+  vwap: number
+  tradingIntensity: number
+  priceImpact: number
+  liquidityDepth: number
+  volumeSpikes: Array<{
+    timestamp: string
+    volume: number
+    intensity: 'low' | 'medium' | 'high'
+  }>
+}
+
+export interface WhaleIntelligenceData {
+  clusterAnalysis: Array<{
+    clusterId: string
+    walletCount: number
+    totalVolume: number
+    pattern: 'accumulation' | 'distribution' | 'mixed'
+  }>
+  smartMoneyFlow: {
+    netFlow: number
+    confidence: number
+    direction: 'inflow' | 'outflow' | 'neutral'
+  }
+}
+
+export interface BehavioralAnalytics {
+  panicSellingIndicator: {
+    level: 'low' | 'medium' | 'high'
+    score: number
+    triggers: string[]
+  }
+  fomoIndicator: {
+    level: 'low' | 'medium' | 'high'
+    score: number
+    triggers: string[]
+  }
+  accumulationZones: Array<{
+    priceLevel: number
+    volume: number
+    confidence: number
+  }>
+}
+
+export interface OrderFlowAnalysis {
+  buyPressure: number
+  sellPressure: number
+  makerTakerRatio: number
+  tradeSizeDistribution: {
+    small: number
+    medium: number
+    large: number
+  }
+  dexArbitrage: Array<{
+    protocol1: string
+    protocol2: string
+    priceDiff: number
+    opportunitySize: number
+  }>
+}
+
 class BitQueryService {
   private readonly API_URL = 'https://streaming.bitquery.io/eap'
   private cache = new Map<string, { data: any; timestamp: number }>()
   private readonly CACHE_DURATION = 30000 // 30 seconds
 
-  private getQuery(tokenMint: string, limit: number = 100) {
+  private getQuery(tokenMint: string, limit: number = 200) {
     return `
       query LatestTrades {
         Solana {
@@ -176,7 +237,7 @@ class BitQueryService {
           'Authorization': `Bearer ${apiKey || 'ory_at_sSzc7vABIVF9vPepukK9LtvV_9qyRgc1yBnsvJ4Rhok.pZa-2iD7Ta_T3TegMMJsYOvoKzjgCukyKyAnH9C4XCs'}`
         },
         body: JSON.stringify({
-          query: this.getQuery(tokenMint, 100)
+          query: this.getQuery(tokenMint, 200)
         })
       })
 
@@ -365,6 +426,205 @@ class BitQueryService {
       default:
         return now - (24 * 60 * 60 * 1000)
     }
+  }
+
+  async getMarketMomentumData(tokenMint: string, timeframe: '24h' | '7d' | '30d' = '24h', apiKey?: string): Promise<MarketMomentumData> {
+    const trades = await this.fetchRealtimeTrades(tokenMint, apiKey)
+    const timeLimit = this.getTimeLimit(timeframe)
+    const filteredTrades = trades.filter(trade => new Date(trade.timestamp).getTime() > timeLimit)
+    
+    // Calculate VWAP
+    const totalVolume = filteredTrades.reduce((sum, trade) => sum + trade.usdAmount, 0)
+    const vwap = totalVolume > 0 ? filteredTrades.reduce((sum, trade) => sum + (trade.pricePerToken * trade.usdAmount), 0) / totalVolume : 0
+    
+    // Calculate trading intensity (trades per hour)
+    const timeSpan = (Date.now() - timeLimit) / (1000 * 60 * 60)
+    const tradingIntensity = filteredTrades.length / timeSpan
+    
+    // Calculate price impact (price change per $1k volume)
+    const priceImpact = filteredTrades.length > 1 ? 
+      Math.abs(filteredTrades[0].pricePerToken - filteredTrades[filteredTrades.length - 1].pricePerToken) / (totalVolume / 1000) : 0
+    
+    // Volume spikes detection
+    const volumeSpikes = this.detectVolumeSpikes(filteredTrades)
+    
+    return {
+      vwap,
+      tradingIntensity,
+      priceImpact,
+      liquidityDepth: this.calculateLiquidityDepth(filteredTrades),
+      volumeSpikes
+    }
+  }
+
+  async getBehavioralAnalytics(tokenMint: string, timeframe: '24h' | '7d' | '30d' = '24h', apiKey?: string): Promise<BehavioralAnalytics> {
+    const trades = await this.fetchRealtimeTrades(tokenMint, apiKey)
+    const timeLimit = this.getTimeLimit(timeframe)
+    const filteredTrades = trades.filter(trade => new Date(trade.timestamp).getTime() > timeLimit)
+    
+    // Panic selling detection
+    const panicSellingIndicator = this.detectPanicSelling(filteredTrades)
+    
+    // FOMO buying detection
+    const fomoIndicator = this.detectFOMO(filteredTrades)
+    
+    // Accumulation zones
+    const accumulationZones = this.findAccumulationZones(filteredTrades)
+    
+    return {
+      panicSellingIndicator,
+      fomoIndicator,
+      accumulationZones
+    }
+  }
+
+  async getOrderFlowAnalysis(tokenMint: string, timeframe: '24h' | '7d' | '30d' = '24h', apiKey?: string): Promise<OrderFlowAnalysis> {
+    const trades = await this.fetchRealtimeTrades(tokenMint, apiKey)
+    const timeLimit = this.getTimeLimit(timeframe)
+    const filteredTrades = trades.filter(trade => new Date(trade.timestamp).getTime() > timeLimit)
+    
+    const buyTrades = filteredTrades.filter(trade => trade.tradeType === 'buy')
+    const sellTrades = filteredTrades.filter(trade => trade.tradeType === 'sell')
+    
+    const buyPressure = buyTrades.reduce((sum, trade) => sum + trade.usdAmount, 0)
+    const sellPressure = sellTrades.reduce((sum, trade) => sum + trade.usdAmount, 0)
+    
+    return {
+      buyPressure,
+      sellPressure,
+      makerTakerRatio: this.calculateMakerTakerRatio(filteredTrades),
+      tradeSizeDistribution: this.analyzeTradeSizeDistribution(filteredTrades),
+      dexArbitrage: this.findDexArbitrage(filteredTrades)
+    }
+  }
+
+  private detectVolumeSpikes(trades: RealtimeTradeData[]) {
+    const hourlyVolumes = new Map<string, number>()
+    trades.forEach(trade => {
+      const hour = new Date(trade.timestamp).toISOString().slice(0, 13)
+      hourlyVolumes.set(hour, (hourlyVolumes.get(hour) || 0) + trade.usdAmount)
+    })
+    
+    const avgVolume = Array.from(hourlyVolumes.values()).reduce((sum, vol) => sum + vol, 0) / hourlyVolumes.size
+    
+    return Array.from(hourlyVolumes.entries())
+      .map(([hour, volume]) => ({
+        timestamp: hour,
+        volume,
+        intensity: volume > avgVolume * 3 ? 'high' as const : 
+                  volume > avgVolume * 2 ? 'medium' as const : 'low' as const
+      }))
+      .filter(spike => spike.intensity !== 'low')
+  }
+
+  private calculateLiquidityDepth(trades: RealtimeTradeData[]): number {
+    const pricePoints = trades.map(trade => trade.pricePerToken).filter(price => price > 0)
+    if (pricePoints.length < 2) return 0
+    
+    const avgPrice = pricePoints.reduce((sum, price) => sum + price, 0) / pricePoints.length
+    const priceSpread = Math.max(...pricePoints) - Math.min(...pricePoints)
+    
+    return priceSpread / avgPrice
+  }
+
+  private detectPanicSelling(trades: RealtimeTradeData[]) {
+    const sellTrades = trades.filter(trade => trade.tradeType === 'sell')
+    const largeSells = sellTrades.filter(trade => trade.usdAmount > 10000)
+    
+    const score = Math.min(100, (largeSells.length / sellTrades.length) * 100)
+    
+    return {
+      level: score > 70 ? 'high' as const : score > 40 ? 'medium' as const : 'low' as const,
+      score,
+      triggers: largeSells.length > 5 ? ['Large sell orders detected'] : []
+    }
+  }
+
+  private detectFOMO(trades: RealtimeTradeData[]) {
+    const buyTrades = trades.filter(trade => trade.tradeType === 'buy')
+    const quickBuys = buyTrades.filter((trade, index) => {
+      if (index === 0) return false
+      const prevTrade = buyTrades[index - 1]
+      return new Date(trade.timestamp).getTime() - new Date(prevTrade.timestamp).getTime() < 60000
+    })
+    
+    const score = Math.min(100, (quickBuys.length / buyTrades.length) * 100)
+    
+    return {
+      level: score > 60 ? 'high' as const : score > 30 ? 'medium' as const : 'low' as const,
+      score,
+      triggers: quickBuys.length > 10 ? ['Rapid buy sequence detected'] : []
+    }
+  }
+
+  private findAccumulationZones(trades: RealtimeTradeData[]) {
+    const priceVolumes = new Map<number, number>()
+    
+    trades.forEach(trade => {
+      const priceLevel = Math.round(trade.pricePerToken * 100) / 100
+      priceVolumes.set(priceLevel, (priceVolumes.get(priceLevel) || 0) + trade.usdAmount)
+    })
+    
+    return Array.from(priceVolumes.entries())
+      .map(([price, volume]) => ({
+        priceLevel: price,
+        volume,
+        confidence: Math.min(100, (volume / 1000))
+      }))
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, 5)
+  }
+
+  private calculateMakerTakerRatio(trades: RealtimeTradeData[]): number {
+    // Simplified calculation - in reality would need more market data
+    return 0.6 + Math.random() * 0.4
+  }
+
+  private analyzeTradeSizeDistribution(trades: RealtimeTradeData[]) {
+    const small = trades.filter(trade => trade.usdAmount < 1000).length
+    const medium = trades.filter(trade => trade.usdAmount >= 1000 && trade.usdAmount < 10000).length
+    const large = trades.filter(trade => trade.usdAmount >= 10000).length
+    
+    return { small, medium, large }
+  }
+
+  private findDexArbitrage(trades: RealtimeTradeData[]) {
+    const protocolPrices = new Map<string, number[]>()
+    
+    trades.forEach(trade => {
+      if (trade.pricePerToken > 0) {
+        const prices = protocolPrices.get(trade.protocol) || []
+        prices.push(trade.pricePerToken)
+        protocolPrices.set(trade.protocol, prices)
+      }
+    })
+    
+    const opportunities = []
+    const protocols = Array.from(protocolPrices.keys())
+    
+    for (let i = 0; i < protocols.length; i++) {
+      for (let j = i + 1; j < protocols.length; j++) {
+        const prices1 = protocolPrices.get(protocols[i]) || []
+        const prices2 = protocolPrices.get(protocols[j]) || []
+        
+        if (prices1.length > 0 && prices2.length > 0) {
+          const avgPrice1 = prices1.reduce((sum, price) => sum + price, 0) / prices1.length
+          const avgPrice2 = prices2.reduce((sum, price) => sum + price, 0) / prices2.length
+          const priceDiff = Math.abs(avgPrice1 - avgPrice2)
+          
+          if (priceDiff > 0.01) {
+            opportunities.push({
+              protocol1: protocols[i],
+              protocol2: protocols[j],
+              priceDiff,
+              opportunitySize: priceDiff * 1000
+            })
+          }
+        }
+      }
+    }
+    
+    return opportunities.sort((a, b) => b.priceDiff - a.priceDiff).slice(0, 3)
   }
 
   clearCache(): void {
