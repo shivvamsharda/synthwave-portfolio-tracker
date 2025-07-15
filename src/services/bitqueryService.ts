@@ -173,7 +173,7 @@ class BitQueryService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey || 'demo'}`
+          'Authorization': `Bearer ${apiKey || 'ory_at_sSzc7vABIVF9vPepukK9LtvV_9qyRgc1yBnsvJ4Rhok.pZa-2iD7Ta_T3TegMMJsYOvoKzjgCukyKyAnH9C4XCs'}`
         },
         body: JSON.stringify({
           query: this.getQuery(tokenMint, 200)
