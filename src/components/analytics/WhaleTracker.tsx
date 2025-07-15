@@ -3,8 +3,8 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Eye, Wallet, TrendingUp, TrendingDown, AlertTriangle, RefreshCw } from "lucide-react"
-import { useWhaleTracking } from "@/hooks/useWhaleTracking"
+import { Eye, Wallet, TrendingUp, TrendingDown, AlertTriangle, RefreshCw, ExternalLink } from "lucide-react"
+import { useBitQueryData } from "@/hooks/useBitQueryData"
 import { format } from "date-fns"
 
 interface WhaleTrackerProps {
@@ -12,22 +12,14 @@ interface WhaleTrackerProps {
 }
 
 export function WhaleTracker({ tokenMint }: WhaleTrackerProps) {
-  const { 
-    topHolders, 
-    whaleActivity, 
-    whaleStats, 
-    concentrationData, 
-    loading, 
-    loadAllWhaleData,
-    refreshData 
-  } = useWhaleTracking()
-  const [minHolding, setMinHolding] = useState<number>(100000)
+  const { whaleActivities, loading, fetchWhaleActivity, refreshAllData } = useBitQueryData()
+  const [minHolding, setMinHolding] = useState<number>(10000)
 
   useEffect(() => {
     if (tokenMint) {
-      loadAllWhaleData(tokenMint, minHolding)
+      fetchWhaleActivity(tokenMint, minHolding)
     }
-  }, [tokenMint, minHolding, loadAllWhaleData])
+  }, [tokenMint, minHolding, fetchWhaleActivity])
 
   const formatWalletAddress = (address: string) => {
     if (address.length < 8) return address
@@ -53,7 +45,7 @@ export function WhaleTracker({ tokenMint }: WhaleTrackerProps) {
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => refreshData(tokenMint, minHolding)}
+            onClick={() => refreshAllData(tokenMint, '24h', minHolding)}
             disabled={loading}
             variant="outline"
             size="sm"
@@ -62,7 +54,7 @@ export function WhaleTracker({ tokenMint }: WhaleTrackerProps) {
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          {[50000, 100000, 250000, 500000].map((amount) => (
+          {[1000, 10000, 50000, 100000].map((amount) => (
             <Button
               key={amount}
               variant={minHolding === amount ? "default" : "outline"}
@@ -70,7 +62,7 @@ export function WhaleTracker({ tokenMint }: WhaleTrackerProps) {
               onClick={() => setMinHolding(amount)}
               className="text-xs"
             >
-              ${amount / 1000}K+
+              ${amount >= 1000 ? `${amount / 1000}K+` : `$${amount}+`}
             </Button>
           ))}
         </div>
@@ -80,177 +72,148 @@ export function WhaleTracker({ tokenMint }: WhaleTrackerProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <DashboardCard className="p-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">{whaleStats.total_whales}</div>
-            <div className="text-sm text-muted-foreground">Total Whales</div>
+            <div className="text-2xl font-bold text-foreground">{whaleActivities.length}</div>
+            <div className="text-sm text-muted-foreground">Active Whales</div>
           </div>
         </DashboardCard>
         <DashboardCard className="p-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-500">+{whaleStats.new_this_week}</div>
-            <div className="text-sm text-muted-foreground">New This Week</div>
+            <div className="text-2xl font-bold text-green-500">{whaleActivities.filter(w => w.tradeType === 'buy').length}</div>
+            <div className="text-sm text-muted-foreground">Whale Buys</div>
           </div>
         </DashboardCard>
         <DashboardCard className="p-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">{whaleStats.whale_dominance.toFixed(1)}%</div>
-            <div className="text-sm text-muted-foreground">Whale Dominance</div>
+            <div className="text-2xl font-bold text-red-500">{whaleActivities.filter(w => w.tradeType === 'sell').length}</div>
+            <div className="text-sm text-muted-foreground">Whale Sells</div>
           </div>
         </DashboardCard>
         <DashboardCard className="p-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-500">{whaleStats.active_alerts}</div>
-            <div className="text-sm text-muted-foreground">Active Alerts</div>
+            <div className="text-2xl font-bold text-blue-500">{whaleActivities.filter(w => w.impact === 'high').length}</div>
+            <div className="text-sm text-muted-foreground">High Impact</div>
           </div>
         </DashboardCard>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top Holders */}
-        <DashboardCard className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Wallet className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Top Holders</h3>
+      {/* Real-time Whale Activity */}
+      <DashboardCard className="p-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Eye className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-foreground">Live Whale Activity</h3>
+            <Badge variant="outline" className="text-green-500 border-green-500">
+              Real-time via BitQuery
+            </Badge>
+          </div>
+          
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-muted-foreground" />
+                <p className="text-muted-foreground">Loading whale activity...</p>
+              </div>
             </div>
-            
+          ) : whaleActivities.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No whale activity found above ${minHolding.toLocaleString()}</p>
+              <p className="text-sm">Try lowering the minimum threshold</p>
+            </div>
+          ) : (
             <div className="space-y-3">
-              {topHolders.slice(0, 10).map((whale) => (
+              {whaleActivities.map((activity, index) => (
                 <div
-                  key={whale.id}
+                  key={index}
                   className="flex items-center justify-between p-3 border border-border/30 rounded-lg hover:bg-muted/20 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="text-sm font-mono bg-muted px-2 py-1 rounded">
-                      #{whale.holder_rank || 0}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <code className="text-xs">{formatWalletAddress(whale.wallet_address)}</code>
-                        <div className="flex gap-1">
-                          {whale.tags?.map((tag) => (
-                            <Badge 
-                              key={tag} 
-                              variant={tag === "Alert" ? "destructive" : "secondary"}
-                              className="text-xs px-1 py-0"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatTokenAmount(whale.balance)} • {whale.percentage_of_supply?.toFixed(1) || '0'}% of supply
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="font-semibold">${whale.usd_value?.toLocaleString() || '0'}</div>
-                    <div className={`text-xs flex items-center gap-1 ${
-                      (whale.change_24h || 0) > 0 ? 'text-green-500' : 
-                      (whale.change_24h || 0) < 0 ? 'text-red-500' : 'text-muted-foreground'
-                    }`}>
-                      {(whale.change_24h || 0) > 0 ? <TrendingUp className="w-3 h-3" /> : 
-                       (whale.change_24h || 0) < 0 ? <TrendingDown className="w-3 h-3" /> : null}
-                      {whale.change_24h !== 0 && `${(whale.change_24h || 0) > 0 ? '+' : ''}${whale.change_24h?.toFixed(1) || '0'}%`}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </DashboardCard>
-
-        {/* Recent Whale Activity */}
-        <DashboardCard className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Recent Activity</h3>
-            </div>
-            
-            <div className="space-y-3">
-              {whaleActivity.slice(0, 10).map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      activity.impact_level === 'high' ? 'bg-red-500' :
-                      activity.impact_level === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                    <div className={`w-3 h-3 rounded-full ${
+                      activity.impact === 'high' ? 'bg-red-500' :
+                      activity.impact === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                     }`} />
                     <div>
                       <div className="flex items-center gap-2">
                         <Badge 
-                          variant={activity.transaction_type.includes('buy') ? 'default' : 'secondary'}
+                          variant={activity.tradeType === 'buy' ? 'default' : 'secondary'}
                           className="text-xs"
                         >
-                          {activity.transaction_type}
+                          {activity.tradeType}
                         </Badge>
-                        <code className="text-xs">{formatWalletAddress(activity.wallet_address)}</code>
+                        <code className="text-xs">{activity.walletAddress}</code>
+                        <Badge variant="outline" className="text-xs">{activity.protocol}</Badge>
                       </div>
                       <div className="text-sm font-medium">
-                        {formatTokenAmount(activity.amount_to || activity.amount_from || 0)}
+                        {activity.tokenAmount.toFixed(2)} tokens
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="font-semibold">${activity.usd_value?.toLocaleString() || '0'}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {format(new Date(activity.timestamp), 'MMM d, h:mm a')}
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className="font-semibold">${activity.usdAmount.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {format(new Date(activity.timestamp), 'MMM d, h:mm a')}
+                      </div>
                     </div>
+                    
+                    <a
+                      href={`https://solscan.io/tx/${activity.signature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        </DashboardCard>
-      </div>
+          )}
+        </div>
+      </DashboardCard>
 
-      {/* Whale Concentration Analysis */}
+      {/* Whale Impact Analysis */}
       <DashboardCard className="p-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Whale Concentration</h3>
+          <h3 className="text-lg font-semibold text-foreground">Whale Impact Analysis</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Top 10 Holders</span>
-                <span className="font-semibold">{concentrationData.top_10_percentage.toFixed(1)}%</span>
+                <span>High Impact Trades</span>
+                <span className="font-semibold">{whaleActivities.filter(w => w.impact === 'high').length}</span>
               </div>
-              <Progress value={concentrationData.top_10_percentage} className="h-2" />
+              <Progress value={whaleActivities.length > 0 ? (whaleActivities.filter(w => w.impact === 'high').length / whaleActivities.length) * 100 : 0} className="h-2" />
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Top 50 Holders</span>
-                <span className="font-semibold">{concentrationData.top_50_percentage.toFixed(1)}%</span>
+                <span>Medium Impact</span>
+                <span className="font-semibold">{whaleActivities.filter(w => w.impact === 'medium').length}</span>
               </div>
-              <Progress value={concentrationData.top_50_percentage} className="h-2" />
+              <Progress value={whaleActivities.length > 0 ? (whaleActivities.filter(w => w.impact === 'medium').length / whaleActivities.length) * 100 : 0} className="h-2" />
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Top 100 Holders</span>
-                <span className="font-semibold">{concentrationData.top_100_percentage.toFixed(1)}%</span>
+                <span>Low Impact</span>
+                <span className="font-semibold">{whaleActivities.filter(w => w.impact === 'low').length}</span>
               </div>
-              <Progress value={concentrationData.top_100_percentage} className="h-2" />
+              <Progress value={whaleActivities.length > 0 ? (whaleActivities.filter(w => w.impact === 'low').length / whaleActivities.length) * 100 : 0} className="h-2" />
             </div>
           </div>
 
-          {concentrationData.risk_level === 'high' && (
-            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                <span className="text-sm font-medium">High Concentration Risk</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Top 50 holders control {concentrationData.top_50_percentage.toFixed(1)}% of the token supply. Large movements could significantly impact price.
-              </p>
+          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-medium">Real-time Whale Monitoring</span>
             </div>
-          )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Live whale activity tracking powered by BitQuery GraphQL API. 
+              Monitoring trades above ${minHolding.toLocaleString()} with automatic impact classification.
+            </p>
+          </div>
         </div>
       </DashboardCard>
     </div>

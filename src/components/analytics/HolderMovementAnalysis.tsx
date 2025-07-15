@@ -4,26 +4,26 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { ArrowRight, TrendingUp, TrendingDown, Activity, RefreshCw, DollarSign, Users } from "lucide-react"
-import { useHolderMovement } from "@/hooks/useHolderMovement"
+import { ArrowRight, TrendingUp, TrendingDown, Activity, RefreshCw, DollarSign, Users, ExternalLink } from "lucide-react"
+import { useBitQueryData } from "@/hooks/useBitQueryData"
 
 interface HolderMovementAnalysisProps {
   tokenMint: string
 }
 
 export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProps) {
-  const { metrics, activities, flowPatterns, loading, analyzeToken, refreshData } = useHolderMovement()
-  const [timeframe, setTimeframe] = useState<"24h" | "7d" | "30d">("7d")
+  const { holderMovement, loading, fetchHolderMovementData, refreshAllData } = useBitQueryData()
+  const [timeframe, setTimeframe] = useState<"24h" | "7d" | "30d">("24h")
 
   useEffect(() => {
     if (tokenMint) {
-      analyzeToken(tokenMint, timeframe)
+      fetchHolderMovementData(tokenMint, timeframe)
     }
-  }, [tokenMint, timeframe, analyzeToken])
+  }, [tokenMint, timeframe, fetchHolderMovementData])
 
   const handleRefresh = async () => {
     if (tokenMint) {
-      await refreshData(tokenMint, timeframe)
+      await refreshAllData(tokenMint, timeframe)
     }
   }
 
@@ -66,7 +66,7 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
               <TrendingUp className="w-4 h-4 text-green-500" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-foreground">{loading ? '...' : metrics.newBuyers}</div>
+              <div className="text-2xl font-bold text-foreground">{loading ? '...' : holderMovement.newBuyers}</div>
               <div className="text-sm text-muted-foreground">New Buyers</div>
             </div>
           </div>
@@ -78,7 +78,7 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
               <TrendingDown className="w-4 h-4 text-red-500" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-foreground">{loading ? '...' : metrics.sellers}</div>
+              <div className="text-2xl font-bold text-foreground">{loading ? '...' : holderMovement.sellers}</div>
               <div className="text-sm text-muted-foreground">Sellers</div>
             </div>
           </div>
@@ -90,7 +90,7 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
               <Activity className="w-4 h-4 text-blue-500" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-foreground">{loading ? '...' : `${metrics.netPositiveFlow.toFixed(1)}%`}</div>
+              <div className="text-2xl font-bold text-foreground">{loading ? '...' : `${holderMovement.netFlow.toFixed(1)}%`}</div>
               <div className="text-sm text-muted-foreground">Net Positive Flow</div>
             </div>
           </div>
@@ -102,7 +102,7 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
               <Users className="w-4 h-4 text-purple-500" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-foreground">{loading ? '...' : metrics.whaleActivity}</div>
+              <div className="text-2xl font-bold text-foreground">{loading ? '...' : holderMovement.whaleActivityCount}</div>
               <div className="text-sm text-muted-foreground">Whale Moves</div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
                 <h3 className="text-lg font-semibold text-foreground">Recent Holder Movements</h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <DollarSign className="w-4 h-4" />
-                  Total Volume: ${metrics.totalVolume.toLocaleString()}
+                  Total Volume: ${(holderMovement.totalBuyVolume + holderMovement.totalSellVolume).toLocaleString()}
                 </div>
               </div>
               
@@ -133,15 +133,15 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
                     <p className="text-muted-foreground">Analyzing holder movements...</p>
                   </div>
                 </div>
-              ) : activities.length === 0 ? (
+              ) : holderMovement.activities.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>No recent holder movements found for this timeframe.</p>
-                  <p className="text-sm">Try selecting a different time period or check if API keys are configured.</p>
+                  <p className="text-sm">Real-time data from BitQuery GraphQL API</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {activities.map((activity, index) => (
+                  {holderMovement.activities.map((activity, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between p-4 border border-border/30 rounded-lg hover:bg-muted/20 transition-colors"
@@ -152,25 +152,23 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
                             {activity.action}
                           </Badge>
                           <code className="text-xs bg-muted px-2 py-1 rounded">
-                            {activity.walletAddress.slice(0, 4)}...{activity.walletAddress.slice(-4)}
+                            {activity.walletAddress}
                           </code>
                           {activity.isWhale && (
                             <Badge variant="outline" className="text-xs">🐋 Whale</Badge>
                           )}
-                          {activity.isNewHolder && (
-                            <Badge variant="outline" className="text-xs">✨ New</Badge>
-                          )}
+                          <Badge variant="outline" className="text-xs">{activity.protocol}</Badge>
                         </div>
                         
-                        <div className="flex items-center gap-2 text-sm">
-                          {activity.fromToken && (
-                            <>
-                              <span className="text-muted-foreground">{activity.fromToken}</span>
-                              <ArrowRight className="w-3 h-3" />
-                            </>
-                          )}
-                          <span className="font-medium">{activity.toToken || 'Token'}</span>
-                        </div>
+                        <a
+                          href={`https://solscan.io/tx/${activity.signature}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          View TX
+                        </a>
                       </div>
 
                       <div className="text-right">
@@ -201,44 +199,52 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
                     <p className="text-muted-foreground">Analyzing flow patterns...</p>
                   </div>
                 </div>
-              ) : flowPatterns.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No flow patterns detected for this timeframe.</p>
-                  <p className="text-sm">Patterns will appear as more trading activity is recorded.</p>
-                </div>
               ) : (
                 <div className="space-y-4">
-                  {flowPatterns.map((pattern, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border border-border/30 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">{pattern.pattern}</span>
-                        </div>
-                        <Badge variant={pattern.trend === 'increasing' ? 'default' : pattern.trend === 'decreasing' ? 'secondary' : 'outline'}>
-                          {pattern.trend}
-                        </Badge>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 border border-border/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-green-500">Buy Volume</h4>
+                        <Badge variant="default">${(holderMovement.totalBuyVolume / 1000).toFixed(0)}K</Badge>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="text-sm font-semibold">{pattern.percentage.toFixed(1)}%</div>
-                          <div className="text-xs text-muted-foreground">${pattern.volume.toLocaleString()} volume</div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span>Total Buyers</span>
+                          <span className="font-semibold">{holderMovement.newBuyers}</span>
                         </div>
-                        <Progress value={pattern.percentage} className="w-20" />
+                        <Progress value={holderMovement.totalBuyVolume > 0 ? 75 : 0} />
                       </div>
                     </div>
-                  ))}
+
+                    <div className="p-4 border border-border/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-red-500">Sell Volume</h4>
+                        <Badge variant="secondary">${(holderMovement.totalSellVolume / 1000).toFixed(0)}K</Badge>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span>Total Sellers</span>
+                          <span className="font-semibold">{holderMovement.sellers}</span>
+                        </div>
+                        <Progress value={holderMovement.totalSellVolume > 0 ? 45 : 0} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Activity className="w-4 h-4 text-blue-500" />
+                      <span className="font-medium">Real-time Flow Analysis</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Net flow: {holderMovement.netFlow > 0 ? '+' : ''}{holderMovement.netFlow.toFixed(1)}% 
+                      ({holderMovement.netFlow > 0 ? 'Positive buying pressure' : 'Selling pressure detected'}).
+                      Average trade size: ${holderMovement.averageTradeSize.toLocaleString()}.
+                      Data powered by BitQuery real-time GraphQL API.
+                    </p>
+                  </div>
                 </div>
               )}
-              
-              <div className="mt-4 p-4 bg-muted/30 rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Pattern Descriptions:</h4>
-                <div className="space-y-1 text-xs text-muted-foreground">
-                  {flowPatterns.map((pattern, index) => (
-                    <div key={index}>• <span className="font-medium">{pattern.pattern}:</span> {pattern.description}</div>
-                  ))}
-                </div>
-              </div>
             </div>
           </DashboardCard>
         </TabsContent>
