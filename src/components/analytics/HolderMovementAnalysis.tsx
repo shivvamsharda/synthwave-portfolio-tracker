@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { ArrowRight, TrendingUp, TrendingDown, Activity, RefreshCw, DollarSign, Users, ExternalLink } from "lucide-react"
+import { ArrowRight, TrendingUp, TrendingDown, Activity, RefreshCw, DollarSign, Users, ExternalLink, Eye, Zap } from "lucide-react"
 import { useBitQueryData } from "@/hooks/useBitQueryData"
 
 interface HolderMovementAnalysisProps {
@@ -27,6 +27,81 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
     }
   }
 
+  // DEX/Protocol color mapping
+  const getDexColors = (protocol: string) => {
+    const protocolLower = protocol.toLowerCase()
+    
+    if (protocolLower.includes('jupiter')) {
+      return {
+        bg: 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20',
+        border: 'border-yellow-500/30',
+        text: 'text-yellow-600',
+        badge: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30',
+        icon: 'text-yellow-500'
+      }
+    } else if (protocolLower.includes('raydium')) {
+      return {
+        bg: 'bg-gradient-to-r from-blue-500/20 to-purple-500/20',
+        border: 'border-blue-500/30',
+        text: 'text-blue-600',
+        badge: 'bg-blue-500/20 text-blue-700 border-blue-500/30',
+        icon: 'text-blue-500'
+      }
+    } else if (protocolLower.includes('orca')) {
+      return {
+        bg: 'bg-gradient-to-r from-teal-500/20 to-cyan-500/20',
+        border: 'border-teal-500/30',
+        text: 'text-teal-600',
+        badge: 'bg-teal-500/20 text-teal-700 border-teal-500/30',
+        icon: 'text-teal-500'
+      }
+    } else if (protocolLower.includes('serum')) {
+      return {
+        bg: 'bg-gradient-to-r from-green-500/20 to-emerald-500/20',
+        border: 'border-green-500/30',
+        text: 'text-green-600',
+        badge: 'bg-green-500/20 text-green-700 border-green-500/30',
+        icon: 'text-green-500'
+      }
+    } else if (protocolLower.includes('openbook')) {
+      return {
+        bg: 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20',
+        border: 'border-indigo-500/30',
+        text: 'text-indigo-600',
+        badge: 'bg-indigo-500/20 text-indigo-700 border-indigo-500/30',
+        icon: 'text-indigo-500'
+      }
+    } else if (protocolLower.includes('pump')) {
+      return {
+        bg: 'bg-gradient-to-r from-pink-500/20 to-rose-500/20',
+        border: 'border-pink-500/30',
+        text: 'text-pink-600',
+        badge: 'bg-pink-500/20 text-pink-700 border-pink-500/30',
+        icon: 'text-pink-500'
+      }
+    } else {
+      return {
+        bg: 'bg-gradient-to-r from-gray-500/20 to-slate-500/20',
+        border: 'border-gray-500/30',
+        text: 'text-gray-600',
+        badge: 'bg-gray-500/20 text-gray-700 border-gray-500/30',
+        icon: 'text-gray-500'
+      }
+    }
+  }
+
+  const getProtocolIcon = (protocol: string) => {
+    const protocolLower = protocol.toLowerCase()
+    
+    if (protocolLower.includes('jupiter')) return <Zap className="w-3 h-3" />
+    if (protocolLower.includes('raydium')) return <Activity className="w-3 h-3" />
+    if (protocolLower.includes('orca')) return <Eye className="w-3 h-3" />
+    if (protocolLower.includes('serum')) return <TrendingUp className="w-3 h-3" />
+    if (protocolLower.includes('openbook')) return <Users className="w-3 h-3" />
+    if (protocolLower.includes('pump')) return <ArrowRight className="w-3 h-3" />
+    
+    return <Activity className="w-3 h-3" />
+  }
 
   return (
     <div className="space-y-6">
@@ -140,47 +215,92 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
                   <p className="text-sm">Real-time data from BitQuery GraphQL API</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {holderMovement.activities.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 border border-border/30 rounded-lg hover:bg-muted/20 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={activity.action === "bought" ? "default" : "secondary"}>
-                            {activity.action}
-                          </Badge>
-                          <code className="text-xs bg-muted px-2 py-1 rounded">
-                            {activity.walletAddress}
-                          </code>
-                          {activity.isWhale && (
-                            <Badge variant="outline" className="text-xs">🐋 Whale</Badge>
-                          )}
-                          <Badge variant="outline" className="text-xs">{activity.protocol}</Badge>
-                        </div>
+                <div className="space-y-3">
+                  {holderMovement.activities.map((activity, index) => {
+                    const dexColors = getDexColors(activity.protocol)
+                    const protocolIcon = getProtocolIcon(activity.protocol)
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={`relative p-4 rounded-xl border-2 ${dexColors.border} ${dexColors.bg} 
+                          hover:shadow-lg hover:scale-[1.02] transition-all duration-300 animate-fade-in`}
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        {/* DEX indicator line */}
+                        <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-xl ${dexColors.icon.replace('text-', 'bg-')}`} />
                         
-                        <a
-                          href={`https://solscan.io/tx/${activity.signature}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          View TX
-                        </a>
-                      </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              {/* Action badge with enhanced styling */}
+                              <Badge 
+                                variant={activity.action === "bought" ? "default" : "secondary"}
+                                className={`${activity.action === "bought" ? 'bg-green-500/20 text-green-700 border-green-500/30' : 'bg-red-500/20 text-red-700 border-red-500/30'} 
+                                  px-3 py-1 text-xs font-medium hover:scale-105 transition-transform`}
+                              >
+                                {activity.action === "bought" ? "🟢" : "🔴"} {activity.action}
+                              </Badge>
+                              
+                              {/* Wallet address with improved styling */}
+                              <div className="flex items-center gap-1 bg-muted/80 px-3 py-1 rounded-lg">
+                                <code className="text-xs font-mono text-foreground">
+                                  {activity.walletAddress}
+                                </code>
+                              </div>
+                              
+                              {/* Whale indicator */}
+                              {activity.isWhale && (
+                                <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-700 border-blue-500/30 animate-pulse">
+                                  🐋 Whale
+                                </Badge>
+                              )}
+                              
+                              {/* Enhanced Protocol badge */}
+                              <Badge 
+                                variant="outline" 
+                                className={`${dexColors.badge} text-xs px-2 py-1 flex items-center gap-1.5 font-medium border-2 hover:scale-105 transition-transform`}
+                              >
+                                <span className={dexColors.icon}>
+                                  {protocolIcon}
+                                </span>
+                                {activity.protocol}
+                              </Badge>
+                            </div>
+                            
+                            {/* Transaction link */}
+                            <a
+                              href={`https://solscan.io/tx/${activity.signature}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs ${dexColors.text} 
+                                hover:bg-white/20 transition-colors hover:scale-105`}
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              View TX
+                            </a>
+                          </div>
 
-                      <div className="text-right">
-                        <div className="font-semibold">{typeof activity.amount === 'number' ? activity.amount.toFixed(2) : '0.00'}</div>
-                        <div className="text-sm text-muted-foreground">${typeof activity.usdValue === 'number' ? activity.usdValue.toLocaleString() : '0'}</div>
-                      </div>
+                          <div className="flex items-center gap-4">
+                            {/* Amount display */}
+                            <div className="text-right">
+                              <div className="font-bold text-lg text-foreground">
+                                {typeof activity.amount === 'number' ? activity.amount.toFixed(2) : '0.00'}
+                              </div>
+                              <div className="text-sm text-muted-foreground font-medium">
+                                ${typeof activity.usdValue === 'number' ? activity.usdValue.toLocaleString() : '0'}
+                              </div>
+                            </div>
 
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(activity.timestamp).toLocaleTimeString()}
+                            {/* Timestamp */}
+                            <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                              {new Date(activity.timestamp).toLocaleTimeString()}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
