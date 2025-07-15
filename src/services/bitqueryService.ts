@@ -191,15 +191,15 @@ class BitQueryService {
         timestamp: trade.Block.Time,
         signature: trade.Transaction.Signature,
         tradeType: trade.Trade.Side.Type === 'sell' ? 'buy' : 'sell', // Inverse because if side is selling, someone is buying the token
-        tokenAmount: trade.Trade.Amount,
-        usdAmount: trade.Trade.AmountInUSD,
-        pricePerToken: trade.Trade.PriceInUSD,
-        currency: trade.Trade.Currency.Name,
-        marketAddress: trade.Trade.Market.MarketAddress,
-        protocol: trade.Trade.Dex.ProtocolName,
-        sideToken: trade.Trade.Side.Currency.Symbol,
-        sideAmount: trade.Trade.Side.Amount,
-        sideUsdAmount: trade.Trade.Side.AmountInUSD
+        tokenAmount: Number(trade.Trade.Amount) || 0,
+        usdAmount: Number(trade.Trade.AmountInUSD) || 0,
+        pricePerToken: Number(trade.Trade.PriceInUSD) || 0,
+        currency: trade.Trade.Currency.Name || 'Unknown',
+        marketAddress: trade.Trade.Market.MarketAddress || '',
+        protocol: trade.Trade.Dex.ProtocolName || 'Unknown',
+        sideToken: trade.Trade.Side.Currency.Symbol || 'Unknown',
+        sideAmount: Number(trade.Trade.Side.Amount) || 0,
+        sideUsdAmount: Number(trade.Trade.Side.AmountInUSD) || 0
       }))
 
       this.cache.set(cacheKey, { data: realtimeData, timestamp: Date.now() })

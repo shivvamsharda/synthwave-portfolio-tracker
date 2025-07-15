@@ -144,14 +144,14 @@ export function WhaleTracker({ tokenMint }: WhaleTrackerProps) {
                         <Badge variant="outline" className="text-xs">{activity.protocol}</Badge>
                       </div>
                       <div className="text-sm font-medium">
-                        {activity.tokenAmount.toFixed(2)} tokens
+                        {typeof activity.tokenAmount === 'number' ? activity.tokenAmount.toFixed(2) : '0.00'} tokens
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <div className="font-semibold">${activity.usdAmount.toLocaleString()}</div>
+                      <div className="font-semibold">${typeof activity.usdAmount === 'number' ? activity.usdAmount.toLocaleString() : '0'}</div>
                       <div className="text-xs text-muted-foreground">
                         {format(new Date(activity.timestamp), 'MMM d, h:mm a')}
                       </div>

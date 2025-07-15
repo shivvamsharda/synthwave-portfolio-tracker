@@ -172,8 +172,8 @@ export function HolderMovementAnalysis({ tokenMint }: HolderMovementAnalysisProp
                       </div>
 
                       <div className="text-right">
-                        <div className="font-semibold">{activity.amount.toFixed(2)}</div>
-                        <div className="text-sm text-muted-foreground">${activity.usdValue.toLocaleString()}</div>
+                        <div className="font-semibold">{typeof activity.amount === 'number' ? activity.amount.toFixed(2) : '0.00'}</div>
+                        <div className="text-sm text-muted-foreground">${typeof activity.usdValue === 'number' ? activity.usdValue.toLocaleString() : '0'}</div>
                       </div>
 
                       <div className="text-xs text-muted-foreground">
