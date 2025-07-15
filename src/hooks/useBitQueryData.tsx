@@ -49,7 +49,7 @@ export function useBitQueryData() {
     } finally {
       setLoading(false)
     }
-  }, [apiKeys.bitquery, toast])
+  }, [toast])
 
   const fetchWhaleActivity = useCallback(async (
     tokenMint: string,
@@ -69,7 +69,7 @@ export function useBitQueryData() {
     } finally {
       setLoading(false)
     }
-  }, [apiKeys.bitquery, toast])
+  }, [toast])
 
   const fetchTokenFlows = useCallback(async (
     tokenMint: string,
@@ -89,7 +89,7 @@ export function useBitQueryData() {
     } finally {
       setLoading(false)
     }
-  }, [apiKeys.bitquery, toast])
+  }, [toast])
 
   const refreshAllData = useCallback(async (
     tokenMint: string,
