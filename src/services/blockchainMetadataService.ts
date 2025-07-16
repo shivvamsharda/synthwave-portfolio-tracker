@@ -7,6 +7,9 @@ if (typeof window !== 'undefined') {
   window.Buffer = Buffer
 }
 
+// Jupiter API for token metadata fallback
+const JUPITER_TOKEN_LIST_URL = 'https://token.jup.ag/all'
+
 // Metaplex Token Metadata Program ID
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s')
 
@@ -24,6 +27,9 @@ interface BlockchainTokenMetadata {
 
 export class BlockchainMetadataService {
   private static connection = new Connection('https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15', 'confirmed')
+  private static jupiterTokenCache: Record<string, any> | null = null
+  private static jupiterCacheExpiry: number = 0
+  private static readonly JUPITER_CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
   /**
    * Get token metadata from database cache first, then blockchain if not found
@@ -50,8 +56,29 @@ export class BlockchainMetadataService {
         return blockchainData
       }
 
-      console.log(`❌ No metadata found for ${mintAddress}`)
-      return null
+      // Fallback to Jupiter API if blockchain fetch failed
+      console.log(`🪐 Trying Jupiter API fallback for ${mintAddress}`)
+      const jupiterData = await this.fetchFromJupiter(mintAddress)
+      
+      if (jupiterData) {
+        console.log(`✅ Successfully fetched Jupiter metadata:`, jupiterData)
+        // Save to database for future use
+        await this.saveToDatabase(jupiterData)
+        return jupiterData
+      }
+
+      // Final fallback: return basic metadata with mint abbreviation
+      console.log(`⚠️ Creating fallback metadata for ${mintAddress}`)
+      const fallbackData: BlockchainTokenMetadata = {
+        mint: mintAddress,
+        symbol: mintAddress.slice(0, 4) + '...' + mintAddress.slice(-4),
+        name: `Token ${mintAddress.slice(0, 8)}...`,
+        decimals: 6, // Default decimals for unknown tokens
+        is_verified: false
+      }
+      
+      // Don't save fallback data to database to allow future retries
+      return fallbackData
     } catch (error) {
       console.error(`❌ Error getting token metadata for ${mintAddress}:`, error)
       return null
@@ -106,17 +133,54 @@ export class BlockchainMetadataService {
 
       const blockchainResults = await Promise.all(blockchainPromises)
       
-      // Save successful results to database and add to result
-      const savePromises: Promise<any>[] = []
-      
+      // For tokens that failed blockchain fetch, try Jupiter API
+      const failedMints: string[] = []
       blockchainResults.forEach((metadata, index) => {
         if (metadata) {
           result[uncachedMints[index]] = metadata
+        } else {
+          failedMints.push(uncachedMints[index])
+        }
+      })
+
+      // Try Jupiter API for failed blockchain fetches
+      if (failedMints.length > 0) {
+        console.log(`Trying Jupiter API for ${failedMints.length} failed blockchain fetches`)
+        const jupiterPromises = failedMints.map(mint => 
+          this.fetchFromJupiter(mint).catch(error => {
+            console.error(`Failed Jupiter fetch for ${mint}:`, error)
+            return null
+          })
+        )
+
+        const jupiterResults = await Promise.all(jupiterPromises)
+        jupiterResults.forEach((metadata, index) => {
+          if (metadata) {
+            result[failedMints[index]] = metadata
+          } else {
+            // Final fallback for completely failed tokens
+            const mint = failedMints[index]
+            result[mint] = {
+              mint,
+              symbol: mint.slice(0, 4) + '...' + mint.slice(-4),
+              name: `Token ${mint.slice(0, 8)}...`,
+              decimals: 6,
+              is_verified: false
+            }
+          }
+        })
+      }
+
+      // Save successful metadata to database
+      const savePromises: Promise<any>[] = []
+      Object.values(result).forEach(metadata => {
+        // Only save if it's not fallback data and not already cached
+        if (metadata.symbol !== `${metadata.mint.slice(0, 4)}...${metadata.mint.slice(-4)}` && 
+            uncachedMints.includes(metadata.mint)) {
           savePromises.push(this.saveToDatabase(metadata))
         }
       })
 
-      // Save all new metadata to database
       if (savePromises.length > 0) {
         await Promise.all(savePromises.map(p => p.catch(e => console.error('Save error:', e))))
       }
@@ -424,6 +488,87 @@ export class BlockchainMetadataService {
       }
     } catch (error) {
       console.error('Error saving to database:', error)
+    }
+  }
+
+  /**
+   * Fetch token metadata from Jupiter API
+   */
+  private static async fetchFromJupiter(mintAddress: string): Promise<BlockchainTokenMetadata | null> {
+    try {
+      console.log(`🪐 Fetching Jupiter metadata for ${mintAddress}`)
+      
+      // Get Jupiter token list (cached)
+      const jupiterTokens = await this.getJupiterTokenList()
+      const tokenData = jupiterTokens[mintAddress]
+      
+      if (tokenData) {
+        console.log(`✅ Found Jupiter metadata for ${mintAddress}:`, tokenData)
+        return {
+          mint: mintAddress,
+          symbol: tokenData.symbol || mintAddress.slice(0, 4) + '...',
+          name: tokenData.name || 'Unknown Token',
+          logo_uri: tokenData.logoURI,
+          description: tokenData.description,
+          website: tokenData.website,
+          twitter: tokenData.twitter,
+          decimals: tokenData.decimals || 6,
+          is_verified: tokenData.verified || false
+        }
+      }
+
+      console.log(`❌ Token not found in Jupiter list: ${mintAddress}`)
+      return null
+    } catch (error) {
+      console.error(`❌ Error fetching Jupiter metadata for ${mintAddress}:`, error)
+      return null
+    }
+  }
+
+  /**
+   * Get cached Jupiter token list or fetch new one
+   */
+  private static async getJupiterTokenList(): Promise<Record<string, any>> {
+    try {
+      const now = Date.now()
+      
+      // Check if cache is valid
+      if (this.jupiterTokenCache && now < this.jupiterCacheExpiry) {
+        console.log('📦 Using cached Jupiter token list')
+        return this.jupiterTokenCache
+      }
+
+      console.log('🌐 Fetching fresh Jupiter token list')
+      const response = await fetch(JUPITER_TOKEN_LIST_URL)
+      
+      if (!response.ok) {
+        throw new Error(`Jupiter API responded with status: ${response.status}`)
+      }
+
+      const tokens = await response.json()
+      
+      // Convert array to mint-keyed object for faster lookups
+      const tokenMap: Record<string, any> = {}
+      tokens.forEach((token: any) => {
+        tokenMap[token.address] = token
+      })
+
+      // Cache the result
+      this.jupiterTokenCache = tokenMap
+      this.jupiterCacheExpiry = now + this.JUPITER_CACHE_DURATION
+
+      console.log(`✅ Cached ${Object.keys(tokenMap).length} Jupiter tokens`)
+      return tokenMap
+    } catch (error) {
+      console.error('❌ Error fetching Jupiter token list:', error)
+      
+      // Return cached data if available, even if expired
+      if (this.jupiterTokenCache) {
+        console.log('⚠️ Using expired Jupiter cache due to fetch error')
+        return this.jupiterTokenCache
+      }
+      
+      return {}
     }
   }
 }
