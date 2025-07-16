@@ -105,19 +105,6 @@ export function DashboardPreview() {
             </div>
           </div>
           
-          {/* User Section */}
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-sm font-bold text-white">
-                A
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Alex Chen</p>
-                <p className="text-xs text-muted-foreground">Premium</p>
-              </div>
-              <Settings className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground" />
-            </div>
-          </div>
         </div>
         
         {/* Main Content */}
