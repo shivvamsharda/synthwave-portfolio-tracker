@@ -8,61 +8,61 @@
 
 @layer base {
   :root {
-    /* Clean Professional Palette */
-    --background: 0 0% 100%;             /* Pure white */
-    --foreground: 222 47% 11%;           /* Dark navy text */
+    /* Dark Web3 Theme */
+    --background: 230 20% 9%;
+    --foreground: 0 0% 95%;
     
-    --card: 0 0% 100%;                   /* White cards */
-    --card-foreground: 222 47% 11%;
+    --card: 230 20% 12%;
+    --card-foreground: 0 0% 95%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 230 20% 12%;
+    --popover-foreground: 0 0% 95%;
     
-    /* Professional Blue Primary */
-    --primary: 221 83% 53%;              /* Professional blue #2563eb */
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 221 83% 95%;        /* Light blue background */
+    /* Purple Primary */
+    --primary: 263 83% 65%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 263 83% 85%;
     
-    /* Clean Gray Secondary */
-    --secondary: 210 40% 98%;
-    --secondary-foreground: 222 47% 11%;
+    /* Dark Secondary */
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 0 0% 95%;
     
-    /* Subtle Blue Accent */
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
+    /* Purple Accent */
+    --accent: 280 100% 70%;
+    --accent-foreground: 0 0% 98%;
     
-    /* Professional grays */
-    --muted: 214 32% 91%;
-    --muted-foreground: 215 16% 47%;
+    /* Dark grays */
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
     
-    /* Danger red */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    /* Red for negative */
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
     
-    /* Success green */
+    /* Green for positive */
     --success: 142 69% 58%;
     --success-foreground: 0 0% 100%;
     
-    /* Clean borders and inputs */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    /* Dark borders */
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 263 83% 65%;
     
-    /* Standard radius */
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
-    /* Professional Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 45%));
-    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 98%), hsl(210 40% 94%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 99%));
+    /* Web3 Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(263 83% 65%), hsl(280 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(230 20% 12%), hsl(263 83% 65% / 0.1));
+    --gradient-accent: linear-gradient(90deg, hsl(263 83% 65% / 0.2), hsl(280 100% 70% / 0.2));
+    --gradient-hero: linear-gradient(135deg, hsl(230 20% 9%), hsl(263 83% 65% / 0.15), hsl(280 100% 70% / 0.1));
     
-    /* Clean shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Dark shadows with glow */
+    --shadow-sm: 0 1px 2px 0 hsl(230 20% 5% / 0.8);
+    --shadow-md: 0 4px 6px -1px hsl(230 20% 5% / 0.8), 0 2px 4px -1px hsl(230 20% 5% / 0.6);
+    --shadow-lg: 0 10px 15px -3px hsl(230 20% 5% / 0.8), 0 4px 6px -2px hsl(230 20% 5% / 0.6);
+    --shadow-glow: 0 0 40px hsl(263 83% 65% / 0.3);
     
-    /* Professional transitions */
-    --transition-smooth: all 0.2s ease-in-out;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -201,5 +201,105 @@
   
   .metric-change-negative {
     @apply text-destructive text-sm font-medium;
+  }
+
+  /* Web3 Animations */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px hsl(263 83% 65% / 0.3); }
+    50% { box-shadow: 0 0 40px hsl(263 83% 65% / 0.5); }
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes count-up {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out;
+  }
+
+  .animate-count-up {
+    animation: count-up 0.5s ease-out;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Web3 specific styles */
+  .web3-card {
+    @apply bg-card border border-border/20 rounded-xl backdrop-blur-sm;
+    background: linear-gradient(135deg, hsl(230 20% 12% / 0.8), hsl(263 83% 65% / 0.05));
+    box-shadow: var(--shadow-lg), 0 0 0 1px hsl(263 83% 65% / 0.1);
+    transition: var(--transition-smooth);
+  }
+
+  .web3-card:hover {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  .web3-button {
+    @apply px-6 py-3 rounded-lg font-medium transition-all duration-300;
+    background: var(--gradient-primary);
+    color: hsl(var(--primary-foreground));
+    box-shadow: var(--shadow-md);
+  }
+
+  .web3-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+
+  .chart-line {
+    stroke: hsl(var(--primary));
+    stroke-width: 2;
+    fill: none;
+    filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.5));
+  }
+
+  .chart-area {
+    fill: url(#gradient);
+    opacity: 0.3;
+  }
+
+  .metric-large {
+    @apply text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
   }
 }

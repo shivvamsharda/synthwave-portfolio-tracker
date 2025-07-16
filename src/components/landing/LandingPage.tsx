@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle } from "lucide-react"
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { DashboardPreview, MessagingPreview } from "./DashboardPreview"
+import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
 
 export function LandingPage() {
   const navigate = useNavigate()
@@ -77,244 +79,359 @@ export function LandingPage() {
     }
   ]
 
+  // Sample data for animations
+  const portfolioData = [1200, 1350, 1180, 1620, 1890, 2100, 1950, 2340, 2680, 2470, 2847];
+  const analyticsData = [420, 380, 510, 490, 650, 720, 680, 820, 960, 1050, 1247];
+  const insightsData = [120, 185, 210, 340, 420, 380, 520, 610, 730, 680, 847];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Navigation */}
-      <nav className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="relative z-50 border-b border-border/20 bg-background/10 backdrop-blur-xl">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary"></div>
-            <span className="text-xl font-semibold">Web3 Analytics</span>
+          <div className="flex items-center space-x-3">
+            <div className="h-8 w-8 rounded-lg bg-gradient-primary animate-pulse-glow"></div>
+            <span className="text-xl font-bold gradient-text">Web3 Analytics</span>
           </div>
-          <div className="hidden md:flex items-center space-x-6">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Pricing
             </a>
-            <Button variant="outline" onClick={() => navigate('/dashboard')}>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/dashboard')}
+              className="border-primary/30 hover:bg-primary/10"
+            >
               Sign In
             </Button>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background"></div>
-        <div className="container relative py-24 lg:py-32">
-          <div className="mx-auto max-w-4xl text-center">
-            <Badge variant="secondary" className="mb-6">
-              <Zap className="mr-1 h-3 w-3" />
-              Real-time Web3 Analytics
-            </Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-              Unlock the Power of
-              <span className="bg-gradient-primary bg-clip-text text-transparent"> On-Chain Data</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto">
-              Transform your Web3 portfolio with real-time analytics, advanced insights, and comprehensive tracking across all your favorite blockchains.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" onClick={() => navigate('/dashboard')} className="btn-primary">
-                Get Started Free
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Shield className="mr-2 h-4 w-4" />
-                Trusted by 50,000+ users
+      {/* Hero Section - Matching Image 5 Layout */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-hero"></div>
+        
+        {/* Background Elements */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Text Content */}
+            <div className="space-y-8 animate-slide-up">
+              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow">
+                <Zap className="mr-2 h-4 w-4" />
+                Unlock the Power of Data with AI
+              </Badge>
+              
+              <div className="space-y-6">
+                <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+                  <span className="text-foreground">Real-time</span>
+                  <br />
+                  <span className="gradient-text">Web3 Analytics</span>
+                  <br />
+                  <span className="text-foreground">Platform</span>
+                </h1>
+                
+                <p className="text-lg text-muted-foreground max-w-xl">
+                  Monitor your entire Web3 portfolio with advanced analytics, real-time notifications, 
+                  and AI-powered insights across all major blockchains.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/dashboard')} 
+                  className="web3-button group"
+                >
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="border-primary/30 hover:bg-primary/10"
+                >
+                  Watch Demo
+                </Button>
+              </div>
+              
+              <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span><CountingNumber target={50000} />+ Users</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4" />
+                  <span>Enterprise Security</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Side - Dashboard Preview */}
+            <div className="relative animate-slide-in-right">
+              <DashboardPreview />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Analytics Features Section - Matching Images 1 & 2 */}
+      <section id="features" className="py-24 relative">
+        <div className="container">
+          <div className="grid gap-8 lg:grid-cols-3">
+            {/* Total Earnings Analytics */}
+            <div className="web3-card p-8 space-y-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <div className="flex items-center space-x-3">
+                <div className="p-3 rounded-xl bg-gradient-primary/20">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground">Total Earnings</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-end space-x-3">
+                    <span className="metric-large">
+                      $<CountingNumber target={2847329} />
+                    </span>
+                    <div className="flex items-center space-x-1 pb-2">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-green-500 font-medium">+12.5%</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Total Portfolio Value</p>
+                </div>
+                
+                <div className="h-20">
+                  <AnimatedLineChart 
+                    data={portfolioData} 
+                    color="hsl(var(--primary))"
+                    height={80}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Real Time Analytics */}
+            <div className="web3-card p-8 space-y-6 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+              <div className="flex items-center space-x-3">
+                <div className="p-3 rounded-xl bg-gradient-primary/20">
+                  <Activity className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground">Real Time Analytics</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-end space-x-3">
+                    <span className="metric-large">
+                      <CountingNumber target={1247} />
+                    </span>
+                    <div className="flex items-center space-x-1 pb-2">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-green-500 font-medium">+8.2%</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Active Tokens Tracked</p>
+                </div>
+                
+                <div className="h-20">
+                  <AnimatedBarChart 
+                    data={analyticsData} 
+                    color="hsl(var(--accent))"
+                    height={80}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Project Overview */}
+            <div className="web3-card p-8 space-y-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
+              <div className="flex items-center space-x-3">
+                <div className="p-3 rounded-xl bg-gradient-primary/20">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground">Project Overview</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-end space-x-3">
+                    <span className="metric-large">
+                      <CountingNumber target={847} />
+                    </span>
+                    <div className="flex items-center space-x-1 pb-2">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-green-500 font-medium">+15.7%</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Insights Generated</p>
+                </div>
+                
+                <div className="h-20">
+                  <AnimatedLineChart 
+                    data={insightsData} 
+                    color="hsl(var(--success))"
+                    height={80}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24">
+      {/* Messaging Integration Section - Matching Image 3 */}
+      <section className="py-24 relative">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Advanced Analytics Dashboard
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Get comprehensive insights into your Web3 investments with our powerful analytics suite.
-            </p>
-          </div>
-          
-          <div className="grid gap-8 lg:grid-cols-3">
-            {features.map((feature, index) => (
-              <Card key={index} className="dashboard-card border-border/50 hover:border-primary/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                        {feature.icon}
-                      </div>
-                      <CardTitle className="text-lg">{feature.title}</CardTitle>
-                    </div>
-                  </div>
-                  <CardDescription className="text-muted-foreground">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-end space-x-2">
-                      <span className="text-3xl font-bold">{feature.value}</span>
-                      <div className="flex items-center text-sm">
-                        <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-                        <span className="text-green-500">{feature.change}</span>
-                        <span className="text-muted-foreground ml-1">{feature.period}</span>
-                      </div>
-                    </div>
-                    <div className="h-16 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg flex items-end justify-center">
-                      <div className="w-full h-8 bg-gradient-primary opacity-30 rounded-b-lg"></div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Integration Section */}
-      <section className="py-24 bg-muted/30">
-        <div className="container">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div>
-              <Badge variant="secondary" className="mb-4">
-                <Globe className="mr-1 h-3 w-3" />
-                Multi-Chain Support
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
-                Real-time Integration Capabilities
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Connect all your wallets and get unified analytics across Solana, Ethereum, Polygon, and more. 
-                Our platform provides seamless integration with real-time notifications and messaging.
-              </p>
-              <ul className="space-y-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left Side - Messaging Preview */}
+            <div className="space-y-8 animate-slide-up">
+              <div className="space-y-6">
+                <h2 className="text-3xl lg:text-4xl font-bold">
+                  <span className="text-foreground">Realtime Messaging</span>
+                  <br />
+                  <span className="gradient-text">Integration</span>
+                </h2>
+                
+                <MessagingPreview />
+              </div>
+            </div>
+            
+            {/* Right Side - Features */}
+            <div className="space-y-8 animate-slide-in-right">
+              <div className="space-y-6">
+                <h2 className="text-3xl lg:text-4xl font-bold">
+                  <span className="text-foreground">Realtime Notification</span>
+                  <br />
+                  <span className="gradient-text">Integration</span>
+                </h2>
+                
+                <p className="text-lg text-muted-foreground">
+                  Stay connected with your portfolio through instant notifications, 
+                  real-time alerts, and collaborative messaging features.
+                </p>
+              </div>
+              
+              <div className="grid gap-4">
                 {[
-                  "Real-time notification integration",
-                  "Multi-wallet connection support", 
-                  "Cross-chain analytics",
-                  "Instant transaction alerts"
+                  { icon: <MessageSquare className="h-5 w-5" />, text: "Instant portfolio updates", delay: '0.2s' },
+                  { icon: <Bell className="h-5 w-5" />, text: "Smart alert system", delay: '0.4s' },
+                  { icon: <Users className="h-5 w-5" />, text: "Team collaboration", delay: '0.6s' },
+                  { icon: <Wallet className="h-5 w-5" />, text: "Multi-wallet notifications", delay: '0.8s' }
                 ].map((item, index) => (
-                  <li key={index} className="flex items-center">
-                    <CheckCircle className="mr-3 h-5 w-5 text-primary" />
-                    <span>{item}</span>
-                  </li>
+                  <div 
+                    key={index}
+                    className="flex items-center space-x-4 p-4 rounded-lg bg-card/50 border border-border/20 animate-slide-in-right"
+                    style={{ animationDelay: item.delay }}
+                  >
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      {item.icon}
+                    </div>
+                    <span className="text-foreground font-medium">{item.text}</span>
+                  </div>
                 ))}
-              </ul>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Card className="dashboard-card">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm">Live Activity</CardTitle>
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {[1,2,3].map((i) => (
-                      <div key={i} className="flex items-center space-x-2 text-xs">
-                        <div className="h-6 w-6 rounded-full bg-primary/20"></div>
-                        <span className="text-muted-foreground">New transaction detected</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="dashboard-card">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">Wallet Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-muted-foreground">Connected</span>
-                      <span className="text-sm font-medium">4/5</span>
-                    </div>
-                    <div className="w-full bg-secondary rounded-full h-2">
-                      <div className="bg-gradient-primary h-2 rounded-full w-4/5"></div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24">
+      {/* Pricing Section - Matching Image 4 */}
+      <section id="pricing" className="py-24 relative">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Choose Your Plan
+          <div className="text-center space-y-4 mb-16 animate-slide-up">
+            <h2 className="text-3xl lg:text-4xl font-bold">
+              <span className="gradient-text">Choose Your Plan</span>
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Start free and scale as you grow. All plans include our core analytics features.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Start free and scale as you grow. All plans include our core analytics features with enterprise-grade security.
             </p>
           </div>
           
-          <div className="grid gap-8 lg:grid-cols-3">
+          <div className="grid gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
-              <Card key={index} className={`dashboard-card relative ${plan.highlighted ? 'border-primary shadow-elegant' : 'border-border/50'}`}>
+              <div 
+                key={index} 
+                className={`web3-card p-8 space-y-6 animate-slide-up relative ${
+                  plan.highlighted 
+                    ? 'border-primary/50 shadow-glow transform scale-105' 
+                    : 'border-border/20'
+                }`}
+                style={{ animationDelay: `${index * 0.2}s` }}
+              >
                 {plan.highlighted && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-gradient-primary text-primary-foreground px-4 py-1 animate-pulse-glow">
+                      Most Popular
+                    </Badge>
                   </div>
                 )}
-                <CardHeader>
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <div className="flex items-end space-x-1">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-foreground">{plan.name}</h3>
+                    <div className="flex items-end space-x-2">
+                      <span className="text-4xl font-bold gradient-text">{plan.price}</span>
+                      <span className="text-muted-foreground pb-1">/month</span>
+                    </div>
+                    <p className="text-muted-foreground">{plan.description}</p>
                   </div>
-                  <CardDescription>{plan.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                  
                   <Button 
-                    className={`w-full ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}
+                    className={`w-full ${plan.highlighted ? 'web3-button' : 'border-primary/30 hover:bg-primary/10'}`}
+                    variant={plan.highlighted ? 'default' : 'outline'}
+                    size="lg"
                     onClick={() => navigate('/dashboard')}
                   >
                     {plan.name === 'Free' ? 'Get Started' : 'Start Free Trial'}
                   </Button>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-foreground">Everything included:</h4>
                   <ul className="space-y-3">
                     {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start">
-                        <CheckCircle className="mr-3 h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
+                      <li key={featureIndex} className="flex items-start space-x-3">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/40 py-12">
+      <footer className="border-t border-border/20 py-16 bg-background/50 backdrop-blur-xl">
         <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="h-6 w-6 rounded bg-gradient-primary"></div>
-              <span className="font-semibold">Web3 Analytics</span>
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-8 rounded-lg bg-gradient-primary animate-pulse-glow"></div>
+              <span className="text-xl font-bold gradient-text">Web3 Analytics</span>
             </div>
-            <div className="flex space-x-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+            
+            <div className="flex space-x-8 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-primary transition-colors">Contact</a>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-            © 2024 Web3 Analytics. All rights reserved.
+          
+          <div className="mt-12 pt-8 border-t border-border/20 text-center">
+            <p className="text-sm text-muted-foreground">
+              © 2024 Web3 Analytics. All rights reserved. Powered by advanced blockchain analytics.
+            </p>
           </div>
         </div>
       </footer>
