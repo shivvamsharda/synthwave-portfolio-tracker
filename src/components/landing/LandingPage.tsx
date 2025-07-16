@@ -40,7 +40,7 @@ export function LandingPage() {
     {
       name: "Free",
       price: "$0",
-      description: "Perfect for getting started with basic Web3 analytics",
+      description: "Perfect for getting started with Neptune AI analytics",
       features: [
         "Up to 3 wallet connections",
         "Basic portfolio tracking",
@@ -90,8 +90,12 @@ export function LandingPage() {
       <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
         <div className="max-w-7xl mx-auto px-10 py-4 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary animate-pulse-glow"></div>
-            <span className="text-xl font-bold gradient-text">Web3 Analytics</span>
+            <img 
+              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
+              alt="Neptune AI Logo" 
+              className="h-8 w-8 object-contain"
+            />
+            <span className="text-xl font-bold gradient-text">Neptune AI</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -420,8 +424,12 @@ export function LandingPage() {
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-lg bg-gradient-primary animate-pulse-glow"></div>
-              <span className="text-xl font-bold gradient-text">Web3 Analytics</span>
+              <img 
+                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
+                alt="Neptune AI Logo" 
+                className="h-8 w-8 object-contain"
+              />
+              <span className="text-xl font-bold gradient-text">Neptune AI</span>
             </div>
             
             <div className="flex space-x-8 text-sm text-muted-foreground">
@@ -433,7 +441,7 @@ export function LandingPage() {
           
           <div className="mt-12 pt-8 border-t border-border/20 text-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 Web3 Analytics. All rights reserved. Powered by advanced blockchain analytics.
+              © 2024 Neptune AI. All rights reserved. Powered by advanced blockchain analytics.
             </p>
           </div>
         </div>
