@@ -284,11 +284,11 @@ export function DashboardPreview() {
                   <p className="text-sm text-muted-foreground">Usage across DeFi protocols</p>
                 </div>
                 <div className="relative flex items-center justify-center mb-4">
-                  <CircularProgress percentage={75} size={120} strokeWidth={8} />
+                  <CircularProgress percentage={100} size={120} strokeWidth={8} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-foreground">75%</div>
-                      <div className="text-xs text-muted-foreground">Diversified</div>
+                      <div className="text-2xl font-bold text-foreground">100%</div>
+                      <div className="text-xs text-muted-foreground">Allocated</div>
                     </div>
                   </div>
                 </div>
