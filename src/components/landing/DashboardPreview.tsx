@@ -287,7 +287,6 @@ export function DashboardPreview() {
                   <CircularProgress percentage={75} size={120} strokeWidth={8} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-foreground">75%</div>
                       <div className="text-xs text-muted-foreground">Diversified</div>
                     </div>
                   </div>
