@@ -87,23 +87,23 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Navigation */}
-      <nav className="relative z-50 border-b border-border/20 bg-background/10 backdrop-blur-xl">
-        <div className="container flex h-16 items-center justify-between">
+      <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
+        <div className="max-w-7xl mx-auto px-10 py-6 flex h-20 items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="h-8 w-8 rounded-lg bg-gradient-primary animate-pulse-glow"></div>
             <span className="text-xl font-bold gradient-text">Web3 Analytics</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Pricing
             </a>
             <Button 
               variant="outline" 
               onClick={() => navigate('/dashboard')}
-              className="border-primary/30 hover:bg-primary/10"
+              className="px-6 py-2.5 border-primary/30 hover:bg-primary/10 hover:shadow-glow transition-all duration-300 font-medium"
             >
               Sign In
             </Button>
@@ -112,37 +112,37 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
+      <section className="relative py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero"></div>
         
         {/* Background Elements */}
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
-        <div className="container relative z-10">
-          <div className="grid lg:grid-cols-5 gap-16 items-center">
-            {/* Left Side - Text Content (2 columns) */}
-            <div className="lg:col-span-2 space-y-8 animate-slide-up">
-              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit">
+        <div className="max-w-7xl mx-auto px-10 relative z-10">
+          <div className="grid lg:grid-cols-12 gap-16 items-center">
+            {/* Left Side - Text Content (5 columns) */}
+            <div className="lg:col-span-5 space-y-8 animate-slide-up">
+              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit mb-2">
                 <Zap className="mr-2 h-4 w-4" />
                 Version 1.3 is available now
               </Badge>
               
-              <div className="space-y-6">
-                <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+              <div className="space-y-8">
+                <h1 className="text-4xl lg:text-6xl font-bold leading-tight tracking-tight">
                   <span className="gradient-text">Unlock the Power of Data with AI</span>
                 </h1>
                 
-                <p className="text-lg text-muted-foreground">
+                <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
                   Empower your business with cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights, real-time notifications, and intelligent automation.
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-6 pt-4">
                 <Button 
                   size="lg" 
                   onClick={() => navigate('/dashboard')} 
-                  className="web3-button group"
+                  className="web3-button group px-8 py-4 text-base"
                 >
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -151,34 +151,34 @@ export function LandingPage() {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-primary/30 hover:bg-primary/10"
+                  className="border-primary/30 hover:bg-primary/10 px-8 py-4 text-base font-medium"
                 >
                   Watch Demo
                 </Button>
               </div>
               
               {/* User Avatars Section */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 pt-4">
                 <div className="flex -space-x-2">
                   {[1, 2, 3, 4].map((_, i) => (
                     <div
                       key={i}
-                      className="w-8 h-8 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground"
+                      className="w-10 h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-sm font-semibold text-primary-foreground"
                     >
                       {String.fromCharCode(65 + i)}
                     </div>
                   ))}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">Over 50+ Users</span>
+                  <span className="font-semibold text-foreground text-base">Over 50+ Users</span>
                   <br />
-                  <span>Join our growing community</span>
+                  <span className="text-muted-foreground">Join our growing community</span>
                 </div>
               </div>
             </div>
             
-            {/* Right Side - Dashboard Preview (3 columns) */}
-            <div className="lg:col-span-3 relative animate-slide-in-right">
+            {/* Right Side - Dashboard Preview (7 columns) */}
+            <div className="lg:col-span-7 relative animate-slide-in-right ml-8">
               <DashboardPreview />
             </div>
           </div>
