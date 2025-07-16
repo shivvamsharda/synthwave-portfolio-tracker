@@ -1,14 +1,12 @@
 import { Connection, PublicKey } from '@solana/web3.js'
 import { supabase } from '@/integrations/supabase/client'
+import { coingeckoService } from './coingeckoService'
 import { Buffer } from 'buffer'
 
 // Ensure Buffer is available globally for browser compatibility
 if (typeof window !== 'undefined') {
   window.Buffer = Buffer
 }
-
-// Jupiter API for token metadata fallback
-const JUPITER_TOKEN_LIST_URL = 'https://token.jup.ag/all'
 
 // Metaplex Token Metadata Program ID
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s')
@@ -26,10 +24,7 @@ interface BlockchainTokenMetadata {
 }
 
 export class BlockchainMetadataService {
-  private static connection = new Connection('https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15', 'confirmed')
-  private static jupiterTokenCache: Record<string, any> | null = null
-  private static jupiterCacheExpiry: number = 0
-  private static readonly JUPITER_CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+  private static connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
 
   /**
    * Get token metadata from database cache first, then blockchain if not found
@@ -56,15 +51,15 @@ export class BlockchainMetadataService {
         return blockchainData
       }
 
-      // Fallback to Jupiter API if blockchain fetch failed
-      console.log(`🪐 Trying Jupiter API fallback for ${mintAddress}`)
-      const jupiterData = await this.fetchFromJupiter(mintAddress)
+      // Fallback to CoinGecko API if blockchain fetch failed
+      console.log(`🦎 Trying CoinGecko API fallback for ${mintAddress}`)
+      const coingeckoData = await this.fetchFromCoinGecko(mintAddress)
       
-      if (jupiterData) {
-        console.log(`✅ Successfully fetched Jupiter metadata:`, jupiterData)
+      if (coingeckoData) {
+        console.log(`✅ Successfully fetched CoinGecko metadata:`, coingeckoData)
         // Save to database for future use
-        await this.saveToDatabase(jupiterData)
-        return jupiterData
+        await this.saveToDatabase(coingeckoData)
+        return coingeckoData
       }
 
       // Final fallback: return basic metadata with mint abbreviation
@@ -133,7 +128,7 @@ export class BlockchainMetadataService {
 
       const blockchainResults = await Promise.all(blockchainPromises)
       
-      // For tokens that failed blockchain fetch, try Jupiter API
+      // For tokens that failed blockchain fetch, try CoinGecko API
       const failedMints: string[] = []
       blockchainResults.forEach((metadata, index) => {
         if (metadata) {
@@ -143,18 +138,18 @@ export class BlockchainMetadataService {
         }
       })
 
-      // Try Jupiter API for failed blockchain fetches
+      // Try CoinGecko API for failed blockchain fetches
       if (failedMints.length > 0) {
-        console.log(`Trying Jupiter API for ${failedMints.length} failed blockchain fetches`)
-        const jupiterPromises = failedMints.map(mint => 
-          this.fetchFromJupiter(mint).catch(error => {
-            console.error(`Failed Jupiter fetch for ${mint}:`, error)
+        console.log(`Trying CoinGecko API for ${failedMints.length} failed blockchain fetches`)
+        const coingeckoPromises = failedMints.map(mint => 
+          this.fetchFromCoinGecko(mint).catch(error => {
+            console.error(`Failed CoinGecko fetch for ${mint}:`, error)
             return null
           })
         )
 
-        const jupiterResults = await Promise.all(jupiterPromises)
-        jupiterResults.forEach((metadata, index) => {
+        const coingeckoResults = await Promise.all(coingeckoPromises)
+        coingeckoResults.forEach((metadata, index) => {
           if (metadata) {
             result[failedMints[index]] = metadata
           } else {
@@ -492,83 +487,34 @@ export class BlockchainMetadataService {
   }
 
   /**
-   * Fetch token metadata from Jupiter API
+   * Fetch token metadata from CoinGecko API
    */
-  private static async fetchFromJupiter(mintAddress: string): Promise<BlockchainTokenMetadata | null> {
+  private static async fetchFromCoinGecko(mintAddress: string): Promise<BlockchainTokenMetadata | null> {
     try {
-      console.log(`🪐 Fetching Jupiter metadata for ${mintAddress}`)
+      console.log(`🦎 Fetching CoinGecko metadata for ${mintAddress}`)
       
-      // Get Jupiter token list (cached)
-      const jupiterTokens = await this.getJupiterTokenList()
-      const tokenData = jupiterTokens[mintAddress]
+      const tokenData = await coingeckoService.getTokenByContract(mintAddress, 'solana')
       
       if (tokenData) {
-        console.log(`✅ Found Jupiter metadata for ${mintAddress}:`, tokenData)
+        console.log(`✅ Found CoinGecko metadata for ${mintAddress}:`, tokenData)
         return {
           mint: mintAddress,
-          symbol: tokenData.symbol || mintAddress.slice(0, 4) + '...',
+          symbol: tokenData.symbol?.toUpperCase() || mintAddress.slice(0, 4) + '...',
           name: tokenData.name || 'Unknown Token',
-          logo_uri: tokenData.logoURI,
-          description: tokenData.description,
-          website: tokenData.website,
-          twitter: tokenData.twitter,
-          decimals: tokenData.decimals || 6,
-          is_verified: tokenData.verified || false
+          logo_uri: tokenData.image?.large || tokenData.image?.small || tokenData.image?.thumb,
+          description: tokenData.description?.en,
+          website: tokenData.links?.homepage?.[0],
+          twitter: tokenData.links?.twitter_screen_name ? `https://twitter.com/${tokenData.links.twitter_screen_name}` : undefined,
+          decimals: 6, // CoinGecko doesn't provide decimals, use default
+          is_verified: tokenData.asset_platform_id === 'solana' // Consider it verified if it's on Solana platform
         }
       }
 
-      console.log(`❌ Token not found in Jupiter list: ${mintAddress}`)
+      console.log(`❌ Token not found in CoinGecko: ${mintAddress}`)
       return null
     } catch (error) {
-      console.error(`❌ Error fetching Jupiter metadata for ${mintAddress}:`, error)
+      console.error(`❌ Error fetching CoinGecko metadata for ${mintAddress}:`, error)
       return null
-    }
-  }
-
-  /**
-   * Get cached Jupiter token list or fetch new one
-   */
-  private static async getJupiterTokenList(): Promise<Record<string, any>> {
-    try {
-      const now = Date.now()
-      
-      // Check if cache is valid
-      if (this.jupiterTokenCache && now < this.jupiterCacheExpiry) {
-        console.log('📦 Using cached Jupiter token list')
-        return this.jupiterTokenCache
-      }
-
-      console.log('🌐 Fetching fresh Jupiter token list')
-      const response = await fetch(JUPITER_TOKEN_LIST_URL)
-      
-      if (!response.ok) {
-        throw new Error(`Jupiter API responded with status: ${response.status}`)
-      }
-
-      const tokens = await response.json()
-      
-      // Convert array to mint-keyed object for faster lookups
-      const tokenMap: Record<string, any> = {}
-      tokens.forEach((token: any) => {
-        tokenMap[token.address] = token
-      })
-
-      // Cache the result
-      this.jupiterTokenCache = tokenMap
-      this.jupiterCacheExpiry = now + this.JUPITER_CACHE_DURATION
-
-      console.log(`✅ Cached ${Object.keys(tokenMap).length} Jupiter tokens`)
-      return tokenMap
-    } catch (error) {
-      console.error('❌ Error fetching Jupiter token list:', error)
-      
-      // Return cached data if available, even if expired
-      if (this.jupiterTokenCache) {
-        console.log('⚠️ Using expired Jupiter cache due to fetch error')
-        return this.jupiterTokenCache
-      }
-      
-      return {}
     }
   }
 }

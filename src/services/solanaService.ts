@@ -3,7 +3,7 @@ import { tokenMetadataService } from './tokenMetadataService'
 import { blockchainMetadataService } from './blockchainMetadataService'
 
 // Solana mainnet RPC endpoint
-const SOLANA_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
+const SOLANA_RPC_URL = 'https://api.mainnet-beta.solana.com'
 const connection = new Connection(SOLANA_RPC_URL, 'confirmed')
 
 export interface TokenBalance {

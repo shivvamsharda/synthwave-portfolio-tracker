@@ -1,3 +1,5 @@
+import { coingeckoService } from './coingeckoService'
+
 interface JupiterPriceResponse {
   [mint: string]: {
     usdPrice: number
@@ -35,6 +37,27 @@ export class PriceService {
         Object.assign(allPrices, data)
       }
 
+      // For any mints that didn't get prices from Jupiter, try CoinGecko fallback
+      const missingMints = mints.filter(mint => !allPrices[mint])
+      if (missingMints.length > 0) {
+        console.log(`💰 Trying CoinGecko fallback for ${missingMints.length} missing prices`)
+        for (const mint of missingMints) {
+          try {
+            const tokenData = await coingeckoService.getTokenByContract(mint, 'solana')
+            if (tokenData?.current_price) {
+              allPrices[mint] = {
+                usdPrice: tokenData.current_price,
+                blockId: 0,
+                decimals: 6,
+                priceChange24h: tokenData.price_change_percentage_24h || 0
+              }
+            }
+          } catch (error) {
+            console.error(`CoinGecko price fallback failed for ${mint}:`, error)
+          }
+        }
+      }
+
       return allPrices
     } catch (error) {
       console.error('Error fetching prices from Jupiter:', error)
@@ -43,11 +66,30 @@ export class PriceService {
   }
 
   /**
-   * Get single token price
+   * Get single token price with CoinGecko fallback
    */
   static async getPrice(mint: string): Promise<number | null> {
+    // Try Jupiter first
     const prices = await this.getPrices([mint])
-    return prices[mint]?.usdPrice || null
+    const jupiterPrice = prices[mint]?.usdPrice
+    
+    if (jupiterPrice) {
+      return jupiterPrice
+    }
+    
+    // Fallback to CoinGecko
+    try {
+      console.log(`💰 Trying CoinGecko price fallback for ${mint}`)
+      const tokenData = await coingeckoService.getTokenByContract(mint, 'solana')
+      if (tokenData?.current_price) {
+        console.log(`✅ Got CoinGecko price for ${mint}: $${tokenData.current_price}`)
+        return tokenData.current_price
+      }
+    } catch (error) {
+      console.error(`❌ CoinGecko price fallback failed for ${mint}:`, error)
+    }
+    
+    return null
   }
 
   /**
