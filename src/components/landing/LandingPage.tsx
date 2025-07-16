@@ -111,7 +111,7 @@ export function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section - Matching Image 5 Layout */}
+      {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero"></div>
         
@@ -120,26 +120,16 @@ export function LandingPage() {
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
         <div className="container relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Side - Text Content */}
-            <div className="space-y-8 animate-slide-up">
-              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow">
-                <Zap className="mr-2 h-4 w-4" />
-                Unlock the Power of Data with AI
-              </Badge>
-              
+          <div className="grid lg:grid-cols-5 gap-16 items-center">
+            {/* Left Side - Text Content (2 columns) */}
+            <div className="lg:col-span-2 space-y-8 animate-slide-up">
               <div className="space-y-6">
-                <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                  <span className="text-foreground">Real-time</span>
-                  <br />
-                  <span className="gradient-text">Web3 Analytics</span>
-                  <br />
-                  <span className="text-foreground">Platform</span>
+                <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+                  <span className="gradient-text">Unlock the Power of Data with AI</span>
                 </h1>
                 
-                <p className="text-lg text-muted-foreground max-w-xl">
-                  Monitor your entire Web3 portfolio with advanced analytics, real-time notifications, 
-                  and AI-powered insights across all major blockchains.
+                <p className="text-lg text-muted-foreground">
+                  Empower your business with cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights, real-time notifications, and intelligent automation.
                 </p>
               </div>
               
@@ -149,7 +139,7 @@ export function LandingPage() {
                   onClick={() => navigate('/dashboard')} 
                   className="web3-button group"
                 >
-                  Get Started Free
+                  Get Started
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
@@ -162,20 +152,28 @@ export function LandingPage() {
                 </Button>
               </div>
               
-              <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4" />
-                  <span><CountingNumber target={50000} />+ Users</span>
+              {/* User Avatars Section */}
+              <div className="flex items-center space-x-4">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground"
+                    >
+                      {String.fromCharCode(65 + i)}
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Shield className="h-4 w-4" />
-                  <span>Enterprise Security</span>
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">Over 50+ Users</span>
+                  <br />
+                  <span>Join our growing community</span>
                 </div>
               </div>
             </div>
             
-            {/* Right Side - Dashboard Preview */}
-            <div className="relative animate-slide-in-right">
+            {/* Right Side - Dashboard Preview (3 columns) */}
+            <div className="lg:col-span-3 relative animate-slide-in-right">
               <DashboardPreview />
             </div>
           </div>
