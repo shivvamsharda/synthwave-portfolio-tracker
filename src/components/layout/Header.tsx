@@ -34,13 +34,17 @@ export function Header({ onNavigate }: HeaderProps) {
         {/* Logo */}
         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate("dashboard")}>
           <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-sm">
-            <span className="text-primary-foreground font-bold text-lg">₿</span>
+            <img 
+              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Neptune%20AI%20Logo%20Transparent.png" 
+              alt="Neptune AI" 
+              className="w-8 h-8 object-contain"
+            />
           </div>
           <div>
             <span className="text-xl font-bold text-foreground">
-              CryptoFolio
+              Neptune AI
             </span>
-            <div className="text-xs text-muted-foreground">Portfolio Dashboard</div>
+            <div className="text-xs text-muted-foreground">AI-Powered Analytics</div>
           </div>
         </div>
 
