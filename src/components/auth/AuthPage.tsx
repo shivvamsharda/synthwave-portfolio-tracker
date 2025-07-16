@@ -4,9 +4,11 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
 import { Wallet, Mail, Lock, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { EmailConfirmationPage } from "./EmailConfirmationPage"
+import { SolanaSignInButton } from "./SolanaSignInButton"
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
@@ -129,6 +131,19 @@ export function AuthPage() {
             )}
           </Button>
         </form>
+
+        <div className="my-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+        </div>
+
+        <SolanaSignInButton />
 
         <div className="mt-6 text-center">
           <button

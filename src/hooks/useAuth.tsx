@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signInWithSolanaWallet: (wallet: any) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<{ error: AuthError | null }>
 }
 
@@ -59,6 +60,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error }
   }
 
+  const signInWithSolanaWallet = async (wallet: any) => {
+    const { error } = await supabase.auth.signInWithWeb3({
+      chain: 'solana',
+      statement: 'I accept the Terms of Service by signing in with my Solana wallet.',
+      wallet,
+    })
+    return { error }
+  }
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     return { error }
@@ -70,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     signUp,
     signIn,
+    signInWithSolanaWallet,
     signOut,
   }
 
