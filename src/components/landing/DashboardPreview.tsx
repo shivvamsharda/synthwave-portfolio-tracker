@@ -285,11 +285,6 @@ export function DashboardPreview() {
                 </div>
                 <div className="relative flex items-center justify-center mb-4">
                   <CircularProgress percentage={75} size={120} strokeWidth={8} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-xs text-muted-foreground">Diversified</div>
-                    </div>
-                  </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
