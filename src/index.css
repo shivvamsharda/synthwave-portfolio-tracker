@@ -22,6 +22,8 @@
     --primary: 263 83% 65%;
     --primary-foreground: 0 0% 98%;
     --primary-light: 263 83% 85%;
+    --primary-lighter: 263 60% 75%;
+    --primary-soft: 263 40% 80%;
     
     /* Dark Secondary */
     --secondary: 217 32% 17%;
@@ -30,6 +32,7 @@
     /* Purple Accent */
     --accent: 280 100% 70%;
     --accent-foreground: 0 0% 98%;
+    --accent-light: 280 60% 80%;
     
     /* Dark grays */
     --muted: 217 32% 17%;
@@ -137,23 +140,25 @@
   
   /* Professional Button Variants */
   .btn-primary {
-    @apply bg-primary text-primary-foreground font-medium rounded-md;
+    background: hsl(var(--primary-lighter));
+    @apply text-primary-foreground font-medium rounded-md;
     box-shadow: var(--shadow-sm);
     transition: var(--transition-smooth);
   }
   
   .btn-primary:hover {
-    @apply bg-primary/90;
+    background: hsl(var(--primary));
     box-shadow: var(--shadow-md);
   }
   
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground font-medium rounded-md border border-border;
+    background: hsl(var(--primary-soft));
+    @apply text-primary-foreground font-medium rounded-md border border-border;
     transition: var(--transition-smooth);
   }
   
   .btn-secondary:hover {
-    @apply bg-secondary/80;
+    background: hsl(var(--primary-lighter));
   }
   
   /* Status indicators */
@@ -274,12 +279,13 @@
 
   .web3-button {
     @apply px-6 py-3 rounded-lg font-medium transition-all duration-300;
-    background: var(--gradient-primary);
+    background: linear-gradient(135deg, hsl(var(--primary-lighter)), hsl(var(--accent-light)));
     color: hsl(var(--primary-foreground));
     box-shadow: var(--shadow-md);
   }
 
   .web3-button:hover {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
   }
