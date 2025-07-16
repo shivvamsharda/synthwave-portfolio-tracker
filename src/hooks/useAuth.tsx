@@ -61,12 +61,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithSolanaWallet = async (wallet: any) => {
-    const { error } = await supabase.auth.signInWithWeb3({
-      chain: 'solana',
-      statement: 'I accept the Terms of Service by signing in with my Solana wallet.',
-      wallet,
-    })
-    return { error }
+    try {
+      console.log('Starting Solana wallet sign in...', {
+        walletName: wallet?.adapter?.name,
+        walletConnected: wallet?.adapter?.connected,
+        publicKey: wallet?.adapter?.publicKey?.toString()
+      })
+
+      const { data, error } = await supabase.auth.signInWithWeb3({
+        chain: 'solana',
+        statement: 'I accept the Terms of Service by signing in with my Solana wallet.',
+        wallet: wallet.adapter,
+      })
+
+      if (error) {
+        console.error('Supabase signInWithWeb3 error:', error)
+      } else {
+        console.log('Supabase signInWithWeb3 success:', data)
+      }
+
+      return { error }
+    } catch (err) {
+      console.error('Unexpected error in signInWithSolanaWallet:', err)
+      return { error: err as AuthError }
+    }
   }
 
   const signOut = async () => {

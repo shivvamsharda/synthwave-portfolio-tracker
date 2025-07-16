@@ -13,6 +13,13 @@ export function SolanaSignInButton() {
   const [loading, setLoading] = useState(false)
 
   const handleSolanaSignIn = async () => {
+    console.log('Wallet state:', {
+      connected: wallet.connected,
+      hasWallet: !!wallet.wallet,
+      walletName: wallet.wallet?.adapter?.name,
+      publicKey: wallet.publicKey?.toString()
+    })
+
     if (!wallet.connected || !wallet.wallet) {
       toast({
         title: "Wallet Error",
@@ -24,24 +31,28 @@ export function SolanaSignInButton() {
 
     setLoading(true)
     try {
-      const { error } = await signInWithSolanaWallet(wallet.wallet)
+      console.log('Attempting Solana sign in...')
+      const { error } = await signInWithSolanaWallet(wallet)
       
       if (error) {
+        console.error('Sign in error:', error)
         toast({
           title: "Sign In Failed",
-          description: error.message,
+          description: `${error.message || 'Unknown error'} - Check console for details`,
           variant: "destructive",
         })
       } else {
+        console.log('Sign in successful!')
         toast({
           title: "Success",
           description: "Successfully signed in with Solana wallet",
         })
       }
     } catch (error) {
+      console.error('Unexpected error in handleSolanaSignIn:', error)
       toast({
         title: "Error",
-        description: "An unexpected error occurred during wallet sign in",
+        description: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'} - Check console for details`,
         variant: "destructive",
       })
     } finally {
