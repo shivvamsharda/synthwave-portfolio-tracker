@@ -308,21 +308,60 @@ export class BlockchainMetadataService {
   }
 
   /**
-   * Safely decode string from bytes with error handling
+   * Safely decode string from bytes with error handling and sanitization
    */
   private static safeDecodeString(bytes: Buffer): string {
     try {
       // Try UTF-8 first
-      return bytes.toString('utf8').replace(/\0/g, '').trim()
-    } catch (error) {
-      try {
-        // Fallback to latin1
-        return bytes.toString('latin1').replace(/\0/g, '').trim()
-      } catch (fallbackError) {
-        console.warn('String decode failed:', fallbackError)
-        return ''
+      let decoded = bytes.toString('utf8').replace(/\0/g, '').trim()
+      
+      // Sanitize the string to remove non-printable characters
+      decoded = this.sanitizeString(decoded)
+      
+      // If the string is mostly garbage, try latin1 fallback
+      if (!this.isValidString(decoded)) {
+        decoded = bytes.toString('latin1').replace(/\0/g, '').trim()
+        decoded = this.sanitizeString(decoded)
       }
+      
+      // Final validation - return empty if still invalid
+      return this.isValidString(decoded) ? decoded : ''
+    } catch (error) {
+      console.warn('String decode failed:', error)
+      return ''
     }
+  }
+  
+  /**
+   * Sanitize string by removing non-printable characters and limiting length
+   */
+  private static sanitizeString(str: string): string {
+    if (!str) return ''
+    
+    // Remove control characters but keep basic whitespace
+    const sanitized = str.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '')
+    
+    // Limit length (symbols: 10 chars, names: 50 chars)
+    const maxLength = sanitized.length <= 10 ? 10 : 50
+    return sanitized.substring(0, maxLength).trim()
+  }
+  
+  /**
+   * Check if a string is valid (contains mostly printable ASCII characters)
+   */
+  private static isValidString(str: string): boolean {
+    if (!str || str.length === 0) return false
+    if (str.length > 50) return false // Too long, probably garbage
+    
+    // Count printable ASCII characters (32-126)
+    const printableChars = str.split('').filter(char => {
+      const code = char.charCodeAt(0)
+      return code >= 32 && code <= 126
+    }).length
+    
+    // At least 70% should be printable ASCII for symbols/names
+    const ratio = printableChars / str.length
+    return ratio >= 0.7 && str.length >= 1
   }
 
   /**
