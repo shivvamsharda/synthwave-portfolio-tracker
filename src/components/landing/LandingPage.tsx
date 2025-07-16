@@ -88,7 +88,7 @@ export function LandingPage() {
     <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Navigation */}
       <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
-        <div className="max-w-7xl mx-auto px-10 py-6 flex h-20 items-center justify-between">
+        <div className="max-w-7xl mx-auto px-10 py-4 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="h-8 w-8 rounded-lg bg-gradient-primary animate-pulse-glow"></div>
             <span className="text-xl font-bold gradient-text">Web3 Analytics</span>
@@ -112,7 +112,7 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
+      <section className="relative py-12 lg:py-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero"></div>
         
         {/* Background Elements */}
