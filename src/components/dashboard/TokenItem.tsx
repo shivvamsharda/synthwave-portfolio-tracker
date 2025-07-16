@@ -11,28 +11,29 @@ export function TokenItem({ token, showWalletInfo = false }: TokenItemProps) {
           {token.logo_uri ? (
             <img 
               src={token.logo_uri} 
-              alt={`${token.token_symbol} logo`}
+              alt={`${token.token_symbol || 'Token'} logo`}
               className="w-full h-full object-cover rounded-full"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.style.display = 'none'
                 const parent = target.parentElement
                 if (parent) {
-                  parent.innerHTML = token.token_symbol.slice(0, 2)
+                  const fallbackText = token.token_symbol ? token.token_symbol.slice(0, 2) : '??'
+                  parent.innerHTML = fallbackText
                   parent.className = "w-10 h-10 rounded-full bg-gradient-cyber flex items-center justify-center text-background font-bold text-sm"
                 }
               }}
             />
           ) : (
-            token.token_symbol.slice(0, 2)
+            token.token_symbol ? token.token_symbol.slice(0, 2) : '??'
           )}
         </div>
         
         {/* Token Info */}
         <div>
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-foreground">{token.token_symbol}</span>
-            <span className="text-xs text-muted-foreground max-w-[120px] truncate">{token.token_name}</span>
+            <span className="font-semibold text-foreground">{token.token_symbol || 'UNKNOWN'}</span>
+            <span className="text-xs text-muted-foreground max-w-[120px] truncate">{token.token_name || 'Unknown Token'}</span>
             {token.walletCount > 1 && (
               <Badge variant="secondary" className="text-xs">
                 {token.walletCount} wallets
@@ -45,7 +46,7 @@ export function TokenItem({ token, showWalletInfo = false }: TokenItemProps) {
               maximumFractionDigits: 6 
             })}
           </div>
-          {showWalletInfo && (
+          {showWalletInfo && token.wallet_address && (
             <div className="text-xs text-muted-foreground">
               {token.wallet_address.slice(0, 4)}...{token.wallet_address.slice(-4)}
             </div>
