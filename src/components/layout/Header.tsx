@@ -2,7 +2,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { useAuth } from "@/hooks/useAuth"
-import { Settings, Menu, X, LogOut } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { Settings, Menu, X, LogOut, Home } from "lucide-react"
 
 interface HeaderProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -11,9 +12,15 @@ interface HeaderProps {
 export function Header({ onNavigate }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { signOut } = useAuth()
+  const navigateToRoute = useNavigate()
 
   const navigate = (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => {
     onNavigate?.(page)
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleHomeClick = () => {
+    navigateToRoute("/")
     setIsMobileMenuOpen(false)
   }
 
@@ -39,6 +46,10 @@ export function Header({ onNavigate }: HeaderProps) {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-1">
+          <Button variant="ghost" onClick={handleHomeClick} className="font-medium">
+            <Home className="w-4 h-4 mr-2" />
+            Home
+          </Button>
           <Button variant="ghost" onClick={() => navigate("dashboard")} className="font-medium">
             Dashboard
           </Button>
@@ -94,6 +105,10 @@ export function Header({ onNavigate }: HeaderProps) {
       {isMobileMenuOpen && (
         <DashboardCard className="md:hidden m-4 p-4 animate-slide-up">
           <nav className="flex flex-col space-y-2">
+            <Button variant="ghost" onClick={handleHomeClick} className="justify-start">
+              <Home className="w-4 h-4 mr-2" />
+              Home
+            </Button>
             <Button variant="ghost" onClick={() => navigate("dashboard")} className="justify-start">
               Dashboard
             </Button>
