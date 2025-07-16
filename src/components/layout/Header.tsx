@@ -33,7 +33,7 @@ export function Header({ onNavigate }: HeaderProps) {
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate("dashboard")}>
-          <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-sm">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm">
             <img 
               src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Neptune%20AI%20Logo%20Transparent.png" 
               alt="Neptune AI" 
