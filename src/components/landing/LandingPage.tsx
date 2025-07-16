@@ -178,7 +178,7 @@ export function LandingPage() {
             </div>
             
             {/* Right Side - Dashboard Preview (7 columns) */}
-            <div className="lg:col-span-7 relative animate-slide-in-right ml-8">
+            <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
               <DashboardPreview />
             </div>
           </div>

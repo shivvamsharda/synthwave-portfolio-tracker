@@ -43,7 +43,7 @@ export function DashboardPreview() {
   ];
   
   return (
-    <div className="relative w-full max-w-6xl mx-auto bg-background border border-border rounded-2xl overflow-hidden shadow-2xl">
+    <div className="relative w-full max-w-none mx-0 bg-background/80 backdrop-blur-sm border border-border/30 rounded-2xl overflow-visible shadow-2xl">
       {/* Main Dashboard Interface */}
       <div className="flex h-[600px]">
         {/* Sidebar */}
@@ -129,16 +129,21 @@ export function DashboardPreview() {
               <Badge variant="secondary" className="text-xs">Live</Badge>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+              <div className="relative group">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-primary" />
                 <input 
                   type="text" 
-                  placeholder="Search..." 
-                  className="pl-10 pr-4 py-2 bg-muted rounded-lg text-sm border-0 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  placeholder="Search wallets, tokens..." 
+                  className="pl-10 pr-4 py-2 bg-muted/70 hover:bg-muted border border-border/30 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 w-64"
                 />
               </div>
-              <Bell className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-foreground" />
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="relative group">
+                <Bell className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-[8px] font-bold text-white">3</span>
+                </div>
+              </div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-glow"></div>
             </div>
           </div>
           
@@ -146,10 +151,10 @@ export function DashboardPreview() {
           <div className="flex-1 p-6 space-y-6 overflow-auto">
             {/* Stats Cards */}
             <div className="grid grid-cols-4 gap-4">
-              <Card className="p-4 border-border bg-card">
+              <Card className="p-4 border-border/30 bg-card/70 backdrop-blur-sm hover:bg-card/90 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer group">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Wallets</span>
-                  <Wallet className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Wallets</span>
+                  <Wallet className="w-4 h-4 text-green-500 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
@@ -157,15 +162,16 @@ export function DashboardPreview() {
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+5.7%</span>
+                    <span className="text-xs text-green-500 font-medium">+5.7%</span>
+                    <span className="text-xs text-muted-foreground">today</span>
                   </div>
                 </div>
               </Card>
               
-              <Card className="p-4 border-border bg-card">
+              <Card className="p-4 border-border/30 bg-card/70 backdrop-blur-sm hover:bg-card/90 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer group">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Protocols</span>
-                  <Globe className="w-4 h-4 text-blue-500" />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Protocols</span>
+                  <Globe className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
@@ -173,15 +179,16 @@ export function DashboardPreview() {
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+17%</span>
+                    <span className="text-xs text-green-500 font-medium">+17%</span>
+                    <span className="text-xs text-muted-foreground">this week</span>
                   </div>
                 </div>
               </Card>
               
-              <Card className="p-4 border-border bg-card">
+              <Card className="p-4 border-border/30 bg-card/70 backdrop-blur-sm hover:bg-card/90 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer group">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">New Traders</span>
-                  <Users className="w-4 h-4 text-purple-500" />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">New Traders</span>
+                  <Users className="w-4 h-4 text-purple-500 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
@@ -189,15 +196,16 @@ export function DashboardPreview() {
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+955%</span>
+                    <span className="text-xs text-green-500 font-medium">+955%</span>
+                    <span className="text-xs text-muted-foreground">since launch</span>
                   </div>
                 </div>
               </Card>
               
-              <Card className="p-4 border-border bg-card">
+              <Card className="p-4 border-border/30 bg-card/70 backdrop-blur-sm hover:bg-card/90 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer group">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Active Traders</span>
-                  <Activity className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Active Traders</span>
+                  <Activity className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
@@ -205,7 +213,8 @@ export function DashboardPreview() {
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+83%</span>
+                    <span className="text-xs text-green-500 font-medium">+83%</span>
+                    <span className="text-xs text-muted-foreground">24h volume</span>
                   </div>
                 </div>
               </Card>
@@ -214,16 +223,16 @@ export function DashboardPreview() {
             {/* Charts Section */}
             <div className="grid grid-cols-3 gap-6">
               {/* Main Chart */}
-              <Card className="col-span-2 p-6 border-border bg-card">
+              <Card className="col-span-2 p-6 border-border/30 bg-card/70 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Trading Volume</h3>
                     <p className="text-sm text-muted-foreground">DEX trading activity</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <button className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-md">24H</button>
-                    <button className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground">7D</button>
-                    <button className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground">30D</button>
+                  <div className="flex items-center space-x-2 bg-muted/50 rounded-lg p-1">
+                    <button className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md shadow-sm hover:shadow-md transition-all duration-200">24H</button>
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-background/50 rounded transition-all duration-200">7D</button>
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-background/50 rounded transition-all duration-200">30D</button>
                   </div>
                 </div>
                 <div className="h-48">
@@ -282,7 +291,7 @@ export function DashboardPreview() {
               </Card>
               
               {/* Donut Chart */}
-              <Card className="p-6 border-border bg-card">
+              <Card className="p-6 border-border/30 bg-card/70 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-foreground">Protocol Distribution</h3>
                   <p className="text-sm text-muted-foreground">Usage across DeFi protocols</p>
@@ -330,7 +339,7 @@ export function DashboardPreview() {
             </div>
             
             {/* Transaction Table */}
-            <Card className="border-border bg-card">
+            <Card className="border-border/30 bg-card/70 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div>
@@ -338,9 +347,9 @@ export function DashboardPreview() {
                     <p className="text-sm text-muted-foreground">Recent trading activity</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Filter className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground" />
-                    <Eye className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground" />
-                    <MoreHorizontal className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground" />
+                    <Filter className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary hover:scale-110 transition-all duration-200" />
+                    <Eye className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary hover:scale-110 transition-all duration-200" />
+                    <MoreHorizontal className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary hover:scale-110 transition-all duration-200" />
                   </div>
                 </div>
               </div>
