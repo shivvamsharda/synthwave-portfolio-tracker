@@ -82,7 +82,26 @@ export function DashboardPreview() {
             </div>
             <div className="flex items-center space-x-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg cursor-pointer">
               <Users className="w-4 h-4" />
-              <span className="text-sm">Social</span>
+              <span className="text-sm">Community</span>
+            </div>
+          </div>
+          
+          {/* Integrations Section */}
+          <div className="px-4 py-3 border-t border-border">
+            <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">Integrations</p>
+            <div className="space-y-2">
+              {[
+                { name: 'Bitquery', color: 'bg-blue-500' },
+                { name: 'Raydium', color: 'bg-purple-500' },
+                { name: 'Jupiter', color: 'bg-green-500' },
+                { name: 'Helio', color: 'bg-orange-500' },
+                { name: 'Meteora', color: 'bg-pink-500' }
+              ].map((integration, i) => (
+                <div key={i} className="flex items-center space-x-2 px-2 py-1 rounded hover:bg-muted/30">
+                  <div className={`w-2 h-2 rounded-full ${integration.color}`}></div>
+                  <span className="text-xs text-muted-foreground">{integration.name}</span>
+                </div>
+              ))}
             </div>
           </div>
           
@@ -129,64 +148,64 @@ export function DashboardPreview() {
             <div className="grid grid-cols-4 gap-4">
               <Card className="p-4 border-border bg-card">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Total Balance</span>
-                  <ArrowUpRight className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-muted-foreground">Wallets</span>
+                  <Wallet className="w-4 h-4 text-green-500" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
-                    $<CountingNumber target={247832} />
+                    <CountingNumber target={9234} />
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+12.5%</span>
+                    <span className="text-xs text-green-500">+5.7%</span>
                   </div>
                 </div>
               </Card>
               
               <Card className="p-4 border-border bg-card">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">24h Volume</span>
-                  <DollarSign className="w-4 h-4 text-blue-500" />
+                  <span className="text-sm text-muted-foreground">Protocols</span>
+                  <Globe className="w-4 h-4 text-blue-500" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
-                    $<CountingNumber target={18453} />
+                    <CountingNumber target={4123} />
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+8.2%</span>
+                    <span className="text-xs text-green-500">+17%</span>
                   </div>
                 </div>
               </Card>
               
               <Card className="p-4 border-border bg-card">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Active Positions</span>
-                  <Activity className="w-4 h-4 text-purple-500" />
+                  <span className="text-sm text-muted-foreground">New Traders</span>
+                  <Users className="w-4 h-4 text-purple-500" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
-                    <CountingNumber target={23} />
+                    <CountingNumber target={123} />
                   </span>
                   <div className="flex items-center space-x-1">
-                    <TrendingDown className="w-3 h-3 text-red-500" />
-                    <span className="text-xs text-red-500">-2.1%</span>
+                    <TrendingUp className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-500">+955%</span>
                   </div>
                 </div>
               </Card>
               
               <Card className="p-4 border-border bg-card">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Yield Earned</span>
-                  <PieChart className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm text-muted-foreground">Active Traders</span>
+                  <Activity className="w-4 h-4 text-amber-500" />
                 </div>
                 <div className="space-y-1">
                   <span className="text-2xl font-bold text-foreground">
-                    $<CountingNumber target={3247} />
+                    <CountingNumber target={2135} />
                   </span>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-3 h-3 text-green-500" />
-                    <span className="text-xs text-green-500">+15.7%</span>
+                    <span className="text-xs text-green-500">+83%</span>
                   </div>
                 </div>
               </Card>
@@ -198,8 +217,8 @@ export function DashboardPreview() {
               <Card className="col-span-2 p-6 border-border bg-card">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">Portfolio Performance</h3>
-                    <p className="text-sm text-muted-foreground">Last 24 hours</p>
+                    <h3 className="text-lg font-semibold text-foreground">Trading Volume</h3>
+                    <p className="text-sm text-muted-foreground">DEX trading activity</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-md">24H</button>
@@ -265,8 +284,8 @@ export function DashboardPreview() {
               {/* Donut Chart */}
               <Card className="p-6 border-border bg-card">
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">Asset Allocation</h3>
-                  <p className="text-sm text-muted-foreground">Portfolio distribution</p>
+                  <h3 className="text-lg font-semibold text-foreground">Protocol Distribution</h3>
+                  <p className="text-sm text-muted-foreground">Usage across DeFi protocols</p>
                 </div>
                 <div className="relative flex items-center justify-center mb-4">
                   <CircularProgress percentage={75} size={120} strokeWidth={8} />
@@ -281,21 +300,21 @@ export function DashboardPreview() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm text-muted-foreground">SOL</span>
+                      <span className="text-sm text-muted-foreground">Raydium</span>
                     </div>
                     <span className="text-sm font-medium">35%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                      <span className="text-sm text-muted-foreground">ETH</span>
+                      <span className="text-sm text-muted-foreground">Jupiter</span>
                     </div>
                     <span className="text-sm font-medium">28%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm text-muted-foreground">USDC</span>
+                      <span className="text-sm text-muted-foreground">Meteora</span>
                     </div>
                     <span className="text-sm font-medium">22%</span>
                   </div>
@@ -315,8 +334,8 @@ export function DashboardPreview() {
               <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
-                    <p className="text-sm text-muted-foreground">Latest blockchain activity</p>
+                    <h3 className="text-lg font-semibold text-foreground">Transaction History</h3>
+                    <p className="text-sm text-muted-foreground">Recent trading activity</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Filter className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground" />

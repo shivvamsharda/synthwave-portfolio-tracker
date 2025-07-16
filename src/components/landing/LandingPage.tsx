@@ -123,6 +123,11 @@ export function LandingPage() {
           <div className="grid lg:grid-cols-5 gap-16 items-center">
             {/* Left Side - Text Content (2 columns) */}
             <div className="lg:col-span-2 space-y-8 animate-slide-up">
+              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit">
+                <Zap className="mr-2 h-4 w-4" />
+                Version 1.3 is available now
+              </Badge>
+              
               <div className="space-y-6">
                 <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
                   <span className="gradient-text">Unlock the Power of Data with AI</span>
