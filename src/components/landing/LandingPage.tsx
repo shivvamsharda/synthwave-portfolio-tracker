@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet } from "lucide-react"
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { DashboardPreview, MessagingPreview } from "./DashboardPreview"
+import { useState } from "react"
+import { DashboardPreview } from "./DashboardPreview"
+import { MessagingPreview } from "./MessagingPreview"
+import { MobileDashboardPreview } from "./MobileDashboardPreview"
 import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function LandingPage() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const features = [
     {
@@ -88,15 +94,17 @@ export function LandingPage() {
     <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Navigation */}
       <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
-        <div className="max-w-7xl mx-auto px-10 py-4 flex h-16 items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
             <img 
               src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
               alt="Neptune AI Logo" 
               className="h-8 w-8 object-contain"
             />
-            <span className="text-xl font-bold gradient-text">Neptune AI</span>
+            <span className="text-lg sm:text-xl font-bold gradient-text">Neptune AI</span>
           </div>
+          
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Features
@@ -112,181 +120,227 @@ export function LandingPage() {
               Sign In
             </Button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/10 shadow-xl">
+            <div className="px-4 py-6 space-y-4">
+              <a 
+                href="#features" 
+                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Features
+              </a>
+              <a 
+                href="#pricing" 
+                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </a>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  navigate('/dashboard')
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full mt-4 border-primary/30 hover:bg-primary/10 hover:shadow-glow transition-all duration-300 font-medium"
+              >
+                Sign In
+              </Button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-12 lg:py-16 overflow-hidden">
+      <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero"></div>
         
         {/* Background Elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-20 left-4 sm:left-10 w-24 sm:w-32 h-24 sm:h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-4 sm:right-10 w-32 sm:w-48 h-32 sm:h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
-        <div className="max-w-7xl mx-auto px-10 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-16 items-center">
-            {/* Left Side - Text Content (5 columns) */}
-            <div className="lg:col-span-5 space-y-8 animate-slide-up">
-              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit mb-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+            {/* Left Side - Text Content */}
+            <div className="lg:col-span-5 space-y-6 sm:space-y-8 animate-slide-up text-center lg:text-left">
+              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit mx-auto lg:mx-0 mb-2">
                 <Zap className="mr-2 h-4 w-4" />
-                Version 1.3 is available now
+                <span className="text-xs sm:text-sm">Version 1.3 is available now</span>
               </Badge>
               
-              <div className="space-y-8">
-                <h1 className="text-4xl lg:text-6xl font-bold leading-tight tracking-tight">
+              <div className="space-y-6 sm:space-y-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
                   <span className="gradient-text">Unlock the Power of Data with AI</span>
                 </h1>
                 
-                <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
+                <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
                   Empower your business with cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights, real-time notifications, and intelligent automation.
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-6 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4 justify-center lg:justify-start">
                 <Button 
-                  size="lg" 
+                  size={isMobile ? "default" : "lg"}
                   onClick={() => navigate('/dashboard')} 
-                  className="web3-button group px-8 py-4 text-base"
+                  className="web3-button group px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
                 >
                   Get Started
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
                 <Button 
                   variant="outline" 
-                  size="lg"
-                  className="border-primary/30 hover:bg-primary/10 px-8 py-4 text-base font-medium"
+                  size={isMobile ? "default" : "lg"}
+                  className="border-primary/30 hover:bg-primary/10 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-medium w-full sm:w-auto"
                 >
                   Watch Demo
                 </Button>
               </div>
               
-              {/* User Avatars Section */}
-              <div className="flex items-center space-x-4 pt-4">
+              {/* User Avatars Section - Hidden on mobile for cleaner look */}
+              <div className="hidden sm:flex items-center space-x-4 pt-4 justify-center lg:justify-start">
                 <div className="flex -space-x-2">
                   {[1, 2, 3, 4].map((_, i) => (
                     <div
                       key={i}
-                      className="w-10 h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-sm font-semibold text-primary-foreground"
+                      className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground"
                     >
                       {String.fromCharCode(65 + i)}
                     </div>
                   ))}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground text-base">Over 50+ Users</span>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground text-sm sm:text-base">Over 50+ Users</span>
                   <br />
                   <span className="text-muted-foreground">Join our growing community</span>
                 </div>
               </div>
             </div>
             
-            {/* Right Side - Dashboard Preview (7 columns) */}
+            {/* Right Side - Dashboard Preview */}
             <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
-              <DashboardPreview />
+              {isMobile ? (
+                <div className="flex justify-center mt-8 lg:mt-0">
+                  <MobileDashboardPreview />
+                </div>
+              ) : (
+                <DashboardPreview />
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Analytics Features Section - Matching Images 1 & 2 */}
-      <section id="features" className="py-24 relative">
-        <div className="container">
-          <div className="grid gap-8 lg:grid-cols-3">
+      {/* Analytics Features Section */}
+      <section id="features" className="py-12 sm:py-16 lg:py-24 relative">
+        <div className="container px-4 sm:px-6">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
             {/* Total Earnings Analytics */}
-            <div className="web3-card p-8 space-y-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="web3-card p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <div className="flex items-center space-x-3">
-                <div className="p-3 rounded-xl bg-gradient-primary/20">
-                  <TrendingUp className="h-6 w-6 text-primary" />
+                <div className="p-2 sm:p-3 rounded-xl bg-gradient-primary/20">
+                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">Total Earnings</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">Total Earnings</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
-                  <div className="flex items-end space-x-3">
-                    <span className="metric-large">
+                  <div className="flex flex-col sm:flex-row sm:items-end space-y-1 sm:space-y-0 sm:space-x-3">
+                    <span className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">
                       $<CountingNumber target={2847329} />
                     </span>
-                    <div className="flex items-center space-x-1 pb-2">
-                      <TrendingUp className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-green-500 font-medium">+12.5%</span>
+                    <div className="flex items-center space-x-1 sm:pb-2">
+                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                      <span className="text-xs sm:text-sm text-green-500 font-medium">+12.5%</span>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">Total Portfolio Value</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Total Portfolio Value</p>
                 </div>
                 
-                <div className="h-20">
+                <div className="h-16 sm:h-20">
                   <AnimatedLineChart 
                     data={portfolioData} 
                     color="hsl(var(--primary))"
-                    height={80}
+                    height={isMobile ? 64 : 80}
                   />
                 </div>
               </div>
             </div>
 
             {/* Real Time Analytics */}
-            <div className="web3-card p-8 space-y-6 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            <div className="web3-card p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-slide-up" style={{ animationDelay: '0.4s' }}>
               <div className="flex items-center space-x-3">
-                <div className="p-3 rounded-xl bg-gradient-primary/20">
-                  <Activity className="h-6 w-6 text-primary" />
+                <div className="p-2 sm:p-3 rounded-xl bg-gradient-primary/20">
+                  <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">Real Time Analytics</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">Real Time Analytics</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
-                  <div className="flex items-end space-x-3">
-                    <span className="metric-large">
+                  <div className="flex flex-col sm:flex-row sm:items-end space-y-1 sm:space-y-0 sm:space-x-3">
+                    <span className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">
                       <CountingNumber target={1247} />
                     </span>
-                    <div className="flex items-center space-x-1 pb-2">
-                      <TrendingUp className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-green-500 font-medium">+8.2%</span>
+                    <div className="flex items-center space-x-1 sm:pb-2">
+                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                      <span className="text-xs sm:text-sm text-green-500 font-medium">+8.2%</span>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">Active Tokens Tracked</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Active Tokens Tracked</p>
                 </div>
                 
-                <div className="h-20">
+                <div className="h-16 sm:h-20">
                   <AnimatedBarChart 
                     data={analyticsData} 
                     color="hsl(var(--accent))"
-                    height={80}
+                    height={isMobile ? 64 : 80}
                   />
                 </div>
               </div>
             </div>
 
             {/* Project Overview */}
-            <div className="web3-card p-8 space-y-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            <div className="web3-card p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
               <div className="flex items-center space-x-3">
-                <div className="p-3 rounded-xl bg-gradient-primary/20">
-                  <BarChart3 className="h-6 w-6 text-primary" />
+                <div className="p-2 sm:p-3 rounded-xl bg-gradient-primary/20">
+                  <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">Project Overview</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">Project Overview</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
-                  <div className="flex items-end space-x-3">
-                    <span className="metric-large">
+                  <div className="flex flex-col sm:flex-row sm:items-end space-y-1 sm:space-y-0 sm:space-x-3">
+                    <span className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">
                       <CountingNumber target={847} />
                     </span>
-                    <div className="flex items-center space-x-1 pb-2">
-                      <TrendingUp className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-green-500 font-medium">+15.7%</span>
+                    <div className="flex items-center space-x-1 sm:pb-2">
+                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                      <span className="text-xs sm:text-sm text-green-500 font-medium">+15.7%</span>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">Insights Generated</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Insights Generated</p>
                 </div>
                 
-                <div className="h-20">
+                <div className="h-16 sm:h-20">
                   <AnimatedLineChart 
                     data={insightsData} 
                     color="hsl(var(--success))"
-                    height={80}
+                    height={isMobile ? 64 : 80}
                   />
                 </div>
               </div>
@@ -295,54 +349,56 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Messaging Integration Section - Matching Image 3 */}
-      <section className="py-24 relative">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      {/* Messaging Integration Section */}
+      <section className="py-12 sm:py-16 lg:py-24 relative">
+        <div className="container px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left Side - Messaging Preview */}
-            <div className="space-y-8 animate-slide-up">
-              <div className="space-y-6">
-                <h2 className="text-3xl lg:text-4xl font-bold">
+            <div className="space-y-6 sm:space-y-8 animate-slide-up order-2 lg:order-1">
+              <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                   <span className="text-foreground">Realtime Messaging</span>
                   <br />
                   <span className="gradient-text">Integration</span>
                 </h2>
                 
-                <MessagingPreview />
+                <div className="flex justify-center lg:justify-start">
+                  <MessagingPreview />
+                </div>
               </div>
             </div>
             
             {/* Right Side - Features */}
-            <div className="space-y-8 animate-slide-in-right">
-              <div className="space-y-6">
-                <h2 className="text-3xl lg:text-4xl font-bold">
+            <div className="space-y-6 sm:space-y-8 animate-slide-in-right order-1 lg:order-2">
+              <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                   <span className="text-foreground">Realtime Notification</span>
                   <br />
                   <span className="gradient-text">Integration</span>
                 </h2>
                 
-                <p className="text-lg text-muted-foreground">
+                <p className="text-base sm:text-lg text-muted-foreground">
                   Stay connected with your portfolio through instant notifications, 
                   real-time alerts, and collaborative messaging features.
                 </p>
               </div>
               
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:gap-4">
                 {[
-                  { icon: <MessageSquare className="h-5 w-5" />, text: "Instant portfolio updates", delay: '0.2s' },
-                  { icon: <Bell className="h-5 w-5" />, text: "Smart alert system", delay: '0.4s' },
-                  { icon: <Users className="h-5 w-5" />, text: "Team collaboration", delay: '0.6s' },
-                  { icon: <Wallet className="h-5 w-5" />, text: "Multi-wallet notifications", delay: '0.8s' }
+                  { icon: <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Instant portfolio updates", delay: '0.2s' },
+                  { icon: <Bell className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Smart alert system", delay: '0.4s' },
+                  { icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Team collaboration", delay: '0.6s' },
+                  { icon: <Wallet className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Multi-wallet notifications", delay: '0.8s' }
                 ].map((item, index) => (
                   <div 
                     key={index}
-                    className="flex items-center space-x-4 p-4 rounded-lg bg-card/50 border border-border/20 animate-slide-in-right"
+                    className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg bg-card/50 border border-border/20 animate-slide-in-right"
                     style={{ animationDelay: item.delay }}
                   >
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
                       {item.icon}
                     </div>
-                    <span className="text-foreground font-medium">{item.text}</span>
+                    <span className="text-sm sm:text-base text-foreground font-medium">{item.text}</span>
                   </div>
                 ))}
               </div>
@@ -351,32 +407,32 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section - Matching Image 4 */}
-      <section id="pricing" className="py-24 relative">
-        <div className="container">
-          <div className="text-center space-y-4 mb-16 animate-slide-up">
-            <h2 className="text-3xl lg:text-4xl font-bold">
+      {/* Pricing Section */}
+      <section id="pricing" className="py-12 sm:py-16 lg:py-24 relative">
+        <div className="container px-4 sm:px-6">
+          <div className="text-center space-y-4 mb-12 sm:mb-16 animate-slide-up">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
               <span className="gradient-text">Choose Your Plan</span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               Start free and scale as you grow. All plans include our core analytics features with enterprise-grade security.
             </p>
           </div>
           
-          <div className="grid gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
               <div 
                 key={index} 
-                className={`web3-card p-8 space-y-6 animate-slide-up relative ${
+                className={`web3-card p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-slide-up relative ${
                   plan.highlighted 
-                    ? 'border-primary/50 shadow-glow transform scale-105' 
+                    ? 'border-primary/50 shadow-glow lg:transform lg:scale-105' 
                     : 'border-border/20'
                 }`}
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
                 {plan.highlighted && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-primary text-primary-foreground px-4 py-1 animate-pulse-glow">
+                  <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-gradient-primary text-primary-foreground px-3 sm:px-4 py-1 animate-pulse-glow text-xs sm:text-sm">
                       Most Popular
                     </Badge>
                   </div>
@@ -384,31 +440,31 @@ export function LandingPage() {
                 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-bold text-foreground">{plan.name}</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold text-foreground">{plan.name}</h3>
                     <div className="flex items-end space-x-2">
-                      <span className="text-4xl font-bold gradient-text">{plan.price}</span>
-                      <span className="text-muted-foreground pb-1">/month</span>
+                      <span className="text-3xl sm:text-4xl font-bold gradient-text">{plan.price}</span>
+                      <span className="text-muted-foreground pb-1 text-sm sm:text-base">/month</span>
                     </div>
-                    <p className="text-muted-foreground">{plan.description}</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">{plan.description}</p>
                   </div>
                   
                   <Button 
                     className={`w-full ${plan.highlighted ? 'web3-button' : 'border-primary/30 hover:bg-primary/10'}`}
                     variant={plan.highlighted ? 'default' : 'outline'}
-                    size="lg"
+                    size={isMobile ? "default" : "lg"}
                     onClick={() => navigate('/dashboard')}
                   >
                     {plan.name === 'Free' ? 'Get Started' : 'Start Free Trial'}
                   </Button>
                 </div>
                 
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-foreground">Everything included:</h4>
-                  <ul className="space-y-3">
+                <div className="space-y-3 sm:space-y-4">
+                  <h4 className="font-semibold text-foreground text-sm sm:text-base">Everything included:</h4>
+                  <ul className="space-y-2 sm:space-y-3">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start space-x-3">
-                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -420,28 +476,26 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/20 py-16 bg-background/50 backdrop-blur-xl">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+      <footer className="py-8 sm:py-12 border-t border-border/10 bg-background/50">
+        <div className="container px-4 sm:px-6">
+          <div className="flex flex-col items-center justify-center space-y-6 md:flex-row md:justify-between md:space-y-0">
             <div className="flex items-center space-x-3">
               <img 
                 src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
                 alt="Neptune AI Logo" 
-                className="h-8 w-8 object-contain"
+                className="h-6 sm:h-8 w-6 sm:w-8 object-contain"
               />
-              <span className="text-xl font-bold gradient-text">Neptune AI</span>
+              <span className="text-lg sm:text-xl font-bold gradient-text">Neptune AI</span>
             </div>
             
-            <div className="flex space-x-8 text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 lg:space-x-8 text-xs sm:text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-primary transition-colors">Contact</a>
+              <a href="#" className="hover:text-primary transition-colors">Support</a>
             </div>
-          </div>
-          
-          <div className="mt-12 pt-8 border-t border-border/20 text-center">
-            <p className="text-sm text-muted-foreground">
-              © 2024 Neptune AI. All rights reserved. Powered by advanced blockchain analytics.
+            
+            <p className="text-xs sm:text-sm text-muted-foreground text-center md:text-left">
+              © 2024 Neptune AI. All rights reserved.
             </p>
           </div>
         </div>
