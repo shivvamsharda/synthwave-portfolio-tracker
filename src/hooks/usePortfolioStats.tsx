@@ -116,11 +116,39 @@ export function usePortfolioStats() {
           filter: `user_id=eq.${user.id}`
         },
         () => {
+          console.log('[PortfolioStats] Portfolio data changed, refreshing stats')
           // Refetch stats when portfolio data changes
           fetchPortfolioStats()
         }
       )
       .subscribe()
+
+    // Also listen for wallet changes to refresh stats
+    const walletChannel = supabase
+      .channel('wallet-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'wallets',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          console.log('[PortfolioStats] Wallets changed, refreshing stats after delay')
+          // Delay to allow portfolio data to be updated first
+          setTimeout(() => {
+            fetchPortfolioStats()
+          }, 2000)
+        }
+      )
+      .subscribe()
+
+    // Force refresh on page load after a brief delay
+    const pageLoadRefresh = setTimeout(() => {
+      console.log('[PortfolioStats] Page load refresh triggered')
+      fetchPortfolioStats()
+    }, 1500)
 
     // Save snapshot every hour
     const snapshotInterval = setInterval(() => {
@@ -134,7 +162,9 @@ export function usePortfolioStats() {
 
     return () => {
       supabase.removeChannel(channel)
+      supabase.removeChannel(walletChannel)
       clearInterval(snapshotInterval)
+      clearTimeout(pageLoadRefresh)
     }
   }, [user])
 
