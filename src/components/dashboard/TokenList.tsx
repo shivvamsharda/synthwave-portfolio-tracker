@@ -19,8 +19,22 @@ export function TokenList({ onNavigate }: TokenListProps) {
   const [groupView, setGroupView] = useState<'flat' | 'grouped'>('grouped')
   const [showWalletBreakdown, setShowWalletBreakdown] = useState(false)
 
+  // Auto-refresh when component mounts to ensure current data
+  useEffect(() => {
+    if (wallets.length > 0) {
+      // Auto-refresh after 2 seconds to ensure we have the latest data
+      const timer = setTimeout(() => {
+        console.log('[TokenList] Auto-refreshing on mount for latest blockchain data')
+        refreshPortfolio()
+      }, 2000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [wallets.length])
+
   // Wrapper function for refresh portfolio to handle onClick events
   const handleRefreshPortfolio = () => {
+    console.log('[TokenList] Manual refresh triggered')
     refreshPortfolio()
   }
 

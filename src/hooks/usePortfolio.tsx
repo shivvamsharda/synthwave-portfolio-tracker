@@ -64,16 +64,29 @@ export function usePortfolio() {
     }
   }, [wallets.length, user]) // Trigger on wallet count changes
 
-  // Auto-refresh stale data
+  // Auto-refresh stale data more aggressively
   useEffect(() => {
-    if (lastUpdated && dataFreshness === 'stale' && wallets.length > 0) {
+    if (lastUpdated && wallets.length > 0) {
       const timeSinceUpdate = Date.now() - lastUpdated.getTime()
-      if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
-        console.log('[Portfolio] Auto-refreshing stale portfolio data')
+      // Reduce threshold to 2 minutes for more frequent updates
+      if (timeSinceUpdate > (2 * 60 * 1000)) {
+        console.log('[Portfolio] Data is stale (>2min), auto-refreshing')
         refreshPortfolio()
       }
     }
-  }, [lastUpdated, dataFreshness, wallets])
+  }, [lastUpdated, wallets])
+
+  // Force refresh every 5 minutes when user is active
+  useEffect(() => {
+    if (user && wallets.length > 0) {
+      const autoRefreshInterval = setInterval(() => {
+        console.log('[Portfolio] Auto-refresh interval triggered (5min)')
+        refreshPortfolio()
+      }, 5 * 60 * 1000) // 5 minutes
+      
+      return () => clearInterval(autoRefreshInterval)
+    }
+  }, [user, wallets.length])
 
   /**
    * Clean up portfolio data for wallets that are no longer connected
@@ -294,8 +307,8 @@ export function usePortfolio() {
           item.price_change_24h = priceData?.priceChange24h || 0
         })
 
-        // First delete existing data for these specific wallets only
-        console.log('[Portfolio] Deleting existing portfolio data for current wallets:', walletAddresses)
+        // First delete ALL existing data for these specific wallets to ensure clean slate
+        console.log('[Portfolio] Deleting ALL existing portfolio data for current wallets:', walletAddresses)
         const { error: deleteError } = await supabase
           .from('portfolio')
           .delete()
@@ -304,15 +317,14 @@ export function usePortfolio() {
 
         if (deleteError) {
           console.error('[Portfolio] Error deleting existing portfolio data:', deleteError)
+        } else {
+          console.log('[Portfolio] Successfully deleted all existing data for current wallets')
         }
 
-        // Then upsert fresh data with conflict resolution
+        // Then insert only the fresh data from blockchain
         const { error } = await supabase
           .from('portfolio')
-          .upsert(portfolioData, { 
-            onConflict: 'user_id,wallet_address,token_mint',
-            ignoreDuplicates: false 
-          })
+          .insert(portfolioData)
 
         if (error) {
           console.error('[Portfolio] Error saving fresh portfolio data:', error)
