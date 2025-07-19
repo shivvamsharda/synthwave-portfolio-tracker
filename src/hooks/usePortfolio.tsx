@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from './useAuth'
 import { useWallet } from './useWallet'
@@ -24,6 +25,8 @@ interface PortfolioToken {
   last_updated: string
 }
 
+const DATA_REFRESH_THRESHOLD = 5 * 60 * 1000 // 5 minutes in milliseconds
+
 export function usePortfolio() {
   const { user } = useAuth()
   const { wallets } = useWallet()
@@ -33,26 +36,47 @@ export function usePortfolio() {
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [dataFreshness, setDataFreshness] = useState<'fresh' | 'stale' | 'cached'>('cached')
 
-  // Load portfolio from database on component mount
+  // Load portfolio from database on component mount and when wallets change
   useEffect(() => {
     if (user && wallets.length > 0) {
       loadPortfolioFromDB()
+    } else if (user && wallets.length === 0) {
+      // Clear portfolio if no wallets are connected
+      setPortfolio([])
+      setLastUpdated(null)
+      setDataFreshness('cached')
     }
   }, [user, wallets])
 
+  // Auto-refresh stale data
+  useEffect(() => {
+    if (lastUpdated && dataFreshness === 'stale' && wallets.length > 0) {
+      const timeSinceUpdate = Date.now() - lastUpdated.getTime()
+      if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
+        console.log('Auto-refreshing stale portfolio data')
+        refreshPortfolio()
+      }
+    }
+  }, [lastUpdated, dataFreshness, wallets])
+
   /**
-   * Load portfolio data from database (fast load)
+   * Load portfolio data from database with freshness checking
    */
   const loadPortfolioFromDB = async () => {
-    if (!user) return
+    if (!user || wallets.length === 0) return
 
     setLoading(true)
     try {
+      const walletAddresses = wallets.map(w => w.wallet_address)
+      
+      // Only load portfolio data for currently connected wallets
       const { data, error } = await supabase
         .from('portfolio')
         .select('*')
         .eq('user_id', user.id)
+        .in('wallet_address', walletAddresses)
         .order('last_updated', { ascending: false })
 
       if (error) {
@@ -63,9 +87,29 @@ export function usePortfolio() {
           variant: "destructive",
         })
       } else {
-        setPortfolio(data || [])
-        if (data && data.length > 0) {
-          setLastUpdated(new Date(data[0].last_updated))
+        // Clean up stale data for wallets that are no longer connected
+        await cleanupStalePortfolioData(walletAddresses)
+        
+        const filteredData = data?.filter(item => 
+          walletAddresses.includes(item.wallet_address)
+        ) || []
+        
+        setPortfolio(filteredData)
+        
+        if (filteredData && filteredData.length > 0) {
+          const mostRecentUpdate = new Date(filteredData[0].last_updated)
+          setLastUpdated(mostRecentUpdate)
+          
+          // Check data freshness
+          const timeSinceUpdate = Date.now() - mostRecentUpdate.getTime()
+          if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
+            setDataFreshness('stale')
+            console.log('Portfolio data is stale, consider refreshing')
+          } else {
+            setDataFreshness('fresh')
+          }
+        } else {
+          setDataFreshness('cached')
         }
       }
     } catch (error) {
@@ -76,7 +120,30 @@ export function usePortfolio() {
   }
 
   /**
-   * Refresh portfolio by fetching from Solana blockchain with retry logic
+   * Clean up portfolio data for wallets that are no longer connected
+   */
+  const cleanupStalePortfolioData = async (currentWalletAddresses: string[]) => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from('portfolio')
+        .delete()
+        .eq('user_id', user.id)
+        .not('wallet_address', 'in', `(${currentWalletAddresses.map(addr => `"${addr}"`).join(',')})`)
+
+      if (error) {
+        console.error('Error cleaning up stale portfolio data:', error)
+      } else {
+        console.log('Cleaned up stale portfolio data for disconnected wallets')
+      }
+    } catch (error) {
+      console.error('Error during cleanup:', error)
+    }
+  }
+
+  /**
+   * Force refresh portfolio by fetching from Solana blockchain
    */
   const refreshPortfolio = async (retryCount = 0) => {
     if (!user || wallets.length === 0) {
@@ -89,21 +156,30 @@ export function usePortfolio() {
     }
 
     setRefreshing(true)
+    setDataFreshness('fresh') // Optimistically set as fresh
     const maxRetries = 3
     
     try {
       const walletAddresses = wallets.map(w => w.wallet_address)
       
+      // Clear existing portfolio data for these wallets to ensure fresh fetch
+      await supabase
+        .from('portfolio')
+        .delete()
+        .eq('user_id', user.id)
+        .in('wallet_address', walletAddresses)
+      
       toast({
         title: "Refreshing Portfolio",
-        description: `Fetching data for ${walletAddresses.length} wallet(s)...`,
+        description: `Fetching fresh data for ${walletAddresses.length} wallet(s)...`,
       })
 
-      // Fetch holdings from Solana blockchain with retry logic
-      let holdingsArray: any[] = []
+      // Fetch fresh holdings from Solana blockchain
+      let holdingsArray: WalletHoldings[] = []
       
       try {
         holdingsArray = await solanaService.getMultipleWalletHoldings(walletAddresses)
+        console.log('Fresh blockchain data fetched:', holdingsArray)
       } catch (error) {
         if (retryCount < maxRetries) {
           console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`)
@@ -113,23 +189,23 @@ export function usePortfolio() {
         throw error
       }
       
-      // Update portfolio data using upsert to handle duplicates
+      // Build fresh portfolio data
       const portfolioData: any[] = []
       let totalTokensFound = 0
       
       holdingsArray.forEach(holdings => {
-        // Add SOL balance
+        // Add SOL balance if > 0
         if (holdings.solBalance > 0) {
           portfolioData.push({
             user_id: user.id,
             wallet_address: holdings.walletAddress,
-            token_mint: 'So11111111111111111111111111111111111111112', // SOL mint
+            token_mint: 'So11111111111111111111111111111111111111112',
             token_symbol: 'SOL',
             token_name: 'Solana',
             balance: holdings.solBalance,
-            usd_value: 0, // Will be updated with prices below
-            token_price: 0, // Will be updated with prices below
-            price_change_24h: 0, // Will be updated with prices below
+            usd_value: 0, // Will be updated with prices
+            token_price: 0,
+            price_change_24h: 0,
             logo_uri: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
             description: 'Solana is a high-performance blockchain platform for decentralized applications and crypto-currencies.',
             website: 'https://solana.com',
@@ -139,7 +215,7 @@ export function usePortfolio() {
           totalTokensFound++
         }
 
-        // Add SPL tokens with metadata
+        // Add SPL tokens
         holdings.tokens.forEach(token => {
           portfolioData.push({
             user_id: user.id,
@@ -148,9 +224,9 @@ export function usePortfolio() {
             token_symbol: token.symbol,
             token_name: token.name,
             balance: token.uiAmount,
-            usd_value: 0, // Will be updated with prices below
-            token_price: 0, // Will be updated with prices below
-            price_change_24h: 0, // Will be updated with prices below
+            usd_value: 0,
+            token_price: 0,
+            price_change_24h: 0,
             logo_uri: token.logoURI,
             description: token.description,
             website: token.website,
@@ -161,33 +237,27 @@ export function usePortfolio() {
         })
       })
 
-      // Fetch prices for all tokens
-      const allMints = portfolioData.map(p => p.token_mint)
-      const prices = await priceService.getPrices(allMints)
-      
-      // Update portfolio data with prices and price changes
-      portfolioData.forEach(item => {
-        const priceData = prices[item.token_mint]
-        const price = priceData?.usdPrice || 0
-        item.usd_value = priceService.calculateUsdValue(item.balance, price)
-        item.token_price = price
-        item.price_change_24h = priceData?.priceChange24h || 0
-      })
-
+      // Fetch current prices
       if (portfolioData.length > 0) {
-        console.log('Attempting to upsert portfolio data:', portfolioData.length, 'items')
-        console.log('User ID:', user.id)
-        console.log('Sample portfolio item:', portfolioData[0])
+        const allMints = portfolioData.map(p => p.token_mint)
+        const prices = await priceService.getPrices(allMints)
         
-        // Use upsert to handle duplicate entries
+        // Update with current prices
+        portfolioData.forEach(item => {
+          const priceData = prices[item.token_mint]
+          const price = priceData?.usdPrice || 0
+          item.usd_value = priceService.calculateUsdValue(item.balance, price)
+          item.token_price = price
+          item.price_change_24h = priceData?.priceChange24h || 0
+        })
+
+        // Insert fresh data
         const { error } = await supabase
           .from('portfolio')
-          .upsert(portfolioData, {
-            onConflict: 'user_id,wallet_address,token_mint'
-          })
+          .insert(portfolioData)
 
         if (error) {
-          console.error('Error saving portfolio:', error)
+          console.error('Error saving fresh portfolio data:', error)
           toast({
             title: "Error",
             description: `Failed to save portfolio data: ${error.message}`,
@@ -197,7 +267,7 @@ export function usePortfolio() {
           const uniqueTokens = new Set(portfolioData.map(p => p.token_mint)).size
           const totalValue = portfolioData.reduce((sum, token) => sum + (token.usd_value || 0), 0)
           
-          // Save portfolio snapshot for historical tracking
+          // Save portfolio snapshot
           await PortfolioHistoryService.savePortfolioSnapshot(
             user.id,
             totalValue,
@@ -206,10 +276,10 @@ export function usePortfolio() {
           
           toast({
             title: "Success",
-            description: `Updated portfolio: ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`,
+            description: `Portfolio refreshed: ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`,
           })
           
-          // Reload from database to show updated data
+          // Reload fresh data from database
           await loadPortfolioFromDB()
         }
       } else {
@@ -217,6 +287,9 @@ export function usePortfolio() {
           title: "No Holdings",
           description: "No token holdings found in connected wallets",
         })
+        setPortfolio([])
+        setLastUpdated(new Date())
+        setDataFreshness('fresh')
       }
 
     } catch (error) {
@@ -231,6 +304,8 @@ export function usePortfolio() {
         description: errorMessage,
         variant: "destructive",
       })
+      
+      setDataFreshness('stale')
     } finally {
       setRefreshing(false)
     }
@@ -248,7 +323,8 @@ export function usePortfolio() {
       totalTokens,
       totalWallets,
       totalValue,
-      lastUpdated
+      lastUpdated,
+      dataFreshness
     }
   }
 
@@ -273,6 +349,7 @@ export function usePortfolio() {
     loading,
     refreshing,
     lastUpdated,
+    dataFreshness,
     
     // Actions
     refreshPortfolio,

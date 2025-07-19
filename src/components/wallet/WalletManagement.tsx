@@ -1,11 +1,12 @@
-import React, { useState } from "react"
+
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, Wallet, Copy, ExternalLink, RefreshCw } from "lucide-react"
+import { Trash2, Plus, Wallet, Copy, ExternalLink, RefreshCw, AlertCircle } from "lucide-react"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
 import { useToast } from "@/hooks/use-toast"
@@ -18,7 +19,7 @@ interface WalletManagementProps {
 
 export function WalletManagement({ onClose }: WalletManagementProps) {
   const { wallets, loading, deleteWallet, refreshWallets } = useWallet()
-  const { refreshPortfolio, refreshing } = usePortfolio()
+  const { refreshPortfolio, refreshing, dataFreshness } = usePortfolio()
   const { toast } = useToast()
   const { user } = useAuth()
   
@@ -26,6 +27,14 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   const [newWalletAddress, setNewWalletAddress] = useState("")
   const [newWalletName, setNewWalletName] = useState("")
   const [addingWallet, setAddingWallet] = useState(false)
+
+  // Auto-refresh portfolio when new wallets are added
+  useEffect(() => {
+    if (wallets.length > 0 && dataFreshness === 'cached') {
+      console.log('New wallets detected, auto-refreshing portfolio')
+      refreshPortfolio()
+    }
+  }, [wallets.length])
 
   const handleAddWallet = async () => {
     if (!newWalletAddress.trim() || !user) {
@@ -82,7 +91,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
 
       toast({
         title: "Success",
-        description: "Wallet added successfully!",
+        description: "Wallet added successfully! Fetching portfolio data...",
       })
 
       // Reset form
@@ -90,11 +99,10 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
       setNewWalletName("")
       setIsAddingWallet(false)
       
-      // Refresh wallets
+      // Refresh wallets list
       await refreshWallets()
       
-      // Automatically fetch portfolio data for the new wallet
-      await refreshPortfolio()
+      // The useEffect above will auto-refresh portfolio when wallets change
 
     } catch (error) {
       console.error('Error adding wallet:', error)
@@ -110,6 +118,21 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
 
   const handleDeleteWallet = async (walletId: string, walletAddress: string) => {
     await deleteWallet(walletId)
+    
+    // Clean up portfolio data for deleted wallet
+    if (user) {
+      try {
+        await supabase
+          .from('portfolio')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('wallet_address', walletAddress)
+        
+        console.log(`Cleaned up portfolio data for deleted wallet: ${walletAddress}`)
+      } catch (error) {
+        console.error('Error cleaning up portfolio data:', error)
+      }
+    }
   }
 
   const copyAddress = async (address: string) => {
@@ -148,11 +171,12 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
           <Button
             onClick={handleRefreshAllHoldings}
             disabled={refreshing || wallets.length === 0}
-            variant="outline"
+            variant={dataFreshness === 'stale' ? "default" : "outline"}
             size="sm"
+            className={dataFreshness === 'stale' ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Refreshing...' : 'Refresh Holdings'}
+            {refreshing ? 'Refreshing...' : dataFreshness === 'stale' ? 'Refresh Required' : 'Refresh Holdings'}
           </Button>
           <Button onClick={() => setIsAddingWallet(true)} size="sm">
             <Plus className="w-4 h-4 mr-2" />
@@ -161,13 +185,28 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
         </div>
       </div>
 
+      {/* Data freshness warning */}
+      {dataFreshness === 'stale' && !refreshing && wallets.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 text-amber-800">
+              <AlertCircle className="w-4 h-4" />
+              <span className="font-medium">Portfolio data may be outdated</span>
+            </div>
+            <p className="text-sm text-amber-700 mt-1">
+              Your portfolio data is more than 5 minutes old. Click "Refresh Required" to get the latest balances from the blockchain.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Add Wallet Form */}
       {isAddingWallet && (
         <Card>
           <CardHeader>
             <CardTitle>Add New Wallet</CardTitle>
             <CardDescription>
-              Enter your Solana wallet address to add it to your portfolio
+              Enter your Solana wallet address to add it to your portfolio. Portfolio data will be automatically fetched.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
