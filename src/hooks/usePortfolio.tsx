@@ -208,6 +208,12 @@ export function usePortfolio() {
       return
     }
 
+    // Prevent multiple simultaneous refresh operations
+    if (refreshing) {
+      console.log('[Portfolio] Refresh already in progress, skipping')
+      return
+    }
+
     setRefreshing(true)
     setDataFreshness('fresh') // Optimistically set as fresh
     const maxRetries = 3
@@ -317,46 +323,63 @@ export function usePortfolio() {
 
         if (deleteError) {
           console.error('[Portfolio] Error deleting existing portfolio data:', deleteError)
-        } else {
-          console.log('[Portfolio] Successfully deleted all existing data for current wallets')
+          throw deleteError
         }
 
-        // Then insert only the fresh data from blockchain
-        const { error } = await supabase
+        console.log('[Portfolio] Successfully deleted all existing data, now inserting fresh data')
+
+        // Wait a moment to ensure delete is fully processed
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        // Then insert only the fresh data from blockchain (no conflict resolution needed)
+        const { error: insertError } = await supabase
           .from('portfolio')
           .insert(portfolioData)
 
-        if (error) {
-          console.error('[Portfolio] Error saving fresh portfolio data:', error)
-          toast({
-            title: "Error",
-            description: `Failed to save portfolio data: ${error.message}`,
-            variant: "destructive",
-          })
-        } else {
-          const uniqueTokens = new Set(portfolioData.map(p => p.token_mint)).size
-          const totalValue = portfolioData.reduce((sum, token) => sum + (token.usd_value || 0), 0)
-          
-          console.log(`[Portfolio] Successfully saved ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`)
-          
-          // Save portfolio snapshot
-          await PortfolioHistoryService.savePortfolioSnapshot(
-            user.id,
-            totalValue,
-            totalTokensFound
-          )
-          
-          toast({
-            title: "Success",
-            description: `Portfolio refreshed: ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`,
-          })
-          
-          // Reload fresh data from database
-          await loadPortfolioFromDB()
-          
-          // Dispatch custom event to notify other components
-          window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        if (insertError) {
+          console.error('[Portfolio] Error inserting fresh portfolio data:', insertError)
+          // If we get a duplicate key error, try upsert instead
+          if (insertError.message?.includes('duplicate key')) {
+            console.log('[Portfolio] Duplicate key detected, using upsert as fallback')
+            const { error: upsertError } = await supabase
+              .from('portfolio')
+              .upsert(portfolioData, { 
+                onConflict: 'user_id,wallet_address,token_mint',
+                ignoreDuplicates: false 
+              })
+            
+            if (upsertError) {
+              throw upsertError
+            }
+          } else {
+            throw insertError
+          }
         }
+
+        console.log('[Portfolio] Fresh portfolio data saved successfully')
+        
+        const uniqueTokens = new Set(portfolioData.map(p => p.token_mint)).size
+        const totalValue = portfolioData.reduce((sum, token) => sum + (token.usd_value || 0), 0)
+        
+        console.log(`[Portfolio] Successfully saved ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`)
+        
+        // Save portfolio snapshot
+        await PortfolioHistoryService.savePortfolioSnapshot(
+          user.id,
+          totalValue,
+          totalTokensFound
+        )
+        
+        toast({
+          title: "Portfolio Refreshed",
+          description: `Fresh blockchain data: ${uniqueTokens} unique tokens, ${totalTokensFound} total holdings`,
+        })
+        
+        // Reload fresh data from database
+        await loadPortfolioFromDB()
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('portfolio-updated'))
       } else {
         console.log('[Portfolio] No holdings found in any wallet')
         toast({
