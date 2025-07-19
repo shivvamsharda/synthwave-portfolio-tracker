@@ -1,9 +1,11 @@
+import React, { useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { TokenItem } from "./TokenItem"
 import { ProcessedPortfolio } from "./types"
 import { ChevronDown, Wallet, RefreshCw } from "lucide-react"
+import { usePortfolio } from "@/hooks/usePortfolio"
 
 interface TokenListContentProps {
   wallets: any[]
@@ -28,6 +30,18 @@ export function TokenListContent({
   onNavigate,
   handleRefreshPortfolio
 }: TokenListContentProps) {
+  const { cleanupAllOrphanedData } = usePortfolio()
+  
+  // Force immediate cleanup if no wallets but portfolio data exists
+  useEffect(() => {
+    if (wallets.length === 0 && portfolio.length > 0) {
+      console.log('[TokenListContent] No wallets but portfolio data exists, forcing cleanup')
+      setTimeout(() => {
+        cleanupAllOrphanedData()
+      }, 100)
+    }
+  }, [wallets.length, portfolio.length])
+
   if (wallets.length === 0) {
     return (
       <div className="text-center py-12">

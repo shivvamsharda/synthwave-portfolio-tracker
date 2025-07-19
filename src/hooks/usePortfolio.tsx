@@ -44,12 +44,46 @@ export function usePortfolio() {
       console.log(`[Portfolio] Loading portfolio for ${wallets.length} wallets:`, wallets.map(w => w.wallet_address))
       loadPortfolioFromDB()
     } else if (user && wallets.length === 0) {
-      console.log('[Portfolio] No wallets connected, clearing portfolio')
+      console.log('[Portfolio] No wallets connected, clearing all portfolio display immediately')
       setPortfolio([])
       setLastUpdated(null)
       setDataFreshness('cached')
+      
+      // Force cleanup any orphaned data in database
+      setTimeout(() => {
+        cleanupAllOrphanedData()
+      }, 500)
     }
   }, [user, wallets])
+
+  // Immediate cleanup on mount if no wallets
+  useEffect(() => {
+    if (user) {
+      const timer = setTimeout(async () => {
+        const { data: walletData } = await supabase
+          .from('wallets')
+          .select('wallet_address')
+          .eq('user_id', user.id)
+        
+        if (!walletData || walletData.length === 0) {
+          console.log('[Portfolio] No wallets found on mount, clearing everything immediately')
+          setPortfolio([])
+          setLastUpdated(null)
+          setDataFreshness('cached')
+          
+          // Clear any remaining database data
+          await supabase
+            .from('portfolio')
+            .delete()
+            .eq('user_id', user.id)
+          
+          window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        }
+      }, 100)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [user])
 
   // Auto-refresh on wallet changes to ensure fresh data
   useEffect(() => {
