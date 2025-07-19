@@ -46,19 +46,7 @@ export function usePortfolioChart(days: number = 30) {
     fetchChartData()
   }, [user, days])
 
-  // Force refresh after a delay on mount for fresh data
-  useEffect(() => {
-    if (user) {
-      const pageLoadRefresh = setTimeout(() => {
-        console.log('[PortfolioChart] Page load refresh triggered')
-        fetchChartData()
-      }, 2000)
-
-      return () => {
-        clearTimeout(pageLoadRefresh)
-      }
-    }
-  }, [user])
+  // Remove automatic refresh to prevent loops
 
   return {
     chartData,

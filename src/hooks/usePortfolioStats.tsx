@@ -146,11 +146,7 @@ export function usePortfolioStats() {
 
     if (!user) return
 
-    // Force refresh on page load after a brief delay
-    const pageLoadRefresh = setTimeout(() => {
-      console.log('[PortfolioStats] Page load refresh triggered')
-      fetchPortfolioStats()
-    }, 1500)
+    // Remove automatic refresh to prevent loops
 
     // Save snapshot every hour
     const snapshotInterval = setInterval(() => {
@@ -164,29 +160,10 @@ export function usePortfolioStats() {
 
     return () => {
       clearInterval(snapshotInterval)
-      clearTimeout(pageLoadRefresh)
     }
   }, [user])
 
-  // Trigger refresh when portfolio data might have changed
-  useEffect(() => {
-    if (user) {
-      // Listen for storage events or custom events that indicate portfolio changes
-      const handlePortfolioUpdate = () => {
-        console.log('[PortfolioStats] Portfolio update detected, refreshing stats')
-        setTimeout(() => {
-          fetchPortfolioStats()
-        }, 1000)
-      }
-
-      // Listen for custom portfolio update events
-      window.addEventListener('portfolio-updated', handlePortfolioUpdate)
-      
-      return () => {
-        window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
-      }
-    }
-  }, [user])
+  // Remove automatic event listeners to prevent infinite loops
 
   return {
     stats,
