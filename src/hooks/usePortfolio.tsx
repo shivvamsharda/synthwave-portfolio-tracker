@@ -341,6 +341,9 @@ export function usePortfolio() {
           
           // Reload fresh data from database
           await loadPortfolioFromDB()
+          
+          // Dispatch custom event to notify other components
+          window.dispatchEvent(new CustomEvent('portfolio-updated'))
         }
       } else {
         console.log('[Portfolio] No holdings found in any wallet')

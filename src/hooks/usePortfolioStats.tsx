@@ -104,46 +104,6 @@ export function usePortfolioStats() {
 
     if (!user) return
 
-    // Set up real-time subscription for portfolio changes
-    const channel = supabase
-      .channel('portfolio-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'portfolio',
-          filter: `user_id=eq.${user.id}`
-        },
-        () => {
-          console.log('[PortfolioStats] Portfolio data changed, refreshing stats')
-          // Refetch stats when portfolio data changes
-          fetchPortfolioStats()
-        }
-      )
-      .subscribe()
-
-    // Also listen for wallet changes to refresh stats
-    const walletChannel = supabase
-      .channel('wallet-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'wallets',
-          filter: `user_id=eq.${user.id}`
-        },
-        () => {
-          console.log('[PortfolioStats] Wallets changed, refreshing stats after delay')
-          // Delay to allow portfolio data to be updated first
-          setTimeout(() => {
-            fetchPortfolioStats()
-          }, 2000)
-        }
-      )
-      .subscribe()
-
     // Force refresh on page load after a brief delay
     const pageLoadRefresh = setTimeout(() => {
       console.log('[PortfolioStats] Page load refresh triggered')
@@ -161,10 +121,28 @@ export function usePortfolioStats() {
     }, 5000) // Save after 5 seconds
 
     return () => {
-      supabase.removeChannel(channel)
-      supabase.removeChannel(walletChannel)
       clearInterval(snapshotInterval)
       clearTimeout(pageLoadRefresh)
+    }
+  }, [user])
+
+  // Trigger refresh when portfolio data might have changed
+  useEffect(() => {
+    if (user) {
+      // Listen for storage events or custom events that indicate portfolio changes
+      const handlePortfolioUpdate = () => {
+        console.log('[PortfolioStats] Portfolio update detected, refreshing stats')
+        setTimeout(() => {
+          fetchPortfolioStats()
+        }, 1000)
+      }
+
+      // Listen for custom portfolio update events
+      window.addEventListener('portfolio-updated', handlePortfolioUpdate)
+      
+      return () => {
+        window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
+      }
     }
   }, [user])
 
