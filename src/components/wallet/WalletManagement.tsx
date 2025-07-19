@@ -23,6 +23,8 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   const { toast } = useToast()
   const { user } = useAuth()
   
+  const [clearingData, setClearingData] = useState(false)
+  
   const [isAddingWallet, setIsAddingWallet] = useState(false)
   const [newWalletAddress, setNewWalletAddress] = useState("")
   const [newWalletName, setNewWalletName] = useState("")
@@ -160,6 +162,38 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
     await refreshPortfolio()
   }
 
+  const handleClearAllPortfolioData = async () => {
+    if (!user) return
+    
+    setClearingData(true)
+    try {
+      // Delete ALL portfolio data for the user
+      const { error } = await supabase
+        .from('portfolio')
+        .delete()
+        .eq('user_id', user.id)
+      
+      if (error) {
+        throw error
+      }
+      
+      toast({
+        title: "Success",
+        description: "All portfolio data cleared. Refresh to fetch fresh data.",
+      })
+      
+    } catch (error) {
+      console.error('Error clearing portfolio data:', error)
+      toast({
+        title: "Error",
+        description: "Failed to clear portfolio data",
+        variant: "destructive",
+      })
+    } finally {
+      setClearingData(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -167,7 +201,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
           <h2 className="text-2xl font-bold text-foreground">Wallet Management</h2>
           <p className="text-muted-foreground">Manage your Solana wallets and refresh holdings</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             onClick={handleRefreshAllHoldings}
             disabled={refreshing || wallets.length === 0}
@@ -178,6 +212,40 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
             <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'Refreshing...' : dataFreshness === 'stale' ? 'Refresh Required' : 'Refresh Holdings'}
           </Button>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={clearingData || wallets.length === 0}
+                className="border-red-200 text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clear All Data
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear All Portfolio Data</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently remove ALL portfolio data from the database. This action cannot be undone. 
+                  You can refresh afterwards to fetch fresh data from your connected wallets.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleClearAllPortfolioData}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  disabled={clearingData}
+                >
+                  {clearingData ? 'Clearing...' : 'Clear All Data'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          
           <Button onClick={() => setIsAddingWallet(true)} size="sm">
             <Plus className="w-4 h-4 mr-2" />
             Add Wallet
