@@ -51,6 +51,19 @@ export function usePortfolio() {
     }
   }, [user, wallets])
 
+  // Auto-refresh on wallet changes to ensure fresh data
+  useEffect(() => {
+    if (user && wallets.length > 0) {
+      // Small delay to ensure database operations complete
+      const timer = setTimeout(() => {
+        console.log('[Portfolio] Wallets changed, refreshing portfolio after delay')
+        refreshPortfolio()
+      }, 1000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [wallets.length, user]) // Trigger on wallet count changes
+
   // Auto-refresh stale data
   useEffect(() => {
     if (lastUpdated && dataFreshness === 'stale' && wallets.length > 0) {

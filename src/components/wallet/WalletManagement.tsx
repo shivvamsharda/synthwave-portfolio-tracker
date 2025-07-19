@@ -30,13 +30,21 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   const [newWalletName, setNewWalletName] = useState("")
   const [addingWallet, setAddingWallet] = useState(false)
 
-  // Auto-refresh portfolio when new wallets are added
+  // Force refresh on page load if wallets exist
   useEffect(() => {
-    if (wallets.length > 0 && dataFreshness === 'cached') {
-      console.log('[WalletManagement] New wallets detected, auto-refreshing portfolio')
-      refreshPortfolio()
+    if (wallets.length > 0) {
+      console.log('[WalletManagement] Page loaded with wallets, ensuring fresh data')
+      // Small delay to let other components initialize
+      const timer = setTimeout(() => {
+        if (dataFreshness === 'cached' || dataFreshness === 'stale') {
+          console.log('[WalletManagement] Auto-refreshing portfolio on page load')
+          refreshPortfolio()
+        }
+      }, 2000)
+      
+      return () => clearTimeout(timer)
     }
-  }, [wallets.length])
+  }, [wallets.length, dataFreshness])
 
   const handleAddWallet = async () => {
     if (!newWalletAddress.trim() || !user) {
@@ -101,10 +109,14 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
       setNewWalletName("")
       setIsAddingWallet(false)
       
-      // Refresh wallets list
+      // Refresh wallets list first
       await refreshWallets()
       
-      // The useEffect above will auto-refresh portfolio when wallets change
+      // Force immediate portfolio refresh after wallet addition
+      setTimeout(() => {
+        console.log('[WalletManagement] Force refreshing portfolio after wallet addition')
+        refreshPortfolio()
+      }, 500)
 
     } catch (error) {
       console.error('[WalletManagement] Error adding wallet:', error)

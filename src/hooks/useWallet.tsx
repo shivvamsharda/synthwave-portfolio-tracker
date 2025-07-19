@@ -68,9 +68,10 @@ export function useWallet() {
         } else {
           toast({
             title: "Success",
-            description: "Wallet connected successfully!",
+            description: "Wallet connected successfully! Refreshing portfolio...",
           })
-          loadWallets()
+          // Refresh wallets first, then portfolio will auto-refresh via useEffect
+          await loadWallets()
         }
       }
     } catch (error) {
@@ -118,9 +119,10 @@ export function useWallet() {
       } else {
         toast({
           title: "Success",
-          description: "Wallet deleted successfully",
+          description: "Wallet deleted successfully, refreshing data...",
         })
-        loadWallets()
+        // Refresh wallets list immediately
+        await loadWallets()
       }
     } catch (error) {
       console.error('Error deleting wallet:', error)
