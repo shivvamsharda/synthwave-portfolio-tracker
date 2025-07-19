@@ -85,42 +85,37 @@ export function usePortfolio() {
     }
   }, [user])
 
-  // Auto-refresh on wallet changes to ensure fresh data
+  // Auto-refresh on wallet changes to ensure fresh data (only when wallets change)
   useEffect(() => {
     if (user && wallets.length > 0) {
-      // Small delay to ensure database operations complete
-      const timer = setTimeout(() => {
-        console.log('[Portfolio] Wallets changed, refreshing portfolio after delay')
-        refreshPortfolio()
-      }, 1000)
-      
-      return () => clearTimeout(timer)
+      // Only refresh when wallet count actually changes, not on every mount
+      const previousWalletCount = parseInt(localStorage.getItem('previousWalletCount') || '0')
+      if (previousWalletCount !== wallets.length) {
+        console.log('[Portfolio] Wallet count changed, refreshing portfolio')
+        localStorage.setItem('previousWalletCount', wallets.length.toString())
+        // Small delay to ensure database operations complete
+        setTimeout(() => {
+          refreshPortfolio()
+        }, 1000)
+      }
+    } else if (user && wallets.length === 0) {
+      localStorage.setItem('previousWalletCount', '0')
     }
-  }, [wallets.length, user]) // Trigger on wallet count changes
+  }, [wallets.length, user])
 
-  // Auto-refresh stale data more aggressively
+  // Only refresh on page load if data is stale (not automatic intervals)
   useEffect(() => {
     if (lastUpdated && wallets.length > 0) {
       const timeSinceUpdate = Date.now() - lastUpdated.getTime()
-      // Reduce threshold to 2 minutes for more frequent updates
-      if (timeSinceUpdate > (2 * 60 * 1000)) {
-        console.log('[Portfolio] Data is stale (>2min), auto-refreshing')
-        refreshPortfolio()
+      // Only check on page load if data is older than 10 minutes
+      if (timeSinceUpdate > (10 * 60 * 1000)) {
+        console.log('[Portfolio] Data is very stale (>10min) on page load, suggesting refresh')
+        setDataFreshness('stale')
+      } else {
+        setDataFreshness('fresh')
       }
     }
   }, [lastUpdated, wallets])
-
-  // Force refresh every 5 minutes when user is active
-  useEffect(() => {
-    if (user && wallets.length > 0) {
-      const autoRefreshInterval = setInterval(() => {
-        console.log('[Portfolio] Auto-refresh interval triggered (5min)')
-        refreshPortfolio()
-      }, 5 * 60 * 1000) // 5 minutes
-      
-      return () => clearInterval(autoRefreshInterval)
-    }
-  }, [user, wallets.length])
 
   /**
    * Clean up portfolio data for wallets that are no longer connected

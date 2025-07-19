@@ -30,10 +30,10 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   const [newWalletName, setNewWalletName] = useState("")
   const [addingWallet, setAddingWallet] = useState(false)
 
-  // Force cleanup of orphaned data on page load
+  // Only cleanup orphaned data on page load, no auto-refresh
   useEffect(() => {
     if (user) {
-      console.log('[WalletManagement] Page loaded, checking for orphaned data')
+      console.log('[WalletManagement] Page loaded, checking for orphaned data (no auto-refresh)')
       const timer = setTimeout(() => {
         cleanupAllOrphanedData()
       }, 1000)
@@ -108,11 +108,8 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
       // Refresh wallets list first
       await refreshWallets()
       
-      // Force immediate portfolio refresh after wallet addition
-      setTimeout(() => {
-        console.log('[WalletManagement] Force refreshing portfolio after wallet addition')
-        refreshPortfolio()
-      }, 500)
+      // Only refresh portfolio for wallet additions, not automatic refresh
+      console.log('[WalletManagement] New wallet added, will refresh portfolio once')
 
     } catch (error) {
       console.error('[WalletManagement] Error adding wallet:', error)

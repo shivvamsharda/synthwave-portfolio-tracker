@@ -18,23 +18,10 @@ export function PortfolioChart() {
   const { stats, loading: statsLoading, refreshStats } = usePortfolioStats()
   const { portfolio, portfolioStats } = usePortfolio()
 
-  // Refresh chart data when portfolio changes
-  useEffect(() => {
-    if (portfolio.length > 0) {
-      console.log('[PortfolioChart] Portfolio data changed, refreshing chart')
-      const timer = setTimeout(() => {
-        refreshChartData()
-        refreshStats()
-      }, 1500)
-      
-      return () => clearTimeout(timer)
-    }
-  }, [portfolio.length, refreshChartData, refreshStats])
-
-  // Listen for portfolio updates
+  // Only refresh chart when explicitly requested, not automatically
   useEffect(() => {
     const handlePortfolioUpdate = () => {
-      console.log('[PortfolioChart] Portfolio update event received, refreshing chart')
+      console.log('[PortfolioChart] Manual portfolio update event received')
       setTimeout(() => {
         refreshChartData()
         refreshStats()
