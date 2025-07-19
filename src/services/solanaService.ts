@@ -2,9 +2,15 @@ import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js'
 import { tokenMetadataService } from './tokenMetadataService'
 import { blockchainMetadataService } from './blockchainMetadataService'
 
-// Solana mainnet RPC endpoint
-const SOLANA_RPC_URL = 'https://api.mainnet-beta.solana.com'
-const connection = new Connection(SOLANA_RPC_URL, 'confirmed')
+// Solana mainnet RPC endpoints with fallback
+const RPC_ENDPOINTS = [
+  'https://solana-api.projectserum.com',
+  'https://rpc.ankr.com/solana',
+  'https://api.mainnet-beta.solana.com'
+]
+
+let currentRpcIndex = 0
+const connection = new Connection(RPC_ENDPOINTS[currentRpcIndex], 'confirmed')
 
 export interface TokenBalance {
   mint: string
@@ -120,30 +126,65 @@ const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: str
 
 export class SolanaService {
   private connection: Connection
+  private currentRpcIndex = 0
 
   constructor() {
-    this.connection = new Connection(SOLANA_RPC_URL, 'confirmed')
+    this.connection = new Connection(RPC_ENDPOINTS[this.currentRpcIndex], 'confirmed')
+  }
+
+  /**
+   * Try next RPC endpoint if current one fails
+   */
+  private async tryNextRpc(): Promise<boolean> {
+    this.currentRpcIndex = (this.currentRpcIndex + 1) % RPC_ENDPOINTS.length
+    this.connection = new Connection(RPC_ENDPOINTS[this.currentRpcIndex], 'confirmed')
+    console.log(`Switched to RPC endpoint: ${RPC_ENDPOINTS[this.currentRpcIndex]}`)
+    return true
+  }
+
+  /**
+   * Execute RPC call with fallback logic
+   */
+  private async executeWithFallback<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+    let lastError: any
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        return await operation()
+      } catch (error: any) {
+        lastError = error
+        
+        // Check if it's a rate limit or access error
+        if (error?.message?.includes('403') || error?.message?.includes('429') || error?.message?.includes('Access forbidden')) {
+          console.log(`RPC call failed with ${error.message}, trying next endpoint...`)
+          await this.tryNextRpc()
+          continue
+        }
+        
+        // For other errors, don't retry
+        throw error
+      }
+    }
+    
+    throw lastError
   }
 
   /**
    * Get SOL balance for a wallet
    */
   async getSolBalance(walletAddress: string): Promise<number> {
-    try {
+    return this.executeWithFallback(async () => {
       const publicKey = new PublicKey(walletAddress)
       const balance = await this.connection.getBalance(publicKey)
       return balance / 1e9 // Convert lamports to SOL
-    } catch (error) {
-      console.error('Error fetching SOL balance:', error)
-      return 0
-    }
+    })
   }
 
   /**
    * Get all SPL token balances for a wallet with enhanced metadata
    */
   async getTokenBalances(walletAddress: string): Promise<TokenBalance[]> {
-    try {
+    return this.executeWithFallback(async () => {
       const publicKey = new PublicKey(walletAddress)
       const tokenAccounts = await this.connection.getParsedTokenAccountsByOwner(
         publicKey,
@@ -203,10 +244,7 @@ export class SolanaService {
       }
 
       return tokens
-    } catch (error) {
-      console.error('Error fetching token balances:', error)
-      return []
-    }
+    })
   }
 
   /**
