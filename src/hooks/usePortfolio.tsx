@@ -397,9 +397,75 @@ export function usePortfolio() {
       setLastUpdated(null)
       setDataFreshness('cached')
       
+      // Also dispatch the portfolio update event
+      window.dispatchEvent(new CustomEvent('portfolio-updated'))
+      
       return true
     } catch (error) {
       console.error('[Portfolio] Error clearing portfolio data:', error)
+      return false
+    }
+  }
+
+  /**
+   * Clean up ALL orphaned portfolio data (not just for current wallets)
+   */
+  const cleanupAllOrphanedData = async () => {
+    if (!user) return false
+    
+    try {
+      console.log('[Portfolio] Cleaning up ALL orphaned portfolio data')
+      
+      // Get current wallet addresses
+      const { data: currentWallets } = await supabase
+        .from('wallets')
+        .select('wallet_address')
+        .eq('user_id', user.id)
+      
+      const currentWalletAddresses = currentWallets?.map(w => w.wallet_address) || []
+      console.log('[Portfolio] Current wallet addresses:', currentWalletAddresses)
+      
+      if (currentWalletAddresses.length === 0) {
+        // No wallets = delete all portfolio data
+        console.log('[Portfolio] No wallets found, deleting all portfolio data')
+        const { error } = await supabase
+          .from('portfolio')
+          .delete()
+          .eq('user_id', user.id)
+          
+        if (error) {
+          console.error('[Portfolio] Error deleting all portfolio data:', error)
+          return false
+        }
+        
+        console.log('[Portfolio] All portfolio data deleted')
+        setPortfolio([])
+        setLastUpdated(null)
+        setDataFreshness('cached')
+        window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        
+        return true
+      } else {
+        // Delete portfolio data for wallet addresses not in current wallets
+        const { error } = await supabase
+          .from('portfolio')
+          .delete()
+          .eq('user_id', user.id)
+          .not('wallet_address', 'in', `(${currentWalletAddresses.map(addr => `"${addr}"`).join(',')})`)
+          
+        if (error) {
+          console.error('[Portfolio] Error deleting orphaned portfolio data:', error)
+          return false
+        }
+        
+        console.log('[Portfolio] Orphaned portfolio data cleaned up')
+        await loadPortfolioFromDB()
+        window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        
+        return true
+      }
+    } catch (error) {
+      console.error('[Portfolio] Error during orphaned data cleanup:', error)
       return false
     }
   }
@@ -448,6 +514,7 @@ export function usePortfolio() {
     refreshPortfolio,
     loadPortfolioFromDB,
     clearAllPortfolioData,
+    cleanupAllOrphanedData,
     
     // Computed
     portfolioStats: getPortfolioStats(),

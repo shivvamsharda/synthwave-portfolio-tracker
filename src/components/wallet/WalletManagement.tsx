@@ -19,7 +19,7 @@ interface WalletManagementProps {
 
 export function WalletManagement({ onClose }: WalletManagementProps) {
   const { wallets, loading, deleteWallet, refreshWallets } = useWallet()
-  const { refreshPortfolio, refreshing, dataFreshness, clearAllPortfolioData } = usePortfolio()
+  const { refreshPortfolio, refreshing, dataFreshness, clearAllPortfolioData, cleanupAllOrphanedData } = usePortfolio()
   const { toast } = useToast()
   const { user } = useAuth()
   
@@ -30,21 +30,17 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   const [newWalletName, setNewWalletName] = useState("")
   const [addingWallet, setAddingWallet] = useState(false)
 
-  // Force refresh on page load if wallets exist
+  // Force cleanup of orphaned data on page load
   useEffect(() => {
-    if (wallets.length > 0) {
-      console.log('[WalletManagement] Page loaded with wallets, ensuring fresh data')
-      // Small delay to let other components initialize
+    if (user) {
+      console.log('[WalletManagement] Page loaded, checking for orphaned data')
       const timer = setTimeout(() => {
-        if (dataFreshness === 'cached' || dataFreshness === 'stale') {
-          console.log('[WalletManagement] Auto-refreshing portfolio on page load')
-          refreshPortfolio()
-        }
-      }, 2000)
+        cleanupAllOrphanedData()
+      }, 1000)
       
       return () => clearTimeout(timer)
     }
-  }, [wallets.length, dataFreshness])
+  }, [user])
 
   const handleAddWallet = async () => {
     if (!newWalletAddress.trim() || !user) {
@@ -190,6 +186,34 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
     await refreshPortfolio()
   }
 
+  const handleCleanupOrphanedData = async () => {
+    if (!user) return
+    
+    setClearingData(true)
+    try {
+      const success = await cleanupAllOrphanedData()
+      
+      if (success) {
+        toast({
+          title: "Success",
+          description: "Orphaned portfolio data cleaned up successfully.",
+        })
+      } else {
+        throw new Error("Failed to clean up data")
+      }
+      
+    } catch (error) {
+      console.error('[WalletManagement] Error cleaning up orphaned data:', error)
+      toast({
+        title: "Error",
+        description: "Failed to clean up orphaned data",
+        variant: "destructive",
+      })
+    } finally {
+      setClearingData(false)
+    }
+  }
+
   const handleClearAllPortfolioData = async () => {
     if (!user) return
     
@@ -242,29 +266,29 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={clearingData || wallets.length === 0}
+                disabled={clearingData}
                 className="border-red-200 text-red-700 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Clear All Data
+                Clean Up Data
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Clear All Portfolio Data</AlertDialogTitle>
+                <AlertDialogTitle>Clean Up Orphaned Data</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently remove ALL portfolio data from the database. This action cannot be undone. 
-                  You can refresh afterwards to fetch fresh data from your connected wallets.
+                  This will remove any portfolio data that doesn't belong to your current connected wallets. 
+                  This is useful if you see old balances from deleted wallets.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleClearAllPortfolioData}
+                  onClick={handleCleanupOrphanedData}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   disabled={clearingData}
                 >
-                  {clearingData ? 'Clearing...' : 'Clear All Data'}
+                  {clearingData ? 'Cleaning...' : 'Clean Up Data'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
