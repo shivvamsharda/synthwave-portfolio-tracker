@@ -483,7 +483,7 @@ export function usePortfolio() {
     if (!user) return false
     
     try {
-      console.log('[Portfolio] Cleaning up ALL orphaned portfolio data')
+      console.log('[Portfolio] Cleaning up ALL orphaned portfolio data and history')
       
       // Get current wallet addresses
       const { data: currentWallets } = await supabase
@@ -495,25 +495,39 @@ export function usePortfolio() {
       console.log('[Portfolio] Current wallet addresses:', currentWalletAddresses)
       
       if (currentWalletAddresses.length === 0) {
-        // No wallets = delete all portfolio data
-        console.log('[Portfolio] No wallets found, deleting all portfolio data')
-        const { error } = await supabase
+        // No wallets = delete all portfolio data AND historical data
+        console.log('[Portfolio] No wallets found, deleting all portfolio and historical data')
+        
+        // Delete portfolio data
+        const { error: portfolioError } = await supabase
           .from('portfolio')
           .delete()
           .eq('user_id', user.id)
           
-        if (error) {
-          console.error('[Portfolio] Error deleting all portfolio data:', error)
-          return false
+        // Delete portfolio history
+        const { error: historyError } = await supabase
+          .from('portfolio_history')
+          .delete()
+          .eq('user_id', user.id)
+          
+        if (portfolioError) {
+          console.error('[Portfolio] Error deleting portfolio data:', portfolioError)
+        }
+        if (historyError) {
+          console.error('[Portfolio] Error deleting portfolio history:', historyError)
         }
         
-        console.log('[Portfolio] All portfolio data deleted')
-        setPortfolio([])
-        setLastUpdated(null)
-        setDataFreshness('cached')
-        window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        if (!portfolioError && !historyError) {
+          console.log('[Portfolio] All portfolio and historical data deleted')
+          setPortfolio([])
+          setLastUpdated(null)
+          setDataFreshness('cached')
+          window.dispatchEvent(new CustomEvent('portfolio-updated'))
+          
+          return true
+        }
         
-        return true
+        return false
       } else {
         // Delete portfolio data for wallet addresses not in current wallets
         const { error } = await supabase
