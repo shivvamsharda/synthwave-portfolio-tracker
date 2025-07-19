@@ -162,13 +162,6 @@ export function usePortfolio() {
     try {
       const walletAddresses = wallets.map(w => w.wallet_address)
       
-      // Clear existing portfolio data for these wallets to ensure fresh fetch
-      await supabase
-        .from('portfolio')
-        .delete()
-        .eq('user_id', user.id)
-        .in('wallet_address', walletAddresses)
-      
       toast({
         title: "Refreshing Portfolio",
         description: `Fetching fresh data for ${walletAddresses.length} wallet(s)...`,
@@ -251,10 +244,24 @@ export function usePortfolio() {
           item.price_change_24h = priceData?.priceChange24h || 0
         })
 
-        // Insert fresh data
+        // First delete existing data for these wallets
+        const { error: deleteError } = await supabase
+          .from('portfolio')
+          .delete()
+          .eq('user_id', user.id)
+          .in('wallet_address', walletAddresses)
+
+        if (deleteError) {
+          console.error('Error deleting existing portfolio data:', deleteError)
+        }
+
+        // Then upsert fresh data with conflict resolution
         const { error } = await supabase
           .from('portfolio')
-          .insert(portfolioData)
+          .upsert(portfolioData, { 
+            onConflict: 'user_id,wallet_address,token_mint',
+            ignoreDuplicates: false 
+          })
 
         if (error) {
           console.error('Error saving fresh portfolio data:', error)
