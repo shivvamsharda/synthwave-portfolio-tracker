@@ -19,7 +19,7 @@ interface WalletManagementProps {
 
 export function WalletManagement({ onClose }: WalletManagementProps) {
   const { wallets, loading, deleteWallet, refreshWallets } = useWallet()
-  const { refreshPortfolio, refreshing, dataFreshness } = usePortfolio()
+  const { refreshPortfolio, refreshing, dataFreshness, clearAllPortfolioData } = usePortfolio()
   const { toast } = useToast()
   const { user } = useAuth()
   
@@ -33,7 +33,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   // Auto-refresh portfolio when new wallets are added
   useEffect(() => {
     if (wallets.length > 0 && dataFreshness === 'cached') {
-      console.log('New wallets detected, auto-refreshing portfolio')
+      console.log('[WalletManagement] New wallets detected, auto-refreshing portfolio')
       refreshPortfolio()
     }
   }, [wallets.length])
@@ -107,7 +107,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
       // The useEffect above will auto-refresh portfolio when wallets change
 
     } catch (error) {
-      console.error('Error adding wallet:', error)
+      console.error('[WalletManagement] Error adding wallet:', error)
       toast({
         title: "Error",
         description: "Failed to add wallet",
@@ -119,20 +119,35 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   }
 
   const handleDeleteWallet = async (walletId: string, walletAddress: string) => {
+    console.log(`[WalletManagement] Deleting wallet: ${walletAddress}`)
+    
+    // Delete wallet from wallets table
     await deleteWallet(walletId)
     
-    // Clean up portfolio data for deleted wallet
+    // Clean up portfolio data for deleted wallet immediately
     if (user) {
       try {
-        await supabase
+        console.log(`[WalletManagement] Cleaning up portfolio data for deleted wallet: ${walletAddress}`)
+        const { error } = await supabase
           .from('portfolio')
           .delete()
           .eq('user_id', user.id)
           .eq('wallet_address', walletAddress)
         
-        console.log(`Cleaned up portfolio data for deleted wallet: ${walletAddress}`)
+        if (error) {
+          console.error('[WalletManagement] Error cleaning up portfolio data:', error)
+        } else {
+          console.log(`[WalletManagement] Successfully cleaned up portfolio data for: ${walletAddress}`)
+        }
+        
+        // Force refresh portfolio with remaining wallets after a brief delay
+        setTimeout(() => {
+          console.log('[WalletManagement] Refreshing portfolio after wallet deletion')
+          refreshPortfolio()
+        }, 500)
+        
       } catch (error) {
-        console.error('Error cleaning up portfolio data:', error)
+        console.error('[WalletManagement] Error during portfolio cleanup:', error)
       }
     }
   }
@@ -159,6 +174,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
   }
 
   const handleRefreshAllHoldings = async () => {
+    console.log('[WalletManagement] Manually refreshing all holdings')
     await refreshPortfolio()
   }
 
@@ -167,23 +183,19 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
     
     setClearingData(true)
     try {
-      // Delete ALL portfolio data for the user
-      const { error } = await supabase
-        .from('portfolio')
-        .delete()
-        .eq('user_id', user.id)
+      const success = await clearAllPortfolioData()
       
-      if (error) {
-        throw error
+      if (success) {
+        toast({
+          title: "Success",
+          description: "All portfolio data cleared. Refresh to fetch fresh data.",
+        })
+      } else {
+        throw new Error("Failed to clear data")
       }
       
-      toast({
-        title: "Success",
-        description: "All portfolio data cleared. Refresh to fetch fresh data.",
-      })
-      
     } catch (error) {
-      console.error('Error clearing portfolio data:', error)
+      console.error('[WalletManagement] Error clearing portfolio data:', error)
       toast({
         title: "Error",
         description: "Failed to clear portfolio data",
@@ -390,7 +402,7 @@ export function WalletManagement({ onClose }: WalletManagementProps) {
                           <AlertDialogTitle>Delete Wallet</AlertDialogTitle>
                           <AlertDialogDescription>
                             Are you sure you want to remove this wallet from your portfolio? 
-                            This will also remove all associated portfolio data.
+                            This will also remove all associated portfolio data and refresh your portfolio automatically.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
