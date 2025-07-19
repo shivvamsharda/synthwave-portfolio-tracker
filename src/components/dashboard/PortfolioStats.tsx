@@ -1,6 +1,8 @@
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { usePortfolioStats } from "@/hooks/usePortfolioStats"
+import { usePortfolio } from "@/hooks/usePortfolio"
 import { TrendingUp, TrendingDown, DollarSign, Package } from "lucide-react"
+import { useEffect } from "react"
 
 interface StatCardProps {
   title: string
@@ -58,7 +60,44 @@ function StatCard({ title, value, change, changeType, icon, loading }: StatCardP
 }
 
 export function PortfolioStats() {
-  const { stats, loading, error } = usePortfolioStats()
+  const { stats, loading, error, refreshStats } = usePortfolioStats()
+  const { portfolio, portfolioStats, dataFreshness } = usePortfolio()
+
+  // Refresh stats when portfolio data changes
+  useEffect(() => {
+    if (portfolio.length > 0) {
+      console.log('[PortfolioStats] Portfolio data changed, refreshing stats')
+      const timer = setTimeout(() => {
+        refreshStats()
+      }, 1000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [portfolio.length, refreshStats])
+
+  // Listen for portfolio updates
+  useEffect(() => {
+    const handlePortfolioUpdate = () => {
+      console.log('[PortfolioStats] Portfolio update event received, refreshing stats')
+      setTimeout(() => {
+        refreshStats()
+      }, 500)
+    }
+
+    window.addEventListener('portfolio-updated', handlePortfolioUpdate)
+    return () => window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
+  }, [refreshStats])
+
+  // Use real-time portfolio stats as fallback if database stats are stale
+  const displayStats = portfolio.length > 0 ? {
+    totalValue: portfolioStats.totalValue,
+    totalAssets: portfolioStats.totalTokens,
+    totalUniqueTokens: new Set(portfolio.map(p => p.token_mint)).size,
+    valueChange24h: stats?.valueChange24h || 0,
+    valueChange24hPercentage: stats?.valueChange24hPercentage || 0,
+    valueChange7d: stats?.valueChange7d || 0,
+    valueChange7dPercentage: stats?.valueChange7dPercentage || 0
+  } : stats
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -102,29 +141,29 @@ export function PortfolioStats() {
   const statsData = [
     {
       title: "Total Portfolio Value",
-      value: stats ? formatCurrency(stats.totalValue) : "$0.00",
-      change: stats ? formatChange(stats.valueChange24h, stats.valueChange24hPercentage) : "$0.00 (0%)",
-      changeType: stats ? getChangeType(stats.valueChange24h) : "neutral" as const,
+      value: displayStats ? formatCurrency(displayStats.totalValue) : "$0.00",
+      change: displayStats ? formatChange(displayStats.valueChange24h, displayStats.valueChange24hPercentage) : "$0.00 (0%)",
+      changeType: displayStats ? getChangeType(displayStats.valueChange24h) : "neutral" as const,
       icon: <DollarSign className="w-6 h-6" />
     },
     {
       title: "24h P&L",
-      value: stats ? formatCurrency(stats.valueChange24h) : "$0.00",
-      change: stats ? formatPercentage(stats.valueChange24hPercentage) : "0%",
-      changeType: stats ? getChangeType(stats.valueChange24h) : "neutral" as const,
+      value: displayStats ? formatCurrency(displayStats.valueChange24h) : "$0.00",
+      change: displayStats ? formatPercentage(displayStats.valueChange24hPercentage) : "0%",
+      changeType: displayStats ? getChangeType(displayStats.valueChange24h) : "neutral" as const,
       icon: <TrendingUp className="w-6 h-6" />
     },
     {
       title: "7d P&L",  
-      value: stats ? formatCurrency(stats.valueChange7d) : "$0.00",
-      change: stats ? formatPercentage(stats.valueChange7dPercentage) : "0%",
-      changeType: stats ? getChangeType(stats.valueChange7d) : "neutral" as const,
+      value: displayStats ? formatCurrency(displayStats.valueChange7d) : "$0.00",
+      change: displayStats ? formatPercentage(displayStats.valueChange7dPercentage) : "0%",
+      changeType: displayStats ? getChangeType(displayStats.valueChange7d) : "neutral" as const,
       icon: <TrendingUp className="w-6 h-6" />
     },
     {
       title: "Total Assets",
-      value: stats ? stats.totalAssets.toString() : "0",
-      change: stats ? `${stats.totalUniqueTokens} unique tokens` : "0 tokens",
+      value: displayStats ? displayStats.totalAssets.toString() : "0",
+      change: displayStats ? `${displayStats.totalUniqueTokens} unique tokens` : "0 tokens",
       changeType: "neutral" as const,
       icon: <Package className="w-6 h-6" />
     }
@@ -140,7 +179,7 @@ export function PortfolioStats() {
           change={stat.change}
           changeType={stat.changeType}
           icon={stat.icon}
-          loading={loading}
+          loading={loading && !displayStats}
         />
       ))}
     </div>

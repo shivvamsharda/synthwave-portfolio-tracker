@@ -2,8 +2,9 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { usePortfolioChart } from "@/hooks/usePortfolioChart"
 import { usePortfolioStats } from "@/hooks/usePortfolioStats"
+import { usePortfolio } from "@/hooks/usePortfolio"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const timeRanges = [
   { label: "24H", days: 1 },
@@ -13,8 +14,36 @@ const timeRanges = [
 
 export function PortfolioChart() {
   const [selectedRange, setSelectedRange] = useState(30)
-  const { chartData, loading: chartLoading } = usePortfolioChart(selectedRange)
-  const { stats, loading: statsLoading } = usePortfolioStats()
+  const { chartData, loading: chartLoading, refreshChartData } = usePortfolioChart(selectedRange)
+  const { stats, loading: statsLoading, refreshStats } = usePortfolioStats()
+  const { portfolio, portfolioStats } = usePortfolio()
+
+  // Refresh chart data when portfolio changes
+  useEffect(() => {
+    if (portfolio.length > 0) {
+      console.log('[PortfolioChart] Portfolio data changed, refreshing chart')
+      const timer = setTimeout(() => {
+        refreshChartData()
+        refreshStats()
+      }, 1500)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [portfolio.length, refreshChartData, refreshStats])
+
+  // Listen for portfolio updates
+  useEffect(() => {
+    const handlePortfolioUpdate = () => {
+      console.log('[PortfolioChart] Portfolio update event received, refreshing chart')
+      setTimeout(() => {
+        refreshChartData()
+        refreshStats()
+      }, 1000)
+    }
+
+    window.addEventListener('portfolio-updated', handlePortfolioUpdate)
+    return () => window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
+  }, [refreshChartData, refreshStats])
 
   // Prepare chart data
   const processedChartData = chartData.map(point => ({
@@ -24,7 +53,8 @@ export function PortfolioChart() {
     formattedValue: point.value.toFixed(2)
   }))
 
-  const currentValue = stats?.totalValue || 0
+  // Use real-time portfolio stats for current values
+  const currentValue = portfolio.length > 0 ? portfolioStats.totalValue : (stats?.totalValue || 0)
   const change24h = stats?.valueChange24h || 0
   const changePercent24h = stats?.valueChange24hPercentage || 0
 
