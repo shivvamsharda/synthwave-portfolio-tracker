@@ -19,21 +19,21 @@
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 98%;
     
-    /* Bright Teal/Cyan Primary - matching reference image */
-    --primary: 174 100% 75%;
+    /* Bright Teal/Cyan Primary - exact hex #51e7b7 */
+    --primary: 161 76% 61%;
     --primary-foreground: 0 0% 0%;
-    --primary-light: 174 80% 80%;
-    --primary-lighter: 174 60% 85%;
-    --primary-soft: 174 40% 90%;
+    --primary-light: 161 76% 70%;
+    --primary-lighter: 161 76% 80%;
+    --primary-soft: 161 76% 90%;
     
     /* Dark Secondary */
     --secondary: 0 0% 8%;
     --secondary-foreground: 0 0% 95%;
     
-    /* Bright Cyan Accent */
-    --accent: 185 100% 78%;
+    /* Bright Cyan Accent - complementary to primary */
+    --accent: 161 76% 68%;
     --accent-foreground: 0 0% 0%;
-    --accent-light: 185 80% 82%;
+    --accent-light: 161 76% 75%;
     
     /* Dark grays */
     --muted: 0 0% 8%;
@@ -50,33 +50,33 @@
     /* Pure black borders */
     --border: 0 0% 12%;
     --input: 0 0% 8%;
-    --ring: 174 100% 75%;
+    --ring: 161 76% 61%;
     
     --radius: 0.5rem;
     
     /* Professional Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(174 100% 75%), hsl(185 100% 78%));
-    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 4%), hsl(174 100% 75% / 0.1));
-    --gradient-accent: linear-gradient(90deg, hsl(174 100% 75% / 0.2), hsl(185 100% 78% / 0.2));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0%), hsl(174 100% 75% / 0.05), hsl(185 100% 78% / 0.03));
+    --gradient-primary: linear-gradient(135deg, hsl(161 76% 61%), hsl(161 76% 68%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 4%), hsl(161 76% 61% / 0.1));
+    --gradient-accent: linear-gradient(90deg, hsl(161 76% 61% / 0.2), hsl(161 76% 68% / 0.2));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0%), hsl(161 76% 61% / 0.05), hsl(161 76% 68% / 0.03));
     
     /* Professional shadows with subtle glow */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.8);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.9), 0 2px 4px -1px hsl(0 0% 0% / 0.7);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 1), 0 4px 6px -2px hsl(0 0% 0% / 0.8);
-    --shadow-glow: 0 0 20px hsl(174 100% 75% / 0.3);
+    --shadow-glow: 0 0 20px hsl(161 76% 61% / 0.3);
     --shadow-navbar: 0 8px 32px hsl(0 0% 0% / 0.8);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 4%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 174 100% 75%;
+    --sidebar-primary: 161 76% 61%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 8%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 174 100% 75%;
+    --sidebar-ring: 161 76% 61%;
   }
 
   .dark {
@@ -86,27 +86,27 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 98%;
-    --primary: 174 100% 75%;
+    --primary: 161 76% 61%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 8%;
     --secondary-foreground: 0 0% 95%;
     --muted: 0 0% 8%;
     --muted-foreground: 0 0% 65%;
-    --accent: 185 100% 78%;
+    --accent: 161 76% 68%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 12%;
     --input: 0 0% 8%;
-    --ring: 174 100% 75%;
+    --ring: 161 76% 61%;
     --sidebar-background: 0 0% 4%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 174 100% 75%;
+    --sidebar-primary: 161 76% 61%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 8%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 174 100% 75%;
+    --sidebar-ring: 161 76% 61%;
   }
 }
 
@@ -218,8 +218,8 @@
 
   /* Professional Animations */
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 10px hsl(174 100% 75% / 0.3); }
-    50% { box-shadow: 0 0 25px hsl(174 100% 75% / 0.5); }
+    0%, 100% { box-shadow: 0 0 10px hsl(161 76% 61% / 0.3); }
+    50% { box-shadow: 0 0 25px hsl(161 76% 61% / 0.5); }
   }
 
   @keyframes slide-up {
