@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -13,8 +14,66 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { CountingNumber } from './AnimatedChart';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+
+// Generate realistic portfolio data for the last 24 hours
+const generatePortfolioData = () => {
+  const data = [];
+  const now = new Date();
+  const startValue = 2800000; // Starting portfolio value
+  
+  for (let i = 23; i >= 0; i--) {
+    const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000);
+    const hour = timestamp.getHours();
+    
+    // Create realistic market movements based on time of day
+    let multiplier = 1;
+    if (hour >= 9 && hour <= 16) multiplier = 1.02; // Market hours boost
+    if (hour >= 0 && hour <= 6) multiplier = 0.98; // Night dip
+    
+    const randomChange = (Math.random() - 0.5) * 0.04 * multiplier;
+    const previousValue = data.length > 0 ? data[data.length - 1].value : startValue;
+    const value = previousValue * (1 + randomChange);
+    
+    data.push({
+      time: timestamp.toISOString(),
+      value: Math.round(value),
+      hour: hour,
+      formattedTime: timestamp.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    });
+  }
+  
+  return data;
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg p-2 shadow-lg">
+        <p className="text-xs text-muted-foreground">{data.formattedTime}</p>
+        <p className="text-sm font-semibold text-foreground">
+          ${payload[0].value.toLocaleString()}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export function MobileDashboardPreview() {
+  const [selectedRange, setSelectedRange] = useState('24H');
+  const chartData = useMemo(() => generatePortfolioData(), []);
+  
+  // Calculate 24h change
+  const startValue = chartData[0]?.value || 0;
+  const endValue = chartData[chartData.length - 1]?.value || 0;
+  const change24h = endValue - startValue;
+  const changePercent = ((change24h / startValue) * 100);
+
   return (
     <div className="w-full max-w-sm mx-auto bg-card border border-border/30 rounded-3xl overflow-hidden shadow-2xl">
       {/* Mobile Header */}
@@ -37,11 +96,19 @@ export function MobileDashboardPreview() {
         <div className="text-center text-white">
           <p className="text-sm opacity-80">Total Portfolio</p>
           <h2 className="text-3xl font-bold">
-            $<CountingNumber target={2847329} />
+            $<CountingNumber target={endValue} />
           </h2>
           <div className="flex items-center justify-center space-x-1 mt-1">
-            <TrendingUp className="w-4 h-4 text-green-300" />
-            <span className="text-green-300 text-sm font-medium">+12.5%</span>
+            {changePercent >= 0 ? (
+              <TrendingUp className="w-4 h-4 text-green-300" />
+            ) : (
+              <TrendingDown className="w-4 h-4 text-red-300" />
+            )}
+            <span className={`text-sm font-medium ${
+              changePercent >= 0 ? 'text-green-300' : 'text-red-300'
+            }`}>
+              {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(1)}%
+            </span>
             <span className="text-white/70 text-sm">24h</span>
           </div>
         </div>
@@ -126,21 +193,41 @@ export function MobileDashboardPreview() {
         </div>
       </div>
 
-      {/* Chart Preview */}
+      {/* Real Chart */}
       <div className="p-4 bg-muted/30">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-foreground">Portfolio Chart</h3>
-          <Badge variant="secondary" className="text-xs">24H</Badge>
+          <Badge variant="secondary" className="text-xs">{selectedRange}</Badge>
         </div>
         
-        <div className="h-20 bg-gradient-to-r from-primary/20 to-accent/20 rounded-lg flex items-end justify-center p-2">
-          {[40, 65, 45, 80, 70, 90, 75, 85].map((height, i) => (
-            <div
-              key={i}
-              className="bg-primary/60 w-3 mx-0.5 rounded-t"
-              style={{ height: `${height}%` }}
-            />
-          ))}
+        <div className="h-24 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="hour" hide />
+              <YAxis hide />
+              <Tooltip content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#colorValue)"
+                dot={false}
+                activeDot={{ 
+                  r: 3, 
+                  fill: "hsl(var(--primary))",
+                  stroke: "hsl(var(--background))",
+                  strokeWidth: 1
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
