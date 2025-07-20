@@ -1,4 +1,5 @@
 
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
@@ -101,6 +102,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
+    // Automatically reset wallet preferences and disconnect wallet on sign out
+    try {
+      localStorage.removeItem('walletName')
+      sessionStorage.removeItem('walletName')
+      
+      // Try to disconnect wallet if it exists in global scope
+      if (typeof window !== 'undefined' && (window as any).solana) {
+        try {
+          await (window as any).solana.disconnect()
+        } catch (error) {
+          console.log('Wallet disconnect attempt:', error)
+        }
+      }
+    } catch (error) {
+      console.log('Error clearing wallet preferences:', error)
+    }
+
     const { error } = await supabase.auth.signOut()
     return { error }
   }
@@ -125,3 +143,4 @@ export function useAuth() {
   }
   return context
 }
+
