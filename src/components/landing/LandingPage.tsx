@@ -188,7 +188,7 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-8 sm:py-12 lg:py-20 overflow-hidden">
+      <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden">
         <div className="absolute inset-0 bg-background"></div>
         
         {/* Background Elements */}
@@ -196,7 +196,7 @@ export function LandingPage() {
         <div className="absolute bottom-20 right-4 sm:right-10 w-32 sm:w-48 h-32 sm:h-48 bg-primary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-20 items-center min-h-[600px] lg:min-h-[700px]">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
             {/* Left Side - Text Content */}
             <div className="lg:col-span-5 space-y-6 sm:space-y-8 animate-slide-up text-center lg:text-left">
               <div className="space-y-6 sm:space-y-8">
@@ -232,15 +232,13 @@ export function LandingPage() {
             </div>
             
             {/* Right Side - Device Stack */}
-            <div className="lg:col-span-7 relative animate-slide-in-right">
+            <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
               {isMobile ? (
                 <div className="flex justify-center mt-8 lg:mt-0">
                   <MobileDashboardPreview />
                 </div>
               ) : (
-                <div className="w-full flex justify-center lg:justify-end">
-                  <DeviceStack />
-                </div>
+                <DeviceStack />
               )}
             </div>
           </div>

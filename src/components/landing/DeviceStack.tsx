@@ -10,7 +10,7 @@ export function DeviceStack() {
   }, [])
 
   return (
-    <div className="relative w-full h-[600px] sm:h-[650px] lg:h-[700px] flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-[500px] flex items-center justify-center">
       {/* Main Tablet - World Map View */}
       <div 
         className={`absolute z-30 transform transition-all duration-1000 ${
@@ -18,26 +18,26 @@ export function DeviceStack() {
         }`}
         style={{ 
           perspective: '1000px',
-          transform: 'rotateX(8deg) rotateY(-12deg) translateY(-20px)'
+          transform: 'rotateX(5deg) rotateY(-10deg)'
         }}
       >
-        <div className="w-72 sm:w-80 h-48 sm:h-56 bg-card border border-border/20 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-80 h-56 bg-card border border-border/20 rounded-2xl shadow-2xl overflow-hidden">
           {/* Screen Content */}
-          <div className="w-full h-full bg-gradient-to-br from-background via-background to-primary/5 p-3 sm:p-4">
+          <div className="w-full h-full bg-gradient-to-br from-background via-background to-primary/5 p-4">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <Globe className="h-4 w-4 text-primary" />
                 <span className="text-xs font-medium text-foreground">Global Activity</span>
               </div>
               <div className="text-xs text-muted-foreground">Live</div>
             </div>
             
             {/* World Map Visualization */}
-            <div className="relative bg-background/50 rounded-lg h-24 sm:h-32 border border-border/10 overflow-hidden">
+            <div className="relative bg-background/50 rounded-lg h-32 border border-border/10 overflow-hidden">
               {/* Map dots representing crypto activity */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 sm:w-24 h-12 sm:h-16 relative">
+                <div className="w-24 h-16 relative">
                   {/* Continents outline */}
                   <div className="absolute inset-0 opacity-20">
                     <svg viewBox="0 0 100 60" className="w-full h-full">
@@ -61,7 +61,7 @@ export function DeviceStack() {
             </div>
             
             {/* Stats */}
-            <div className="mt-2 sm:mt-3 flex justify-between text-xs">
+            <div className="mt-3 flex justify-between text-xs">
               <div>
                 <div className="text-primary font-semibold">$2.8M</div>
                 <div className="text-muted-foreground">Volume</div>
@@ -85,19 +85,19 @@ export function DeviceStack() {
           isVisible ? 'translate-y-0 rotate-0 opacity-100' : 'translate-y-10 rotate-6 opacity-0'
         }`}
         style={{ 
-          transform: 'rotateX(12deg) rotateY(18deg) translateX(80px) translateY(60px) scale(0.85)'
+          transform: 'rotateX(10deg) rotateY(15deg) translateX(120px) translateY(50px)'
         }}
       >
-        <div className="w-56 sm:w-64 h-36 sm:h-44 bg-card border border-border/20 rounded-xl shadow-xl overflow-hidden">
-          <div className="w-full h-full bg-gradient-to-br from-background to-primary/5 p-2 sm:p-3">
+        <div className="w-64 h-44 bg-card border border-border/20 rounded-xl shadow-xl overflow-hidden">
+          <div className="w-full h-full bg-gradient-to-br from-background to-primary/5 p-3">
             {/* Header */}
-            <div className="flex items-center space-x-2 mb-2 sm:mb-3">
+            <div className="flex items-center space-x-2 mb-3">
               <BarChart3 className="h-3 w-3 text-primary" />
               <span className="text-xs font-medium text-foreground">Portfolio</span>
             </div>
             
             {/* Chart */}
-            <div className="bg-background/50 rounded h-16 sm:h-20 border border-border/10 p-2 mb-2">
+            <div className="bg-background/50 rounded h-20 border border-border/10 p-2 mb-2">
               <svg viewBox="0 0 100 40" className="w-full h-full">
                 <polyline
                   points="5,35 15,30 25,32 35,25 45,22 55,18 65,15 75,12 85,8 95,5"
@@ -140,31 +140,31 @@ export function DeviceStack() {
           isVisible ? 'translate-y-0 rotate-0 opacity-100' : 'translate-y-10 rotate-12 opacity-0'
         }`}
         style={{ 
-          transform: 'rotateX(18deg) rotateY(-25deg) translateX(-90px) translateY(120px) scale(0.75)'
+          transform: 'rotateX(15deg) rotateY(-20deg) translateX(-140px) translateY(80px)'
         }}
       >
-        <div className="w-32 sm:w-36 h-56 sm:h-64 bg-card border border-border/20 rounded-2xl shadow-lg overflow-hidden">
-          <div className="w-full h-full bg-gradient-to-b from-background to-primary/5 p-2 sm:p-3">
+        <div className="w-36 h-64 bg-card border border-border/20 rounded-2xl shadow-lg overflow-hidden">
+          <div className="w-full h-full bg-gradient-to-b from-background to-primary/5 p-3">
             {/* Header */}
-            <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+            <div className="flex items-center space-x-2 mb-4">
               <Wallet className="h-3 w-3 text-primary" />
               <span className="text-xs font-medium text-foreground">Wallet</span>
             </div>
             
             {/* Balance */}
-            <div className="text-center mb-3 sm:mb-4">
-              <div className="text-sm sm:text-lg font-bold text-foreground">$24,680</div>
+            <div className="text-center mb-4">
+              <div className="text-lg font-bold text-foreground">$24,680</div>
               <div className="text-xs text-success">+8.2% today</div>
             </div>
             
             {/* Token List */}
-            <div className="space-y-1 sm:space-y-2">
+            <div className="space-y-2">
               {[
                 { symbol: 'BTC', amount: '0.25', value: '$12,340', change: '+5.2%' },
                 { symbol: 'ETH', amount: '3.8', value: '$8,940', change: '+12.1%' },
                 { symbol: 'SOL', amount: '45.2', value: '$3,400', change: '-2.3%' }
               ].map((token, index) => (
-                <div key={index} className="flex justify-between items-center text-xs bg-background/50 rounded p-1.5 sm:p-2">
+                <div key={index} className="flex justify-between items-center text-xs bg-background/50 rounded p-2">
                   <div>
                     <div className="font-medium text-foreground">{token.symbol}</div>
                     <div className="text-muted-foreground text-xs">{token.amount}</div>
@@ -184,8 +184,8 @@ export function DeviceStack() {
 
       {/* Floating glow effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-32 left-20 w-24 sm:w-32 h-24 sm:h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-32 right-20 w-32 sm:w-40 h-32 sm:h-40 bg-primary/3 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-20 left-20 w-32 h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-primary/3 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
       </div>
     </div>
   )
