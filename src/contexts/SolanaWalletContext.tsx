@@ -1,10 +1,7 @@
 
-import React, { FC, ReactNode, useMemo } from 'react'
+import React, { FC, ReactNode, useMemo, useEffect } from 'react'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
-import { BackpackWalletAdapter } from '@solana/wallet-adapter-backpack'
 import { GlowWalletAdapter } from '@solana/wallet-adapter-glow'
 import { SlopeWalletAdapter } from '@solana/wallet-adapter-slope'
 import { TorusWalletAdapter } from '@solana/wallet-adapter-torus'
@@ -21,16 +18,25 @@ interface SolanaWalletProviderProps {
 export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({ children }) => {
   const { apiKeys } = useApiKeys()
   
+  // Clear wallet adapter cache on mount to prevent auto-selection
+  useEffect(() => {
+    try {
+      localStorage.removeItem('walletName')
+      sessionStorage.removeItem('walletName')
+    } catch (error) {
+      console.warn('Could not clear wallet cache:', error)
+    }
+  }, [])
+  
   // Use mainnet RPC from Supabase secrets, fallback to mainnet-beta
   const endpoint = useMemo(() => {
     return apiKeys.solanaRpcUrl || clusterApiUrl('mainnet-beta')
   }, [apiKeys.solanaRpcUrl])
 
+  // Only include wallets that don't auto-register as Standard Wallets
+  // Phantom, Solflare, and Backpack now auto-register, so we exclude them
   const wallets = useMemo(
     () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new BackpackWalletAdapter(),
       new GlowWalletAdapter(),
       new SlopeWalletAdapter(),
       new TorusWalletAdapter(),

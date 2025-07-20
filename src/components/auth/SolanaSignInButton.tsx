@@ -60,32 +60,66 @@ export function SolanaSignInButton() {
     }
   }
 
+  const handleWalletReset = () => {
+    try {
+      localStorage.removeItem('walletName')
+      sessionStorage.removeItem('walletName')
+      if (wallet.connected) {
+        wallet.disconnect()
+      }
+      toast({
+        title: "Wallet Reset",
+        description: "Wallet preferences cleared. Please try connecting again.",
+      })
+    } catch (error) {
+      console.error('Error resetting wallet:', error)
+    }
+  }
+
   if (!wallet.connected) {
     return (
-      <div className="w-full">
+      <div className="w-full space-y-2">
         <WalletMultiButton className="!w-full !bg-gradient-primary !text-primary-foreground !border-0 !rounded-lg !h-11 !font-medium hover:!opacity-90 transition-opacity" />
+        <Button 
+          onClick={handleWalletReset}
+          variant="ghost"
+          className="w-full text-xs text-muted-foreground"
+          size="sm"
+        >
+          Reset Wallet Preferences
+        </Button>
       </div>
     )
   }
 
   return (
-    <Button 
-      onClick={handleSolanaSignIn}
-      variant="outline"
-      className="w-full"
-      disabled={loading}
-    >
-      {loading ? (
-        <>
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          Signing In...
-        </>
-      ) : (
-        <>
-          <Wallet className="w-4 h-4 mr-2" />
-          Sign in with Solana
-        </>
-      )}
-    </Button>
+    <div className="w-full space-y-2">
+      <Button 
+        onClick={handleSolanaSignIn}
+        variant="outline"
+        className="w-full"
+        disabled={loading}
+      >
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Signing In...
+          </>
+        ) : (
+          <>
+            <Wallet className="w-4 h-4 mr-2" />
+            Sign in with Solana
+          </>
+        )}
+      </Button>
+      <Button 
+        onClick={handleWalletReset}
+        variant="ghost"
+        className="w-full text-xs text-muted-foreground"
+        size="sm"
+      >
+        Reset Wallet Preferences
+      </Button>
+    </div>
   )
 }
