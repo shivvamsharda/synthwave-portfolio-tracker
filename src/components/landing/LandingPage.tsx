@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X } from "lucide-react"
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Skull } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { DashboardPreview } from "./DashboardPreview"
 import { MessagingPreview } from "./MessagingPreview"
 import { MobileDashboardPreview } from "./MobileDashboardPreview"
+import { DeviceStack } from "./DeviceStack"
 import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -26,7 +27,7 @@ export function LandingPage() {
     },
     {
       icon: <Activity className="h-8 w-8" />,
-      title: "Real-Time Analytics",
+      title: "Real-Time Analytics", 
       description: "Monitor live market movements and transaction flows across all your connected wallets.",
       value: "1,247",
       change: "+8.2%",
@@ -85,32 +86,34 @@ export function LandingPage() {
     }
   ]
 
-  // Sample data for animations
-  const portfolioData = [1200, 1350, 1180, 1620, 1890, 2100, 1950, 2340, 2680, 2470, 2847];
-  const analyticsData = [420, 380, 510, 490, 650, 720, 680, 820, 960, 1050, 1247];
-  const insightsData = [120, 185, 210, 340, 420, 380, 520, 610, 730, 680, 847];
-
   return (
-    <div className="min-h-screen bg-gradient-hero overflow-hidden">
+    <div className="min-h-screen bg-background overflow-hidden">
       {/* Navigation */}
-      <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
+      <nav className="relative z-50 border-b border-border/10 bg-background/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img 
-              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-              alt="Neptune AI Logo" 
-              className="h-8 w-8 object-contain"
-            />
-            <span className="text-lg sm:text-xl font-bold gradient-text">Neptune AI</span>
+            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Skull className="h-5 w-5 text-primary" />
+            </div>
+            <span className="text-lg sm:text-xl font-bold text-foreground">Cryptic</span>
           </div>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              Home
+            </a>
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Features
+              About
+            </a>
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Products
             </a>
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Pricing
+              Contact
+            </a>
+            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              FAQ
             </a>
             <Button 
               variant="outline" 
@@ -135,18 +138,39 @@ export function LandingPage() {
           <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/10 shadow-xl">
             <div className="px-4 py-6 space-y-4">
               <a 
+                href="#" 
+                className="block text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a 
                 href="#features" 
                 className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Features
+                About
+              </a>
+              <a 
+                href="#features" 
+                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Products
               </a>
               <a 
                 href="#pricing" 
                 className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Pricing
+                Contact
+              </a>
+              <a 
+                href="#pricing" 
+                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                FAQ
               </a>
               <Button 
                 variant="outline" 
@@ -165,28 +189,25 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-hero"></div>
+        <div className="absolute inset-0 bg-background"></div>
         
         {/* Background Elements */}
         <div className="absolute top-20 left-4 sm:left-10 w-24 sm:w-32 h-24 sm:h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-4 sm:right-10 w-32 sm:w-48 h-32 sm:h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 right-4 sm:right-10 w-32 sm:w-48 h-32 sm:h-48 bg-primary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
             {/* Left Side - Text Content */}
             <div className="lg:col-span-5 space-y-6 sm:space-y-8 animate-slide-up text-center lg:text-left">
-              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit mx-auto lg:mx-0 mb-2">
-                <Zap className="mr-2 h-4 w-4" />
-                <span className="text-xs sm:text-sm">Version 1.3 is available now</span>
-              </Badge>
-              
               <div className="space-y-6 sm:space-y-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-                  <span className="gradient-text">Unlock the Power of Data with AI</span>
+                  <span className="text-foreground">Unlock the Power of</span>
+                  <br />
+                  <span className="gradient-text">Crypto</span>
                 </h1>
                 
                 <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
-                  Empower your business with cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights, real-time notifications, and intelligent automation.
+                  Dive into the world of cryptocurrency with our cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights and real-time data.
                 </p>
               </div>
               
@@ -196,7 +217,7 @@ export function LandingPage() {
                   onClick={() => navigate('/dashboard')} 
                   className="web3-button group px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
                 >
-                  Get Started
+                  Explore
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
@@ -205,44 +226,73 @@ export function LandingPage() {
                   size={isMobile ? "default" : "lg"}
                   className="border-primary/30 hover:bg-primary/10 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-medium w-full sm:w-auto"
                 >
-                  Watch Demo
+                  Start Now
                 </Button>
-              </div>
-              
-              {/* User Avatars Section - Hidden on mobile for cleaner look */}
-              <div className="hidden sm:flex items-center space-x-4 pt-4 justify-center lg:justify-start">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground"
-                    >
-                      {String.fromCharCode(65 + i)}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground text-sm sm:text-base">Over 50+ Users</span>
-                  <br />
-                  <span className="text-muted-foreground">Join our growing community</span>
-                </div>
               </div>
             </div>
             
-            {/* Right Side - Dashboard Preview */}
+            {/* Right Side - Device Stack */}
             <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
               {isMobile ? (
                 <div className="flex justify-center mt-8 lg:mt-0">
                   <MobileDashboardPreview />
                 </div>
               ) : (
-                <DashboardPreview />
+                <DeviceStack />
               )}
             </div>
           </div>
         </div>
       </section>
 
+      {/* Features Section */}
+      <section id="features" className="py-12 sm:py-16 lg:py-24 relative">
+        <div className="container px-4 sm:px-6">
+          <div className="text-center space-y-4 mb-12 sm:mb-16 animate-slide-up">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+              <span className="gradient-text">Advanced Analytics Features</span>
+            </h2>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Powerful tools designed to give you comprehensive insights into your cryptocurrency investments and market trends.
+            </p>
+          </div>
+          
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
+            {features.map((feature, index) => (
+              <div 
+                key={index} 
+                className="web3-card p-4 sm:p-6 space-y-4 sm:space-y-6 animate-slide-up"
+                style={{ animationDelay: `${index * 0.2}s` }}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 rounded-lg bg-primary/10 text-primary flex-shrink-0">
+                    {feature.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">{feature.description}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-background/50 rounded-lg p-4 border border-border/10">
+                  <div className="flex items-end space-x-3 mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold gradient-text">
+                      <CountingNumber 
+                        end={parseInt(feature.value.replace(/[$,]/g, ''))} 
+                        duration={2000}
+                        prefix={feature.value.includes('$') ? '$' : ''}
+                        suffix={feature.value.includes('$') ? '' : ''}
+                      />
+                    </div>
+                    <div className="text-success text-sm font-medium mb-1">{feature.change}</div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{feature.period}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Messaging Integration Section */}
       <section className="py-12 sm:py-16 lg:py-24 relative">
@@ -358,7 +408,7 @@ export function LandingPage() {
                   <ul className="space-y-2 sm:space-y-3">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start space-x-3">
-                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success flex-shrink-0 mt-0.5" />
                         <span className="text-xs sm:text-sm text-muted-foreground">{feature}</span>
                       </li>
                     ))}
@@ -375,12 +425,10 @@ export function LandingPage() {
         <div className="container px-4 sm:px-6">
           <div className="flex flex-col items-center justify-center space-y-6 md:flex-row md:justify-between md:space-y-0">
             <div className="flex items-center space-x-3">
-              <img 
-                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-                alt="Neptune AI Logo" 
-                className="h-6 sm:h-8 w-6 sm:w-8 object-contain"
-              />
-              <span className="text-lg sm:text-xl font-bold gradient-text">Neptune AI</span>
+              <div className="w-6 sm:w-8 h-6 sm:h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Skull className="h-4 sm:h-5 w-4 sm:w-5 text-primary" />
+              </div>
+              <span className="text-lg sm:text-xl font-bold text-foreground">Cryptic</span>
             </div>
             
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 lg:space-x-8 text-xs sm:text-sm text-muted-foreground">
@@ -390,7 +438,7 @@ export function LandingPage() {
             </div>
             
             <p className="text-xs sm:text-sm text-muted-foreground text-center md:text-left">
-              © 2024 Neptune AI. All rights reserved.
+              © 2024 Cryptic. All rights reserved.
             </p>
           </div>
         </div>
