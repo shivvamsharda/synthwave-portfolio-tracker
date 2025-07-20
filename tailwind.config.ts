@@ -19,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Outfit', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+				'outfit': ['Outfit', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -91,8 +95,8 @@ export default {
 				'navbar': 'var(--shadow-navbar)'
 			},
 			fontSize: {
-				'hero': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-				'section': ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+				'hero': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+				'section': ['2.5rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -113,10 +117,10 @@ export default {
 				},
 				'glow-pulse': {
 					'0%, 100%': {
-						boxShadow: '0 0 5px hsl(var(--primary) / 0.3)'
+						boxShadow: '0 0 8px hsl(var(--primary) / 0.3)'
 					},
 					'50%': {
-						boxShadow: '0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4)'
+						boxShadow: '0 0 25px hsl(var(--primary) / 0.6), 0 0 35px hsl(var(--primary) / 0.4)'
 					}
 				},
 				'slide-up': {
@@ -142,8 +146,8 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
-				'slide-up': 'slide-up 0.5s ease-out',
-				'fade-in': 'fade-in 0.3s ease-out'
+				'slide-up': 'slide-up 0.6s ease-out',
+				'fade-in': 'fade-in 0.4s ease-out'
 			}
 		}
 	},
