@@ -212,7 +212,7 @@ export function LandingPage() {
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4 justify-center lg:justify-start">
+              <div className="flex justify-center lg:justify-start pt-4">
                 <Button 
                   size={isMobile ? "default" : "lg"}
                   onClick={() => navigate('/dashboard')} 
@@ -222,33 +222,8 @@ export function LandingPage() {
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
-                <Button 
-                  variant="outline" 
-                  size={isMobile ? "default" : "lg"}
-                  className="border-primary/30 hover:bg-primary/10 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-medium w-full sm:w-auto"
-                >
-                  Watch Demo
-                </Button>
               </div>
               
-              {/* User Avatars Section - Hidden on mobile for cleaner look */}
-              <div className="hidden sm:flex items-center space-x-4 pt-4 justify-center lg:justify-start">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground"
-                    >
-                      {String.fromCharCode(65 + i)}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground text-sm sm:text-base">Over 50+ Users</span>
-                  <br />
-                  <span className="text-muted-foreground">Join our growing community</span>
-                </div>
-              </div>
             </div>
             
             {/* Right Side - Dashboard Preview */}
