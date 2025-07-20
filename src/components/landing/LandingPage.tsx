@@ -93,7 +93,7 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Navigation */}
-      <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
+      <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg mx-4 mt-4 rounded-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
             <img 
