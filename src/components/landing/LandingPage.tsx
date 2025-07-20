@@ -182,7 +182,7 @@ export function LandingPage() {
               
               <div className="space-y-6 sm:space-y-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-                  <span className="gradient-text">Unlock the Power of Data with AI</span>
+                  <span className="text-white font-bold">Unlock the Power of Data with AI</span>
                 </h1>
                 
                 <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
