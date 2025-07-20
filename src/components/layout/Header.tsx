@@ -41,7 +41,7 @@ export function Header({ onNavigate }: HeaderProps) {
             />
           </div>
           <div>
-            <span className="text-xl font-bold text-foreground">
+            <span className="text-xl font-bold text-white">
               Neptune AI
             </span>
             <div className="text-xs text-muted-foreground">AI-Powered Analytics</div>
