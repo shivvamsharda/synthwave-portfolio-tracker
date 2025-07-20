@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { DashboardPreview } from "./DashboardPreview"
 import { MessagingPreview } from "./MessagingPreview"
 import { MobileDashboardPreview } from "./MobileDashboardPreview"
@@ -14,6 +14,35 @@ export function LandingPage() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [visibleCards, setVisibleCards] = useState<number[]>([])
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = cardRefs.current.indexOf(entry.target as HTMLDivElement)
+          if (entry.isIntersecting && index !== -1) {
+            setTimeout(() => {
+              setVisibleCards(prev => [...new Set([...prev, index])])
+            }, index * 100) // Stagger animation by 100ms
+          }
+        })
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    )
+
+    cardRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref)
+    })
+
+    return () => {
+      cardRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref)
+      })
+    }
+  }, [])
 
   const features = [
     {
@@ -288,18 +317,58 @@ export function LandingPage() {
               }
             ].map((feature, index) => (
               <div 
-                key={index} 
-                className="web3-card p-6 space-y-4 animate-slide-up group hover:scale-105 transition-all duration-300"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                key={index}
+                ref={(el) => (cardRefs.current[index] = el)}
+                className={`
+                  relative group cursor-pointer p-6 space-y-4 rounded-xl border border-border/20 
+                  bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm
+                  hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30
+                  hover:bg-gradient-to-br hover:from-card/80 hover:to-card/60
+                  transition-all duration-300 ease-in-out overflow-hidden
+                  ${visibleCards.includes(index) 
+                    ? 'opacity-100 translate-y-0' 
+                    : 'opacity-0 translate-y-8'
+                  }
+                `}
+                style={{ 
+                  transitionDelay: visibleCards.includes(index) ? '0ms' : `${index * 100}ms`,
+                }}
               >
-                <div className="p-3 rounded-lg bg-primary/10 text-primary w-fit group-hover:bg-primary/20 transition-colors">
-                  {feature.icon}
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 via-accent/10 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {/* Icon container with enhanced animations */}
+                <div className={`
+                  relative p-3 rounded-lg bg-primary/10 text-primary w-fit
+                  group-hover:bg-primary/20 group-hover:scale-110 group-hover:rotate-3
+                  transition-all duration-300 ease-out
+                  ${visibleCards.includes(index) 
+                    ? 'scale-100 opacity-100' 
+                    : 'scale-80 opacity-0'
+                  }
+                `}
+                style={{ 
+                  transitionDelay: visibleCards.includes(index) ? `${index * 100 + 200}ms` : '0ms',
+                }}>
+                  <div className="group-hover:animate-pulse">
+                    {feature.icon}
+                  </div>
+                  
+                  {/* Icon glow effect on hover */}
+                  <div className="absolute inset-0 rounded-lg bg-primary/20 blur-md opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
                 </div>
                 
-                <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-foreground">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                <div className="relative space-y-2">
+                  <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-200">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground group-hover:text-foreground/80 leading-relaxed transition-colors duration-200">
+                    {feature.description}
+                  </p>
                 </div>
+                
+                {/* Bottom accent line that expands on hover */}
+                <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent w-0 group-hover:w-full transition-all duration-500 ease-out"></div>
               </div>
             ))}
           </div>
