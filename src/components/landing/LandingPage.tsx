@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X } from "lucide-react"
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { DashboardPreview } from "./DashboardPreview"
@@ -232,8 +232,79 @@ export function LandingPage() {
           </div>
         </div>
       </section>
-
-
+      {/* Platform Features Section */}
+      <section id="features" className="py-12 sm:py-16 lg:py-24 relative">
+        <div className="container px-4 sm:px-6">
+          <div className="text-center space-y-4 mb-12 sm:mb-16 animate-slide-up">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+              <span className="gradient-text">Platform Features</span>
+            </h2>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Advanced analytics and monitoring tools designed for Web3 professionals and traders.
+            </p>
+          </div>
+          
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+            {[
+              {
+                icon: <BarChart3 className="h-6 w-6" />,
+                title: "Custom Token Analytics",
+                description: "Get deep insights on any token by mint address or symbol, including volume, holders, market cap, and more."
+              },
+              {
+                icon: <TrendingUp className="h-6 w-6" />,
+                title: "Trending Token Radar",
+                description: "Live feed of top-performing tokens across timeframes. Discover what's gaining momentum and why."
+              },
+              {
+                icon: <Shield className="h-6 w-6" />,
+                title: "AI Risk Assessment",
+                description: "Instantly evaluate token risk with AI-driven scores across price volatility, whale activity, liquidity, and social signals."
+              },
+              {
+                icon: <Users className="h-6 w-6" />,
+                title: "Holder Movement Tracking",
+                description: "Visualize wallet behavior—new holders, exits, transfers, and volume movement across time ranges."
+              },
+              {
+                icon: <Eye className="h-6 w-6" />,
+                title: "Whale Tracker",
+                description: "Identify and follow whale wallet actions. Monitor their inflows/outflows, timing, and holding patterns."
+              },
+              {
+                icon: <GitBranch className="h-6 w-6" />,
+                title: "Token Flow Analysis",
+                description: "Trace token movements across wallets and protocols. Understand how capital flows in and out of ecosystems."
+              },
+              {
+                icon: <Layers className="h-6 w-6" />,
+                title: "Multi-Chain Support",
+                description: "Seamlessly track tokens and analytics across Solana, Ethereum, and more—without switching dashboards."
+              },
+              {
+                icon: <Clock className="h-6 w-6" />,
+                title: "Real-Time Updates",
+                description: "Every metric auto-refreshes, giving you always-on insights without needing to reload or re-analyze."
+              }
+            ].map((feature, index) => (
+              <div 
+                key={index} 
+                className="web3-card p-6 space-y-4 animate-slide-up group hover:scale-105 transition-all duration-300"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="p-3 rounded-lg bg-primary/10 text-primary w-fit group-hover:bg-primary/20 transition-colors">
+                  {feature.icon}
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="text-lg font-bold text-foreground">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       {/* Messaging Integration Section */}
       <section className="py-12 sm:py-16 lg:py-24 relative">
         <div className="container px-4 sm:px-6">
