@@ -201,11 +201,14 @@ export function LandingPage() {
               
               <div className="space-y-6 sm:space-y-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-                  <span className="text-white font-bold">Unlock the Power of Data with AI</span>
+                  <span className="text-white font-bold">
+                    Advanced Crypto Analytics{" "}
+                    <span className="block sm:inline gradient-text">Powered by AI</span>
+                  </span>
                 </h1>
                 
                 <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
-                  Empower your business with cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights, real-time notifications, and intelligent automation.
+                  Track your entire crypto portfolio with AI-powered insights. Monitor whale movements, analyze token risks, discover trending opportunities, and get real-time alerts across all major blockchains.
                 </p>
               </div>
               
@@ -431,7 +434,6 @@ export function LandingPage() {
           </div>
         </div>
       </section>
-
 
       {/* Footer */}
       <footer className="py-8 sm:py-12 border-t border-border/10 bg-background/50">
