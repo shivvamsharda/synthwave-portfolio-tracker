@@ -1,6 +1,6 @@
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { DashboardCard } from "@/components/ui/dashboard-card"
 import { useAuth } from "@/hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import { Settings, Menu, X, LogOut, Home } from "lucide-react"
@@ -29,11 +29,11 @@ export function Header({ onNavigate }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/80 border-b border-border/50 shadow-navbar">
+      <div className="container flex h-20 items-center justify-between px-6">
         {/* Logo */}
-        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate("dashboard")}>
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm">
+        <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigate("dashboard")}>
+          <div className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-lg">
             <img 
               src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Neptune%20AI%20Logo%20Transparent.png" 
               alt="Neptune AI" 
@@ -41,32 +41,56 @@ export function Header({ onNavigate }: HeaderProps) {
             />
           </div>
           <div>
-            <span className="text-xl font-bold text-white">
+            <span className="text-2xl font-bold gradient-text">
               Neptune AI
             </span>
-            <div className="text-xs text-muted-foreground">AI-Powered Analytics</div>
+            <div className="text-xs text-muted-foreground font-medium">AI-Powered Analytics</div>
           </div>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
-          <Button variant="ghost" onClick={handleHomeClick} className="font-medium">
+        <nav className="hidden md:flex items-center space-x-2">
+          <Button 
+            variant="ghost" 
+            onClick={handleHomeClick} 
+            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+          >
             <Home className="w-4 h-4 mr-2" />
             Home
           </Button>
-          <Button variant="ghost" onClick={() => navigate("dashboard")} className="font-medium">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("dashboard")} 
+            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+          >
             Dashboard
           </Button>
-          <Button variant="ghost" onClick={() => navigate("wallets")} className="font-medium">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("wallets")} 
+            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+          >
             Wallets
           </Button>
-          <Button variant="ghost" onClick={() => navigate("analytics")} className="font-medium">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("analytics")} 
+            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+          >
             Analytics
           </Button>
-          <Button variant="ghost" onClick={() => navigate("nfts")} className="font-medium">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("nfts")} 
+            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+          >
             NFTs
           </Button>
-          <Button variant="ghost" onClick={() => navigate("yield")} className="font-medium">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("yield")} 
+            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+          >
             Yield
           </Button>
         </nav>
@@ -77,7 +101,7 @@ export function Header({ onNavigate }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="hidden md:flex text-muted-foreground hover:text-foreground"
+            className="hidden md:flex text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200"
             onClick={handleSignOut}
           >
             <LogOut className="w-4 h-4" />
@@ -87,7 +111,7 @@ export function Header({ onNavigate }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="hidden md:flex"
+            className="hidden md:flex hover:bg-muted/50 rounded-xl transition-all duration-200"
             onClick={() => navigate("settings")}
           >
             <Settings className="w-4 h-4" />
@@ -97,47 +121,81 @@ export function Header({ onNavigate }: HeaderProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden"
+            className="md:hidden hover:bg-muted/50 rounded-xl"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <DashboardCard className="md:hidden m-4 p-4 animate-slide-up">
-          <nav className="flex flex-col space-y-2">
-            <Button variant="ghost" onClick={handleHomeClick} className="justify-start">
-              <Home className="w-4 h-4 mr-2" />
+        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl">
+          <nav className="container px-6 py-6 space-y-2">
+            <Button 
+              variant="ghost" 
+              onClick={handleHomeClick} 
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+            >
+              <Home className="w-4 h-4 mr-3" />
               Home
             </Button>
-            <Button variant="ghost" onClick={() => navigate("dashboard")} className="justify-start">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("dashboard")} 
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+            >
               Dashboard
             </Button>
-            <Button variant="ghost" onClick={() => navigate("wallets")} className="justify-start">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("wallets")} 
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+            >
               Wallets
             </Button>
-            <Button variant="ghost" onClick={() => navigate("analytics")} className="justify-start">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("analytics")} 
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+            >
               Analytics
             </Button>
-            <Button variant="ghost" onClick={() => navigate("nfts")} className="justify-start">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("nfts")} 
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+            >
               NFTs
             </Button>
-            <Button variant="ghost" onClick={() => navigate("yield")} className="justify-start">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("yield")} 
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+            >
               Yield
             </Button>
-            <Button variant="ghost" onClick={() => navigate("settings")} className="justify-start">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
-            <Button variant="ghost" onClick={handleSignOut} className="justify-start text-muted-foreground">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="border-t border-border/30 pt-4 mt-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate("settings")} 
+                className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+              >
+                <Settings className="w-4 h-4 mr-3" />
+                Settings
+              </Button>
+              <Button 
+                variant="ghost" 
+                onClick={handleSignOut} 
+                className="w-full justify-start text-muted-foreground hover:bg-destructive/5 hover:text-destructive rounded-xl font-medium"
+              >
+                <LogOut className="w-4 h-4 mr-3" />
+                Sign Out
+              </Button>
+            </div>
           </nav>
-        </DashboardCard>
+        </div>
       )}
     </header>
   )

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -27,7 +28,9 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					light: 'hsl(var(--primary-light))'
+					light: 'hsl(var(--primary-light))',
+					lighter: 'hsl(var(--primary-lighter))',
+					soft: 'hsl(var(--primary-soft))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -47,7 +50,8 @@ export default {
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					foreground: 'hsl(var(--accent-foreground))',
+					light: 'hsl(var(--accent-light))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -76,12 +80,19 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-secondary': 'var(--gradient-secondary)',
-				'gradient-subtle': 'var(--gradient-subtle)'
+				'gradient-accent': 'var(--gradient-accent)', 
+				'gradient-hero': 'var(--gradient-hero)'
 			},
 			boxShadow: {
 				'sm': 'var(--shadow-sm)',
 				'md': 'var(--shadow-md)', 
-				'lg': 'var(--shadow-lg)'
+				'lg': 'var(--shadow-lg)',
+				'glow': 'var(--shadow-glow)',
+				'navbar': 'var(--shadow-navbar)'
+			},
+			fontSize: {
+				'hero': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+				'section': ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -102,10 +113,10 @@ export default {
 				},
 				'glow-pulse': {
 					'0%, 100%': {
-						boxShadow: '0 0 5px hsl(var(--primary) / 0.5)'
+						boxShadow: '0 0 5px hsl(var(--primary) / 0.3)'
 					},
 					'50%': {
-						boxShadow: '0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.6)'
+						boxShadow: '0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4)'
 					}
 				},
 				'slide-up': {

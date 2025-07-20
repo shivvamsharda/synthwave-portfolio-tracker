@@ -1,9 +1,11 @@
+
 import { Header } from "@/components/layout/Header"
 import { PortfolioStats } from "./PortfolioStats"
 import { PortfolioChart } from "./PortfolioChart"
 import { TokenList } from "./TokenList"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
+import { Wallet, TrendingUp, BarChart3, Download } from "lucide-react"
 
 interface DashboardProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -14,15 +16,15 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const { portfolioStats } = usePortfolio()
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-hero">
       <Header onNavigate={onNavigate} />
       
-      <main className="container px-4 py-8 space-y-8">
+      <main className="container px-6 py-8 space-y-8">
         {/* Portfolio Stats */}
         <PortfolioStats />
 
         {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Portfolio Chart */}
           <PortfolioChart />
           
@@ -30,45 +32,68 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <TokenList onNavigate={onNavigate} />
         </div>
 
-        {/* Quick Actions - Moved before footer */}
-        <div className="dashboard-card p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Quick Actions */}
+        <div className="crypto-card p-8">
+          <h3 className="text-xl font-bold text-foreground mb-6 gradient-text">Quick Actions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button 
               onClick={() => onNavigate?.("wallets")}
-              className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30"
+              className="group p-6 rounded-2xl bg-card/40 hover:bg-card/60 transition-all duration-300 text-left border border-border/30 hover:border-primary/30 hover:shadow-glow"
             >
-              <div className="text-primary font-semibold">Manage Wallets</div>
-              <div className="text-sm text-muted-foreground">Add or remove wallets</div>
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="feature-icon group-hover:scale-110 transition-transform">
+                  <Wallet className="h-5 w-5" />
+                </div>
+                <div className="text-primary font-bold text-lg">Manage Wallets</div>
+              </div>
+              <div className="text-sm text-muted-foreground font-medium">Add or remove wallets</div>
             </button>
-            <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-secondary/30">
-              <div className="text-primary font-semibold">Export Data</div>
-              <div className="text-sm text-muted-foreground">Download CSV</div>
+
+            <button className="group p-6 rounded-2xl bg-card/40 hover:bg-card/60 transition-all duration-300 text-left border border-border/30 hover:border-primary/30 hover:shadow-glow">
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="feature-icon group-hover:scale-110 transition-transform">
+                  <Download className="h-5 w-5" />
+                </div>
+                <div className="text-primary font-bold text-lg">Export Data</div>
+              </div>
+              <div className="text-sm text-muted-foreground font-medium">Download CSV reports</div>
             </button>
-            <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
-              <div className="text-primary font-semibold">Share Portfolio</div>
-              <div className="text-sm text-muted-foreground">Create public link</div>
+
+            <button className="group p-6 rounded-2xl bg-card/40 hover:bg-card/60 transition-all duration-300 text-left border border-border/30 hover:border-primary/30 hover:shadow-glow">
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="feature-icon group-hover:scale-110 transition-transform">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+                <div className="text-primary font-bold text-lg">Share Portfolio</div>
+              </div>
+              <div className="text-sm text-muted-foreground font-medium">Create public link</div>
             </button>
-            <button className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 text-left border border-border/30 hover:border-primary/30">
-              <div className="text-primary font-semibold">Analytics</div>
-              <div className="text-sm text-muted-foreground">Deep insights</div>
+
+            <button className="group p-6 rounded-2xl bg-card/40 hover:bg-card/60 transition-all duration-300 text-left border border-border/30 hover:border-primary/30 hover:shadow-glow">
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="feature-icon group-hover:scale-110 transition-transform">
+                  <BarChart3 className="h-5 w-5" />
+                </div>
+                <div className="text-primary font-bold text-lg">Analytics</div>
+              </div>
+              <div className="text-sm text-muted-foreground font-medium">Deep insights & AI analysis</div>
             </button>
           </div>
         </div>
 
         {/* Bottom Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-          <div className="dashboard-card p-6 text-center">
-            <div className="text-2xl font-bold text-primary">{portfolioStats.totalWallets}</div>
-            <div className="text-sm text-muted-foreground">Connected Wallets</div>
+          <div className="crypto-card p-8 text-center">
+            <div className="metric-value mb-2">{portfolioStats.totalWallets}</div>
+            <div className="metric-label">Connected Wallets</div>
           </div>
-          <div className="dashboard-card p-6 text-center">
-            <div className="text-2xl font-bold text-primary">{portfolioStats.totalTokens}</div>
-            <div className="text-sm text-muted-foreground">Token Holdings</div>
+          <div className="crypto-card p-8 text-center">
+            <div className="metric-value mb-2">{portfolioStats.totalTokens}</div>
+            <div className="metric-label">Token Holdings</div>
           </div>
-          <div className="dashboard-card p-6 text-center">
-            <div className="text-2xl font-bold text-primary">1</div>
-            <div className="text-sm text-muted-foreground">Solana Network</div>
+          <div className="crypto-card p-8 text-center">
+            <div className="metric-value mb-2">1</div>
+            <div className="metric-label">Solana Network</div>
           </div>
         </div>
       </main>
