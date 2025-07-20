@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -18,6 +19,7 @@ serve(async (req) => {
       coingecko: Deno.env.get('COINGECKO_API_KEY'),
       santiment: Deno.env.get('SANTIMENT_API_KEY'),
       lunarcrush: Deno.env.get('LUNARCRUSH_API_KEY'),
+      solanaRpcUrl: Deno.env.get('SOLANA_RPC_URL'),
     }
 
     return new Response(

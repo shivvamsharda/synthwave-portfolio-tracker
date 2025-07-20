@@ -58,12 +58,18 @@ export interface SolanaYieldPosition {
 class SolanaYieldService {
   private connection: Connection;
 
-  constructor() {
-    // Use a high-performance RPC endpoint for better reliability
-    this.connection = new Connection(
-      'https://mainnet-beta.solana.com',
-      'confirmed'
-    );
+  constructor(customRpcUrl?: string) {
+    // Use custom RPC URL if provided, otherwise use mainnet-beta default
+    const rpcUrl = customRpcUrl || 'https://api.mainnet-beta.solana.com';
+    this.connection = new Connection(rpcUrl, 'confirmed');
+  }
+
+  /**
+   * Update RPC URL (useful when API keys are loaded)
+   */
+  updateRpcUrl(customRpcUrl: string) {
+    this.connection = new Connection(customRpcUrl, 'confirmed');
+    console.log(`Updated Solana Yield Service to RPC endpoint: ${customRpcUrl}`);
   }
 
   // Fetch all available protocols
@@ -280,4 +286,17 @@ class SolanaYieldService {
   }
 }
 
-export const solanaYieldService = new SolanaYieldService();
+// Create a service instance that will be updated with RPC URL when available
+let solanaYieldServiceInstance: SolanaYieldService | null = null;
+
+export const getSolanaYieldService = (customRpcUrl?: string): SolanaYieldService => {
+  if (!solanaYieldServiceInstance) {
+    solanaYieldServiceInstance = new SolanaYieldService(customRpcUrl);
+  } else if (customRpcUrl) {
+    solanaYieldServiceInstance.updateRpcUrl(customRpcUrl);
+  }
+  return solanaYieldServiceInstance;
+};
+
+// Export singleton instance (will be updated when RPC URL is available)  
+export const solanaYieldService = getSolanaYieldService();

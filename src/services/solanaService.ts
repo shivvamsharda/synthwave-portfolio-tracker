@@ -2,16 +2,12 @@ import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js'
 import { tokenMetadataService } from './tokenMetadataService'
 import { blockchainMetadataService } from './blockchainMetadataService'
 
-// Solana mainnet RPC endpoints with fallback (Helius as primary)
-const RPC_ENDPOINTS = [
-  'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15',
+// Fallback Solana mainnet RPC endpoints
+const FALLBACK_RPC_ENDPOINTS = [
   'https://solana-api.projectserum.com',
   'https://rpc.ankr.com/solana',
   'https://api.mainnet-beta.solana.com'
 ]
-
-let currentRpcIndex = 0
-const connection = new Connection(RPC_ENDPOINTS[currentRpcIndex], 'confirmed')
 
 export interface TokenBalance {
   mint: string
@@ -128,18 +124,31 @@ const KNOWN_TOKENS: Record<string, { symbol: string; name: string; logoURI?: str
 export class SolanaService {
   private connection: Connection
   private currentRpcIndex = 0
+  private rpcEndpoints: string[] = []
 
-  constructor() {
-    this.connection = new Connection(RPC_ENDPOINTS[this.currentRpcIndex], 'confirmed')
+  constructor(customRpcUrl?: string) {
+    // Use custom RPC URL if provided, otherwise use fallbacks
+    this.rpcEndpoints = customRpcUrl ? [customRpcUrl, ...FALLBACK_RPC_ENDPOINTS] : FALLBACK_RPC_ENDPOINTS
+    this.connection = new Connection(this.rpcEndpoints[this.currentRpcIndex], 'confirmed')
+  }
+
+  /**
+   * Update RPC URL (useful when API keys are loaded)
+   */
+  updateRpcUrl(customRpcUrl: string) {
+    this.rpcEndpoints = [customRpcUrl, ...FALLBACK_RPC_ENDPOINTS]
+    this.currentRpcIndex = 0
+    this.connection = new Connection(this.rpcEndpoints[this.currentRpcIndex], 'confirmed')
+    console.log(`Updated to RPC endpoint: ${this.rpcEndpoints[this.currentRpcIndex]}`)
   }
 
   /**
    * Try next RPC endpoint if current one fails
    */
   private async tryNextRpc(): Promise<boolean> {
-    this.currentRpcIndex = (this.currentRpcIndex + 1) % RPC_ENDPOINTS.length
-    this.connection = new Connection(RPC_ENDPOINTS[this.currentRpcIndex], 'confirmed')
-    console.log(`Switched to RPC endpoint: ${RPC_ENDPOINTS[this.currentRpcIndex]}`)
+    this.currentRpcIndex = (this.currentRpcIndex + 1) % this.rpcEndpoints.length
+    this.connection = new Connection(this.rpcEndpoints[this.currentRpcIndex], 'confirmed')
+    console.log(`Switched to RPC endpoint: ${this.rpcEndpoints[this.currentRpcIndex]}`)
     return true
   }
 
@@ -170,9 +179,6 @@ export class SolanaService {
     throw lastError
   }
 
-  /**
-   * Get SOL balance for a wallet
-   */
   async getSolBalance(walletAddress: string): Promise<number> {
     return this.executeWithFallback(async () => {
       const publicKey = new PublicKey(walletAddress)
@@ -181,9 +187,6 @@ export class SolanaService {
     })
   }
 
-  /**
-   * Get all SPL token balances for a wallet with enhanced metadata
-   */
   async getTokenBalances(walletAddress: string): Promise<TokenBalance[]> {
     return this.executeWithFallback(async () => {
       const publicKey = new PublicKey(walletAddress)
@@ -248,9 +251,6 @@ export class SolanaService {
     })
   }
 
-  /**
-   * Get complete wallet holdings (SOL + SPL tokens)
-   */
   async getWalletHoldings(walletAddress: string): Promise<WalletHoldings> {
     try {
       const [solBalance, tokens] = await Promise.all([
@@ -279,9 +279,6 @@ export class SolanaService {
     }
   }
 
-  /**
-   * Get holdings for multiple wallets
-   */
   async getMultipleWalletHoldings(walletAddresses: string[]): Promise<WalletHoldings[]> {
     try {
       const holdingsPromises = walletAddresses.map(address => 
@@ -296,5 +293,17 @@ export class SolanaService {
   }
 }
 
-// Export singleton instance
-export const solanaService = new SolanaService()
+// Create a service instance that will be updated with RPC URL when available
+let solanaServiceInstance: SolanaService | null = null
+
+export const getSolanaService = (customRpcUrl?: string): SolanaService => {
+  if (!solanaServiceInstance) {
+    solanaServiceInstance = new SolanaService(customRpcUrl)
+  } else if (customRpcUrl) {
+    solanaServiceInstance.updateRpcUrl(customRpcUrl)
+  }
+  return solanaServiceInstance
+}
+
+// Export singleton instance (will be updated when RPC URL is available)
+export const solanaService = getSolanaService()

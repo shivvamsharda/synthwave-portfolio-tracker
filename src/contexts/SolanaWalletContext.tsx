@@ -9,6 +9,7 @@ import { GlowWalletAdapter } from '@solana/wallet-adapter-glow'
 import { SlopeWalletAdapter } from '@solana/wallet-adapter-slope'
 import { TorusWalletAdapter } from '@solana/wallet-adapter-torus'
 import { clusterApiUrl } from '@solana/web3.js'
+import { useApiKeys } from '@/hooks/useApiKeys'
 
 // Import default styles
 import '@solana/wallet-adapter-react-ui/styles.css'
@@ -18,9 +19,12 @@ interface SolanaWalletProviderProps {
 }
 
 export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({ children }) => {
-  // Use devnet for development
-  const network = clusterApiUrl('devnet')
-  const endpoint = useMemo(() => network, [network])
+  const { apiKeys } = useApiKeys()
+  
+  // Use mainnet RPC from Supabase secrets, fallback to mainnet-beta
+  const endpoint = useMemo(() => {
+    return apiKeys.solanaRpcUrl || clusterApiUrl('mainnet-beta')
+  }, [apiKeys.solanaRpcUrl])
 
   const wallets = useMemo(
     () => [
