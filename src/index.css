@@ -8,35 +8,35 @@
 
 @layer base {
   :root {
-    /* Dark Web3 Theme */
-    --background: 230 20% 9%;
+    /* Black & Teal Theme */
+    --background: 0 0% 0%;
     --foreground: 0 0% 95%;
     
-    --card: 230 20% 12%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 95%;
     
-    --popover: 230 20% 12%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 95%;
     
-    /* Purple Primary */
-    --primary: 263 83% 65%;
+    /* Teal/Cyan Primary */
+    --primary: 162 100% 42%;
     --primary-foreground: 0 0% 98%;
-    --primary-light: 263 83% 85%;
-    --primary-lighter: 263 60% 75%;
-    --primary-soft: 263 40% 80%;
+    --primary-light: 162 80% 60%;
+    --primary-lighter: 162 60% 70%;
+    --primary-soft: 162 40% 80%;
     
     /* Dark Secondary */
-    --secondary: 217 32% 17%;
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 95%;
     
-    /* Purple Accent */
-    --accent: 280 100% 70%;
+    /* Teal Accent */
+    --accent: 162 85% 50%;
     --accent-foreground: 0 0% 98%;
-    --accent-light: 280 60% 80%;
+    --accent-light: 162 60% 70%;
     
     /* Dark grays */
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
     
     /* Red for negative */
     --destructive: 0 63% 31%;
@@ -47,24 +47,24 @@
     --success-foreground: 0 0% 100%;
     
     /* Dark borders */
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 263 83% 65%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 162 100% 42%;
     
     --radius: 0.75rem;
     
-    /* Web3 Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 83% 65%), hsl(280 100% 70%));
-    --gradient-secondary: linear-gradient(135deg, hsl(230 20% 12%), hsl(263 83% 65% / 0.1));
-    --gradient-accent: linear-gradient(90deg, hsl(263 83% 65% / 0.2), hsl(280 100% 70% / 0.2));
-    --gradient-hero: linear-gradient(135deg, hsl(230 20% 9%), hsl(263 83% 65% / 0.15), hsl(280 100% 70% / 0.1));
+    /* Teal Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(162 100% 42%), hsl(162 85% 50%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 8%), hsl(162 100% 42% / 0.1));
+    --gradient-accent: linear-gradient(90deg, hsl(162 100% 42% / 0.2), hsl(162 85% 50% / 0.2));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0%), hsl(162 100% 42% / 0.15), hsl(162 85% 50% / 0.1));
     
-    /* Dark shadows with glow */
-    --shadow-sm: 0 1px 2px 0 hsl(230 20% 5% / 0.8);
-    --shadow-md: 0 4px 6px -1px hsl(230 20% 5% / 0.8), 0 2px 4px -1px hsl(230 20% 5% / 0.6);
-    --shadow-lg: 0 10px 15px -3px hsl(230 20% 5% / 0.8), 0 4px 6px -2px hsl(230 20% 5% / 0.6);
-    --shadow-glow: 0 0 40px hsl(263 83% 65% / 0.3);
-    --shadow-navbar: 0 8px 32px hsl(230 20% 5% / 0.6);
+    /* Dark shadows with teal glow */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.8);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.8), 0 2px 4px -1px hsl(0 0% 0% / 0.6);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.8), 0 4px 6px -2px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 40px hsl(162 100% 42% / 0.3);
+    --shadow-navbar: 0 8px 32px hsl(0 0% 0% / 0.6);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -86,25 +86,25 @@
   }
 
   .dark {
-    --background: 222 84% 5%;
-    --foreground: 210 40% 98%;
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 92% 60%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 162 100% 42%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 162 85% 50%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 217 92% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 162 100% 42%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -211,8 +211,8 @@
 
   /* Web3 Animations */
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px hsl(263 83% 65% / 0.3); }
-    50% { box-shadow: 0 0 40px hsl(263 83% 65% / 0.5); }
+    0%, 100% { box-shadow: 0 0 20px hsl(162 100% 42% / 0.3); }
+    50% { box-shadow: 0 0 40px hsl(162 100% 42% / 0.5); }
   }
 
   @keyframes slide-up {
@@ -267,8 +267,8 @@
   /* Web3 specific styles */
   .web3-card {
     @apply bg-card border border-border/20 rounded-xl backdrop-blur-sm;
-    background: linear-gradient(135deg, hsl(230 20% 12% / 0.8), hsl(263 83% 65% / 0.05));
-    box-shadow: var(--shadow-lg), 0 0 0 1px hsl(263 83% 65% / 0.1);
+    background: linear-gradient(135deg, hsl(0 0% 8% / 0.8), hsl(162 100% 42% / 0.05));
+    box-shadow: var(--shadow-lg), 0 0 0 1px hsl(162 100% 42% / 0.1);
     transition: var(--transition-smooth);
   }
 
