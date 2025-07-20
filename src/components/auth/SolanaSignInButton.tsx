@@ -76,7 +76,9 @@ export function SolanaSignInButton() {
           Signing In...
         </Button>
       ) : (
-        <WalletMultiButton className="!w-full !bg-gradient-primary !text-primary-foreground !border-0 !rounded-lg !h-11 !font-medium hover:!opacity-90 transition-opacity" />
+        <div className="flex justify-center">
+          <WalletMultiButton className="!bg-gradient-primary !text-primary-foreground !border-0 !rounded-lg !h-11 !font-medium hover:!opacity-90 transition-opacity !mx-auto !block" />
+        </div>
       )}
     </div>
   )
