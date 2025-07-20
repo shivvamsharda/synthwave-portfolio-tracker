@@ -278,7 +278,7 @@ export function LandingPage() {
                   <div className="flex items-end space-x-3 mb-2">
                     <div className="text-2xl sm:text-3xl font-bold gradient-text">
                       <CountingNumber 
-                        end={parseInt(feature.value.replace(/[$,]/g, ''))} 
+                        target={parseInt(feature.value.replace(/[$,]/g, ''))} 
                         duration={2000}
                         prefix={feature.value.includes('$') ? '$' : ''}
                         suffix={feature.value.includes('$') ? '' : ''}
