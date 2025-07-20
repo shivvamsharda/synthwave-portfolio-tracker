@@ -109,9 +109,6 @@ export function LandingPage() {
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Pricing
-            </a>
             <Button 
               variant="outline" 
               onClick={() => navigate('/dashboard')}
@@ -140,13 +137,6 @@ export function LandingPage() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Features
-              </a>
-              <a 
-                href="#pricing" 
-                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Pricing
               </a>
               <Button 
                 variant="outline" 
@@ -302,73 +292,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-12 sm:py-16 lg:py-24 relative">
-        <div className="container px-4 sm:px-6">
-          <div className="text-center space-y-4 mb-12 sm:mb-16 animate-slide-up">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-              <span className="gradient-text">Choose Your Plan</span>
-            </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start free and scale as you grow. All plans include our core analytics features with enterprise-grade security.
-            </p>
-          </div>
-          
-          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
-            {plans.map((plan, index) => (
-              <div 
-                key={index} 
-                className={`web3-card p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-slide-up relative ${
-                  plan.highlighted 
-                    ? 'border-primary/50 shadow-glow lg:transform lg:scale-105' 
-                    : 'border-border/20'
-                }`}
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                {plan.highlighted && (
-                  <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-primary text-primary-foreground px-3 sm:px-4 py-1 animate-pulse-glow text-xs sm:text-sm">
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl sm:text-2xl font-bold text-foreground">{plan.name}</h3>
-                    <div className="flex items-end space-x-2">
-                      <span className="text-3xl sm:text-4xl font-bold gradient-text">{plan.price}</span>
-                      <span className="text-muted-foreground pb-1 text-sm sm:text-base">/month</span>
-                    </div>
-                    <p className="text-sm sm:text-base text-muted-foreground">{plan.description}</p>
-                  </div>
-                  
-                  <Button 
-                    className={`w-full ${plan.highlighted ? 'web3-button' : 'border-primary/30 hover:bg-primary/10'}`}
-                    variant={plan.highlighted ? 'default' : 'outline'}
-                    size={isMobile ? "default" : "lg"}
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    {plan.name === 'Free' ? 'Get Started' : 'Start Free Trial'}
-                  </Button>
-                </div>
-                
-                <div className="space-y-3 sm:space-y-4">
-                  <h4 className="font-semibold text-foreground text-sm sm:text-base">Everything included:</h4>
-                  <ul className="space-y-2 sm:space-y-3">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start space-x-3">
-                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="py-8 sm:py-12 border-t border-border/10 bg-background/50">
