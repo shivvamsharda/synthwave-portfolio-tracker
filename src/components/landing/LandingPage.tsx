@@ -7,7 +7,7 @@ import { useState } from "react"
 import { DashboardPreview } from "./DashboardPreview"
 import { MessagingPreview } from "./MessagingPreview"
 import { MobileDashboardPreview } from "./MobileDashboardPreview"
-import { DeviceStack } from "./DeviceStack"
+import { FeaturedAnalyticsCard } from "./FeaturedAnalyticsCard"
 import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -196,9 +196,9 @@ export function LandingPage() {
         <div className="absolute bottom-20 right-4 sm:right-10 w-32 sm:w-48 h-32 sm:h-48 bg-primary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left Side - Text Content */}
-            <div className="lg:col-span-5 space-y-6 sm:space-y-8 animate-slide-up text-center lg:text-left">
+            <div className="space-y-6 sm:space-y-8 animate-slide-up text-center lg:text-left">
               <div className="space-y-6 sm:space-y-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
                   <span className="text-foreground">Unlock the Power of</span>
@@ -231,14 +231,14 @@ export function LandingPage() {
               </div>
             </div>
             
-            {/* Right Side - Device Stack */}
-            <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
+            {/* Right Side - Featured Analytics Card */}
+            <div className="relative animate-slide-in-right flex items-center justify-center">
               {isMobile ? (
                 <div className="flex justify-center mt-8 lg:mt-0">
                   <MobileDashboardPreview />
                 </div>
               ) : (
-                <DeviceStack />
+                <FeaturedAnalyticsCard />
               )}
             </div>
           </div>
