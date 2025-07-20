@@ -1,299 +1,173 @@
+
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X } from "lucide-react"
+import { 
+  Menu, 
+  X, 
+  ArrowRight, 
+  TrendingUp, 
+  BarChart3, 
+  Activity, 
+  Shield, 
+  Target,
+  Zap,
+  Globe,
+  Brain,
+  PieChart,
+  LineChart,
+  Wallet,
+  Sparkles
+} from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
-import { DashboardPreview } from "./DashboardPreview"
-import { MessagingPreview } from "./MessagingPreview"
-import { MobileDashboardPreview } from "./MobileDashboardPreview"
-import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { CryptoDashboardCard } from "./CryptoDashboardCard"
+import { FeatureCard } from "./FeatureCard"
 
 export function LandingPage() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  const dashboardData = [
+    { title: "Shicke", value: "1,247", percentage: 75, chartData: [20, 35, 45, 50, 65, 70, 75], isPositive: true },
+    { title: "Cerrcic", value: "892", percentage: 60, chartData: [30, 25, 40, 55, 45, 60, 65], isPositive: true },
+    { title: "Blocric", value: "2,340", percentage: 85, chartData: [15, 25, 35, 50, 70, 80, 85], isPositive: true },
+    { title: "Cryptec", value: "1,156", percentage: 45, chartData: [60, 45, 35, 30, 40, 45, 50], isPositive: false }
+  ]
+
+  const insightCards = [
+    { title: "Cryobcaes", value: "1230.00", subtitle: "Current Price" },
+    { title: "Crytii Caise", value: "30", subtitle: "Active Trades" },
+    { title: "Crcoptc", value: "Analytics", subtitle: "Dashboard View" }
+  ]
+
   const features = [
-    {
-      icon: <TrendingUp className="h-8 w-8" />,
-      title: "Total Earnings Analytics",
-      description: "Track your portfolio performance with real-time value calculations and detailed earning breakdowns.",
-      value: "$2,847,329",
-      change: "+12.5%",
-      period: "24h"
-    },
-    {
-      icon: <Activity className="h-8 w-8" />,
-      title: "Real-Time Analytics",
-      description: "Monitor live market movements and transaction flows across all your connected wallets.",
-      value: "1,247",
-      change: "+8.2%",
-      period: "Active Tokens"
-    },
-    {
-      icon: <BarChart3 className="h-8 w-8" />,
-      title: "Advanced Insights",
-      description: "Get deep analytics on token flows, holder movements, and market sentiment analysis.",
-      value: "847",
-      change: "+15.7%",
-      period: "Insights Generated"
-    }
+    { icon: Brain, title: "Insights", description: "Advanced AI-powered market insights and trend analysis for better decision making." },
+    { icon: PieChart, title: "Portfolios", description: "Comprehensive portfolio tracking and management across multiple wallets." },
+    { icon: Shield, title: "Risk Management", description: "Intelligent risk assessment and automated safety measures for your investments." },
+    { icon: TrendingUp, title: "Trends", description: "Real-time market trends and predictive analytics for crypto movements." },
+    { icon: Target, title: "Strategies", description: "Customized trading strategies based on your risk profile and goals." },
+    { icon: BarChart3, title: "Performance", description: "Detailed performance analytics and historical data visualization." },
+    { icon: Zap, title: "Optimization", description: "Portfolio optimization tools to maximize returns and minimize risks." },
+    { icon: LineChart, title: "Forecasting", description: "Machine learning-powered price predictions and market forecasting." }
   ]
-
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      description: "Perfect for getting started with Neptune AI analytics",
-      features: [
-        "Up to 3 wallet connections",
-        "Basic portfolio tracking",
-        "24-hour data history",
-        "Community support"
-      ],
-      highlighted: false
-    },
-    {
-      name: "Professional",
-      price: "$29",
-      description: "Advanced analytics for serious Web3 users and traders",
-      features: [
-        "Unlimited wallet connections",
-        "Real-time analytics",
-        "90-day data history",
-        "Advanced charting tools",
-        "Email notifications",
-        "Priority support"
-      ],
-      highlighted: true
-    },
-    {
-      name: "Enterprise",
-      price: "$99",
-      description: "Complete solution for institutions and power users",
-      features: [
-        "Everything in Professional",
-        "Custom analytics dashboard",
-        "API access",
-        "White-label options",
-        "Dedicated account manager",
-        "Custom integrations"
-      ],
-      highlighted: false
-    }
-  ]
-
-  // Sample data for animations
-  const portfolioData = [1200, 1350, 1180, 1620, 1890, 2100, 1950, 2340, 2680, 2470, 2847];
-  const analyticsData = [420, 380, 510, 490, 650, 720, 680, 820, 960, 1050, 1247];
-  const insightsData = [120, 185, 210, 340, 420, 380, 520, 610, 730, 680, 847];
 
   return (
-    <div className="min-h-screen bg-gradient-hero overflow-hidden">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="relative z-50 border-b border-border/10 bg-background/20 backdrop-blur-xl shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img 
-              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-              alt="Neptune AI Logo" 
-              className="h-8 w-8 object-contain"
-            />
-            <span className="text-lg sm:text-xl font-bold gradient-text">Neptune AI</span>
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Features
-            </a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Pricing
-            </a>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/dashboard')}
-              className="px-6 py-2.5 border-primary/30 hover:bg-primary/10 hover:shadow-glow transition-all duration-300 font-medium"
-            >
-              Sign In
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/10 shadow-xl">
-            <div className="px-4 py-6 space-y-4">
-              <a 
-                href="#features" 
-                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+      <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-sm font-bold text-primary-foreground">C</span>
+              </div>
+              <span className="text-xl font-bold gradient-text">Cryptic</span>
+            </div>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                 Features
               </a>
-              <a 
-                href="#pricing" 
-                className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Pricing
+              <a href="#insights" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                Insights
+              </a>
+              <a href="#analytics" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                Analytics
               </a>
               <Button 
                 variant="outline" 
-                onClick={() => {
-                  navigate('/dashboard')
-                  setMobileMenuOpen(false)
-                }}
-                className="w-full mt-4 border-primary/30 hover:bg-primary/10 hover:shadow-glow transition-all duration-300 font-medium"
+                onClick={() => navigate('/dashboard')}
+                className="border-border hover:bg-card"
               >
                 Sign In
               </Button>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
-        )}
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-border bg-card/50 backdrop-blur-xl">
+              <div className="px-4 py-6 space-y-4">
+                <a href="#features" className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2">
+                  Features
+                </a>
+                <a href="#insights" className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2">
+                  Insights
+                </a>
+                <a href="#analytics" className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2">
+                  Analytics
+                </a>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full border-border hover:bg-card"
+                >
+                  Sign In
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden">
+      <section className="relative py-16 lg:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero"></div>
         
-        {/* Background Elements */}
-        <div className="absolute top-20 left-4 sm:left-10 w-24 sm:w-32 h-24 sm:h-32 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-4 sm:right-10 w-32 sm:w-48 h-32 sm:h-48 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-            {/* Left Side - Text Content */}
-            <div className="lg:col-span-5 space-y-6 sm:space-y-8 animate-slide-up text-center lg:text-left">
-              <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit mx-auto lg:mx-0 mb-2">
-                <Zap className="mr-2 h-4 w-4" />
-                <span className="text-xs sm:text-sm">Version 1.3 is available now</span>
-              </Badge>
-              
-              <div className="space-y-6 sm:space-y-8">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-                  <span className="gradient-text">Unlock the Power of Data with AI</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left Side - Content */}
+            <div className="space-y-8 animate-slide-up text-center lg:text-left">
+              <div className="space-y-6">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                  <span className="text-foreground">Unlock the Power of</span>
+                  <br />
+                  <span className="gradient-text">Crypto</span>
                 </h1>
                 
-                <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
-                  Empower your business with cutting-edge AI analytics. Monitor your entire Web3 portfolio with advanced insights, real-time notifications, and intelligent automation.
+                <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
+                  Dive into the world of cryptocurrency with our cutting-edge analytics platform. 
+                  Make informed decisions with real-time data and AI-powered insights.
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button 
-                  size={isMobile ? "default" : "lg"}
-                  onClick={() => navigate('/dashboard')} 
-                  className="web3-button group px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
+                  size="lg"
+                  onClick={() => navigate('/dashboard')}
+                  className="crypto-button px-8 py-4 text-base"
                 >
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+                  Explore
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 
                 <Button 
-                  variant="outline" 
-                  size={isMobile ? "default" : "lg"}
-                  className="border-primary/30 hover:bg-primary/10 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-medium w-full sm:w-auto"
+                  size="lg"
+                  className="crypto-button-dark px-8 py-4 text-base"
                 >
-                  Watch Demo
+                  Start Now
                 </Button>
-              </div>
-              
-              {/* User Avatars Section - Hidden on mobile for cleaner look */}
-              <div className="hidden sm:flex items-center space-x-4 pt-4 justify-center lg:justify-start">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground"
-                    >
-                      {String.fromCharCode(65 + i)}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground text-sm sm:text-base">Over 50+ Users</span>
-                  <br />
-                  <span className="text-muted-foreground">Join our growing community</span>
-                </div>
               </div>
             </div>
             
             {/* Right Side - Dashboard Preview */}
-            <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
-              {isMobile ? (
-                <div className="flex justify-center mt-8 lg:mt-0">
-                  <MobileDashboardPreview />
-                </div>
-              ) : (
-                <DashboardPreview />
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* Messaging Integration Section */}
-      <section className="py-12 sm:py-16 lg:py-24 relative">
-        <div className="container px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-            {/* Left Side - Messaging Preview */}
-            <div className="space-y-6 sm:space-y-8 animate-slide-up order-2 lg:order-1">
-              <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-                  <span className="text-foreground">Realtime Messaging</span>
-                  <br />
-                  <span className="gradient-text">Integration</span>
-                </h2>
-                
-                <div className="flex justify-center lg:justify-start">
-                  <MessagingPreview />
-                </div>
-              </div>
-            </div>
-            
-            {/* Right Side - Features */}
-            <div className="space-y-6 sm:space-y-8 animate-slide-in-right order-1 lg:order-2">
-              <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-                  <span className="text-foreground">Realtime Notification</span>
-                  <br />
-                  <span className="gradient-text">Integration</span>
-                </h2>
-                
-                <p className="text-base sm:text-lg text-muted-foreground">
-                  Stay connected with your portfolio through instant notifications, 
-                  real-time alerts, and collaborative messaging features.
-                </p>
-              </div>
-              
-              <div className="grid gap-3 sm:gap-4">
-                {[
-                  { icon: <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Instant portfolio updates", delay: '0.2s' },
-                  { icon: <Bell className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Smart alert system", delay: '0.4s' },
-                  { icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Team collaboration", delay: '0.6s' },
-                  { icon: <Wallet className="h-4 w-4 sm:h-5 sm:w-5" />, text: "Multi-wallet notifications", delay: '0.8s' }
-                ].map((item, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg bg-card/50 border border-border/20 animate-slide-in-right"
-                    style={{ animationDelay: item.delay }}
-                  >
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
-                      {item.icon}
-                    </div>
-                    <span className="text-sm sm:text-base text-foreground font-medium">{item.text}</span>
+            <div className="relative animate-fade-in">
+              <div className="grid grid-cols-2 gap-4">
+                {dashboardData.slice(0, 4).map((item, index) => (
+                  <div key={index} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <CryptoDashboardCard {...item} />
                   </div>
                 ))}
               </div>
@@ -302,68 +176,113 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-12 sm:py-16 lg:py-24 relative">
-        <div className="container px-4 sm:px-6">
-          <div className="text-center space-y-4 mb-12 sm:mb-16 animate-slide-up">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-              <span className="gradient-text">Choose Your Plan</span>
+      {/* Analytics Dashboard Section */}
+      <section className="py-16 lg:py-24 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4 mb-16 animate-slide-up">
+            <h2 className="text-3xl lg:text-4xl font-bold">
+              <span className="gradient-text">Revolutionize Your</span>
+              <br />
+              <span className="text-foreground">Trading Experience</span>
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start free and scale as you grow. All plans include our core analytics features with enterprise-grade security.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Advanced analytics and real-time monitoring for your crypto portfolio
             </p>
           </div>
           
-          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
-            {plans.map((plan, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {dashboardData.map((item, index) => (
               <div 
                 key={index} 
-                className={`web3-card p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 animate-slide-up relative ${
-                  plan.highlighted 
-                    ? 'border-primary/50 shadow-glow lg:transform lg:scale-105' 
-                    : 'border-border/20'
-                }`}
+                className="animate-slide-up" 
+                style={{ animationDelay: `${index * 0.15}s` }}
+              >
+                <CryptoDashboardCard {...item} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Insights Section */}
+      <section id="insights" className="py-16 lg:py-24 bg-card/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4 mb-16 animate-slide-up">
+            <h2 className="text-3xl lg:text-4xl font-bold">
+              <span className="text-foreground">Empowering</span>{" "}
+              <span className="gradient-text">Crypto Insights</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Advanced analytics tools to help you make informed decisions in the crypto market
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {insightCards.map((card, index) => (
+              <Card 
+                key={index} 
+                className="crypto-card p-8 text-center animate-slide-up"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
-                {plan.highlighted && (
-                  <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-primary text-primary-foreground px-3 sm:px-4 py-1 animate-pulse-glow text-xs sm:text-sm">
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl sm:text-2xl font-bold text-foreground">{plan.name}</h3>
-                    <div className="flex items-end space-x-2">
-                      <span className="text-3xl sm:text-4xl font-bold gradient-text">{plan.price}</span>
-                      <span className="text-muted-foreground pb-1 text-sm sm:text-base">/month</span>
-                    </div>
-                    <p className="text-sm sm:text-base text-muted-foreground">{plan.description}</p>
-                  </div>
+                <CardContent className="p-0 space-y-4">
+                  <h3 className="text-xl font-bold text-foreground">{card.title}</h3>
+                  <div className="text-3xl font-bold gradient-text">{card.value}</div>
+                  <p className="text-sm text-muted-foreground">{card.subtitle}</p>
                   
-                  <Button 
-                    className={`w-full ${plan.highlighted ? 'web3-button' : 'border-primary/30 hover:bg-primary/10'}`}
-                    variant={plan.highlighted ? 'default' : 'outline'}
-                    size={isMobile ? "default" : "lg"}
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    {plan.name === 'Free' ? 'Get Started' : 'Start Free Trial'}
-                  </Button>
-                </div>
-                
-                <div className="space-y-3 sm:space-y-4">
-                  <h4 className="font-semibold text-foreground text-sm sm:text-base">Everything included:</h4>
-                  <ul className="space-y-2 sm:space-y-3">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start space-x-3">
-                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm text-muted-foreground">{feature}</span>
-                      </li>
+                  {/* Mini chart visualization */}
+                  <div className="h-16 w-full bg-gradient-to-r from-primary/20 to-transparent rounded-lg flex items-end justify-center space-x-1 p-2">
+                    {[...Array(8)].map((_, i) => (
+                      <div 
+                        key={i}
+                        className="bg-primary/60 rounded-sm animate-pulse"
+                        style={{ 
+                          height: `${20 + Math.random() * 40}px`,
+                          width: '6px',
+                          animationDelay: `${i * 0.1}s`
+                        }}
+                      />
                     ))}
-                  </ul>
-                </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <Button 
+              size="lg"
+              onClick={() => navigate('/dashboard')}
+              className="crypto-button px-8 py-4"
+            >
+              Dive In
+              <Sparkles className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4 mb-16 animate-slide-up">
+            <h2 className="text-3xl lg:text-4xl font-bold">
+              <span className="gradient-text">Amplify Your</span>
+              <br />
+              <span className="text-foreground">Crypto Success</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Discover trends and opportunities with our comprehensive suite of crypto analytics tools
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <div 
+                key={index} 
+                className="animate-slide-up" 
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <FeatureCard {...feature} />
               </div>
             ))}
           </div>
@@ -371,26 +290,59 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 sm:py-12 border-t border-border/10 bg-background/50">
-        <div className="container px-4 sm:px-6">
-          <div className="flex flex-col items-center justify-center space-y-6 md:flex-row md:justify-between md:space-y-0">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-                alt="Neptune AI Logo" 
-                className="h-6 sm:h-8 w-6 sm:w-8 object-contain"
-              />
-              <span className="text-lg sm:text-xl font-bold gradient-text">Neptune AI</span>
+      <footer className="py-16 border-t border-border bg-card/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <span className="text-sm font-bold text-primary-foreground">C</span>
+                </div>
+                <span className="text-xl font-bold gradient-text">Cryptic</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Advanced crypto analytics platform for informed trading decisions.
+              </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 lg:space-x-8 text-xs sm:text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-primary transition-colors">Support</a>
+            {/* Company */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground">Company</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-primary transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Team</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Press</a></li>
+              </ul>
             </div>
             
-            <p className="text-xs sm:text-sm text-muted-foreground text-center md:text-left">
-              © 2024 Neptune AI. All rights reserved.
+            {/* Resources */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground">Resources</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-primary transition-colors">Guides</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Webinars</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Support</a></li>
+              </ul>
+            </div>
+            
+            {/* Connect */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground">Connect</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-primary transition-colors">Twitter</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">LinkedIn</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Discord</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Telegram</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-12 pt-8 border-t border-border text-center">
+            <p className="text-sm text-muted-foreground">
+              © 2024 Cryptic. All rights reserved.
             </p>
           </div>
         </div>
