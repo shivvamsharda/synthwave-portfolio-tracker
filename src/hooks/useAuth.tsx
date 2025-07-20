@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
@@ -63,15 +64,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithSolanaWallet = async (wallet: any) => {
     try {
       console.log('Starting Solana wallet sign in...', {
-        walletName: wallet?.adapter?.name,
-        walletConnected: wallet?.adapter?.connected,
-        publicKey: wallet?.adapter?.publicKey?.toString()
+        walletName: wallet?.wallet?.adapter?.name || wallet?.adapter?.name,
+        walletConnected: wallet?.connected,
+        publicKey: wallet?.publicKey?.toString(),
+        selectedWallet: wallet?.wallet?.adapter?.name,
+        defaultAdapter: wallet?.adapter?.name
       })
+
+      // Use the selected wallet adapter, not the default adapter
+      const selectedAdapter = wallet?.wallet?.adapter || wallet?.adapter
+      
+      if (!selectedAdapter) {
+        console.error('No wallet adapter found')
+        return { error: { message: 'No wallet adapter available' } as AuthError }
+      }
+
+      console.log('Using wallet adapter:', selectedAdapter.name)
 
       const { data, error } = await supabase.auth.signInWithWeb3({
         chain: 'solana',
         statement: 'I accept the Terms of Service by signing in with my Solana wallet.',
-        wallet: wallet.adapter,
+        wallet: selectedAdapter,
       })
 
       if (error) {
