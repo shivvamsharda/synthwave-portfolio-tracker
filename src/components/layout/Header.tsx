@@ -63,34 +63,6 @@ export function Header({ onNavigate }: HeaderProps) {
           >
             Dashboard
           </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("wallets")} 
-            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
-          >
-            Wallets
-          </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("analytics")} 
-            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
-          >
-            Analytics
-          </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("nfts")} 
-            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
-          >
-            NFTs
-          </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("yield")} 
-            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
-          >
-            Yield
-          </Button>
         </nav>
 
         {/* Actions */}
@@ -145,34 +117,6 @@ export function Header({ onNavigate }: HeaderProps) {
               className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
             >
               Dashboard
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("wallets")} 
-              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
-            >
-              Wallets
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("analytics")} 
-              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
-            >
-              Analytics
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("nfts")} 
-              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
-            >
-              NFTs
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("yield")} 
-              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
-            >
-              Yield
             </Button>
             <div className="border-t border-border/30 pt-4 mt-4">
               <Button 
