@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +7,7 @@ import { useState, useEffect, useRef } from "react"
 import { DashboardPreview } from "./DashboardPreview"
 import { MessagingPreview } from "./MessagingPreview"
 import { MobileDashboardPreview } from "./MobileDashboardPreview"
+import { FeatureCarousel } from "./FeatureCarousel"
 import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -234,6 +234,25 @@ export function LandingPage() {
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Feature Screenshots Carousel Section */}
+      <section className="py-16 lg:py-24 relative">
+        <div className="container px-6">
+          <div className="text-center space-y-6 mb-16 animate-slide-up">
+            <h2 className="section-title">
+              <span className="text-foreground">See Our Platform</span>
+              <br />
+              <span className="gradient-text">In Action</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto font-medium">
+              Explore our comprehensive crypto analytics platform through these interactive screenshots. 
+              From portfolio management to AI-powered insights, see how we're revolutionizing crypto analytics.
+            </p>
+          </div>
+          
+          <FeatureCarousel />
         </div>
       </section>
 
