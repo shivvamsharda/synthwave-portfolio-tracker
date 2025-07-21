@@ -8,37 +8,37 @@ const features = [
   {
     title: "Portfolio Dashboard",
     description: "Comprehensive overview of your entire crypto portfolio with real-time value tracking and performance analytics.",
-    image: "/lovable-uploads/9fb7b51a-2b81-4a22-960f-8b7a6e34b82c.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Dashboard%20Overview.png"
   },
   {
     title: "Token Holdings",
     description: "Detailed breakdown of your token holdings with current prices, 24h changes, and portfolio allocation percentages.",
-    image: "/lovable-uploads/be8f9a79-d44c-4c8c-a9f8-c3d8b17db9e7.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Token%20Holdings.png"
   },
   {
     title: "Token Analytics",
     description: "Advanced analytics for any token including market data, trading volume, and comprehensive performance metrics.",
-    image: "/lovable-uploads/95528b8b-e49b-4d8a-9b49-d1b8de2b2b93.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Token%20Analytics.png"
   },
   {
     title: "AI Risk Assessment",
     description: "Intelligent risk scoring powered by AI analyzing price volatility, liquidity, and market sentiment for informed decisions.",
-    image: "/lovable-uploads/7c2c7cf3-e0a4-4c29-a00b-4c3e9b5a5c77.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//AI%20Risk%20Assessment.png"
   },
   {
     title: "Holder Movement Analysis",
     description: "Track wallet behavior patterns, new holders vs exits, and understand token flow dynamics over time.",
-    image: "/lovable-uploads/8e4f9a7c-3b9e-4a1a-8f2e-5c6d7e8f9a0b.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Holder%20Movement%20Analysis.png"
   },
   {
     title: "Whale Tracker",
     description: "Monitor large wallet movements and whale activity to stay ahead of market-moving transactions.",
-    image: "/lovable-uploads/1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Whale%20Tracker.png"
   },
   {
     title: "Token Flow Analysis",
     description: "Visualize real-time token movements across wallets and protocols with detailed flow mapping.",
-    image: "/lovable-uploads/2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e.png"
+    image: "https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//Token%20Flow%20Analysis.png"
   }
 ]
 
@@ -103,6 +103,10 @@ export function FeatureCarousel() {
                       alt={feature.title}
                       className="w-full h-auto object-cover"
                       loading="lazy"
+                      onError={(e) => {
+                        console.error(`Failed to load image for ${feature.title}:`, feature.image)
+                        e.currentTarget.style.display = 'none'
+                      }}
                     />
                   </Card>
                 </div>
