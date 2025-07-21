@@ -13,11 +13,16 @@ export function usePortfolioProcessing(
       statistics: { totalTokens: 0, uniqueTokens: 0, totalValue: 0 } 
     }
 
+    // Filter out tokens without valid pricing data
+    const tokensWithPrices = portfolio.filter(token => 
+      token.usd_value > 0 && token.token_price > 0
+    )
+
     // Aggregate tokens across wallets
     const tokenMap = new Map()
     const byWallet: Record<string, any[]> = {}
 
-    portfolio.forEach(token => {
+    tokensWithPrices.forEach(token => {
       const key = token.token_mint
       
       // Group by wallet
