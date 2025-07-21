@@ -18,6 +18,7 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
   const { orders, loading, error, lastUpdated, refreshOrderHistory } = useJupiterOrderHistory()
   const { wallets } = useWallet()
   const [selectedWallet, setSelectedWallet] = useState<string>("all")
+  const [selectedStatus, setSelectedStatus] = useState<string>("all")
 
   // Group orders by wallet
   const ordersByWallet = orders.reduce((acc, order) => {
@@ -35,13 +36,29 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
     return wallet?.wallet_name || `${address.slice(0, 4)}...${address.slice(-4)}`
   }
 
-  // Filter orders based on selected wallet
-  const filteredOrders = selectedWallet === "all" 
-    ? orders 
-    : orders.filter(order => order.userPubkey === selectedWallet)
+  // Filter orders based on selected wallet and status
+  const filteredOrders = orders.filter(order => {
+    const walletMatch = selectedWallet === "all" || order.userPubkey === selectedWallet
+    const statusMatch = selectedStatus === "all" || 
+      (selectedStatus === "active" && (order.status === "Open" || order.status === "Active")) ||
+      (selectedStatus === "completed" && order.status === "Completed") ||
+      (selectedStatus === "cancelled" && order.status === "Cancelled")
+    
+    return walletMatch && statusMatch
+  })
 
-  // Get available wallets that have orders
-  const walletsWithOrders = Object.keys(ordersByWallet)
+  // Group filtered orders by wallet
+  const filteredOrdersByWallet = filteredOrders.reduce((acc, order) => {
+    const walletAddress = order.userPubkey
+    if (!acc[walletAddress]) {
+      acc[walletAddress] = []
+    }
+    acc[walletAddress].push(order)
+    return acc
+  }, {} as Record<string, typeof orders>)
+
+  // Get available wallets that have filtered orders
+  const walletsWithFilteredOrders = Object.keys(filteredOrdersByWallet)
 
   const LoadingSkeleton = () => (
     <div className="space-y-3">
@@ -133,30 +150,58 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
         </Button>
       </div>
 
-      {/* Wallet Filter */}
-      {!loading && orders.length > 0 && walletsWithOrders.length > 1 && (
-        <div className="mb-4">
-          <Select value={selectedWallet} onValueChange={setSelectedWallet}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select wallet" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                <div className="flex items-center space-x-2">
-                  <Wallet className="w-4 h-4" />
-                  <span>All Wallets ({orders.length} orders)</span>
-                </div>
-              </SelectItem>
-              {walletsWithOrders.map((walletAddress) => (
-                <SelectItem key={walletAddress} value={walletAddress}>
-                  <div className="flex items-center space-x-2">
-                    <Wallet className="w-4 h-4" />
-                    <span>{getWalletName(walletAddress)} ({ordersByWallet[walletAddress].length} orders)</span>
-                  </div>
+      {/* Filters */}
+      {!loading && orders.length > 0 && (
+        <div className="mb-4 space-y-3">
+          {/* Status Filter */}
+          <div>
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <span>All Status ({orders.length} orders)</span>
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                <SelectItem value="active">
+                  <span>Active ({orders.filter(o => o.status === "Open" || o.status === "Active").length} orders)</span>
+                </SelectItem>
+                <SelectItem value="completed">
+                  <span>Completed ({orders.filter(o => o.status === "Completed").length} orders)</span>
+                </SelectItem>
+                <SelectItem value="cancelled">
+                  <span>Cancelled ({orders.filter(o => o.status === "Cancelled").length} orders)</span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Wallet Filter - only show if multiple wallets have filtered orders */}
+          {walletsWithFilteredOrders.length > 1 && (
+            <div>
+              <Select value={selectedWallet} onValueChange={setSelectedWallet}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select wallet" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    <div className="flex items-center space-x-2">
+                      <Wallet className="w-4 h-4" />
+                      <span>All Wallets ({filteredOrders.length} orders)</span>
+                    </div>
+                  </SelectItem>
+                  {walletsWithFilteredOrders.map((walletAddress) => (
+                    <SelectItem key={walletAddress} value={walletAddress}>
+                      <div className="flex items-center space-x-2">
+                        <Wallet className="w-4 h-4" />
+                        <span>{getWalletName(walletAddress)} ({filteredOrdersByWallet[walletAddress].length} orders)</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       )}
 
@@ -166,14 +211,14 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
           <LoadingSkeleton />
         ) : error ? (
           <ErrorState />
-        ) : orders.length === 0 ? (
+        ) : filteredOrders.length === 0 ? (
           <EmptyState />
         ) : (
           <ScrollArea className="h-full">
             <div className="space-y-3 pr-4">
               {selectedWallet === "all" ? (
                 // Show grouped by wallet when "All Wallets" is selected
-                Object.entries(ordersByWallet).map(([walletAddress, walletOrders]) => (
+                Object.entries(filteredOrdersByWallet).map(([walletAddress, walletOrders]) => (
                   <div key={walletAddress} className="space-y-3">
                     {/* Wallet Header */}
                     <div className="flex items-center space-x-2 px-3 py-2 bg-muted/20 rounded-lg">

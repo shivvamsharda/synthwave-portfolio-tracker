@@ -18,7 +18,7 @@ interface JupiterOrder {
   expiredAt: string | null
   createdAt: string
   updatedAt: string
-  status: 'Completed' | 'Cancelled' | 'Active' | 'Expired'
+  status: 'Completed' | 'Cancelled' | 'Active' | 'Expired' | 'Open'
   openTx: string
   closeTx: string | null
   programVersion: string
@@ -131,21 +131,33 @@ export class JupiterOrderHistoryService {
   }
 
   /**
-   * Get order history for multiple wallets
+   * Get order history for multiple wallets with multiple statuses
    */
-  static async getOrderHistoryForWallets(walletAddresses: string[]): Promise<ProcessedJupiterOrder[]> {
+  static async getOrderHistoryForWallets(
+    walletAddresses: string[], 
+    orderStatuses: ('history' | 'active')[] = ['history']
+  ): Promise<ProcessedJupiterOrder[]> {
     if (walletAddresses.length === 0) return []
 
     try {
-      const orderPromises = walletAddresses.map(address => 
-        this.getOrderHistory(address, 'history', 1)
-      )
+      const orderPromises: Promise<ProcessedJupiterOrder[]>[] = []
+      
+      // Fetch for each wallet and each status
+      walletAddresses.forEach(address => {
+        orderStatuses.forEach(status => {
+          orderPromises.push(this.getOrderHistory(address, status, 1))
+        })
+      })
       
       const orderResults = await Promise.all(orderPromises)
       const allOrders = orderResults.flat()
       
-      // Sort by creation date (newest first)
-      return allOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      // Remove duplicates based on orderKey and sort by creation date (newest first)
+      const uniqueOrders = Array.from(
+        new Map(allOrders.map(order => [order.orderKey, order])).values()
+      )
+      
+      return uniqueOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     } catch (error) {
       console.error('Error fetching order history for multiple wallets:', error)
       return []

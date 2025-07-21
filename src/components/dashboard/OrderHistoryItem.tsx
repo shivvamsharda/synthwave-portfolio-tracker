@@ -17,6 +17,7 @@ export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
       case 'Cancelled':
         return 'bg-red-50 text-red-700 border-red-200'
       case 'Active':
+      case 'Open':
         return 'bg-blue-50 text-blue-700 border-blue-200'
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200'
@@ -30,10 +31,15 @@ export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
       case 'Cancelled':
         return <XCircle className="w-3 h-3" />
       case 'Active':
+      case 'Open':
         return <Activity className="w-3 h-3" />
       default:
         return <Clock className="w-3 h-3" />
     }
+  }
+
+  const getDisplayStatus = (status: string) => {
+    return status === 'Open' ? 'Active' : status
   }
 
   const handleViewTransaction = (txId: string) => {
@@ -57,7 +63,7 @@ export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
         <div className="flex items-center space-x-2">
           <Badge className={`text-xs ${getStatusColor(order.status)}`}>
             {getStatusIcon(order.status)}
-            <span className="ml-1">{order.status}</span>
+            <span className="ml-1">{getDisplayStatus(order.status)}</span>
           </Badge>
           {order.tradesCount > 0 && (
             <Badge variant="outline" className="text-xs">

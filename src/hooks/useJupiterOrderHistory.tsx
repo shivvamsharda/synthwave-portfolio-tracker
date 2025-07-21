@@ -24,7 +24,8 @@ export function useJupiterOrderHistory() {
       const walletAddresses = wallets.map(wallet => wallet.wallet_address)
       console.log('[JupiterOrderHistory] Fetching order history for wallets:', walletAddresses)
       
-      const orderHistory = await jupiterOrderHistoryService.getOrderHistoryForWallets(walletAddresses)
+      // Fetch both history and active orders
+      const orderHistory = await jupiterOrderHistoryService.getOrderHistoryForWallets(walletAddresses, ['history', 'active'])
       console.log('[JupiterOrderHistory] Received order history:', orderHistory.length, 'orders')
       
       setOrders(orderHistory)
