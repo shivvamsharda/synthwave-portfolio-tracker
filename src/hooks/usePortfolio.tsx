@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from './useAuth'
 import { useWallet } from './useWallet'
@@ -37,21 +38,12 @@ export function usePortfolio() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [dataFreshness, setDataFreshness] = useState<'fresh' | 'stale' | 'cached'>('cached')
   const [isOperationInProgress, setIsOperationInProgress] = useState(false)
-  const [backgroundRefreshing, setBackgroundRefreshing] = useState(false)
 
-  // Load portfolio from database on component mount and when wallets change
+  // Load portfolio from database on component mount and when wallets change (NO AUTO-REFRESH)
   useEffect(() => {
     if (user && wallets.length > 0) {
       console.log(`[Portfolio] Loading portfolio for ${wallets.length} wallets:`, wallets.map(w => w.wallet_address))
       loadPortfolioFromDB()
-      
-      // Always refresh on page load for fresh data
-      const timer = setTimeout(() => {
-        console.log('[Portfolio] Auto-refreshing portfolio on page load')
-        refreshPortfolioInBackground()
-      }, 2000) // Small delay to show cached data first
-      
-      return () => clearTimeout(timer)
     } else if (user && wallets.length === 0) {
       console.log('[Portfolio] No wallets connected, clearing all portfolio display immediately')
       setPortfolio([])
@@ -72,12 +64,12 @@ export function usePortfolio() {
     }
   }, [user, wallets])
 
-  // Check data freshness
+  // Check data freshness (but don't auto-refresh)
   useEffect(() => {
     if (lastUpdated && wallets.length > 0) {
       const timeSinceUpdate = Date.now() - lastUpdated.getTime()
       if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
-        console.log('[Portfolio] Data is stale, showing stale indicator')
+        console.log('[Portfolio] Data is stale, showing stale indicator (no auto-refresh)')
         setDataFreshness('stale')
       } else {
         setDataFreshness('fresh')
@@ -126,7 +118,7 @@ export function usePortfolio() {
   }
 
   /**
-   * Load portfolio data from database with freshness checking
+   * Load portfolio data from database
    */
   const loadPortfolioFromDB = async () => {
     if (!user || wallets.length === 0 || isOperationInProgress) return
@@ -170,7 +162,7 @@ export function usePortfolio() {
           const timeSinceUpdate = Date.now() - mostRecentUpdate.getTime()
           if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
             setDataFreshness('stale')
-            console.log('[Portfolio] Portfolio data is stale, will refresh in background')
+            console.log('[Portfolio] Portfolio data is stale (no auto-refresh)')
           } else {
             setDataFreshness('fresh')
             console.log('[Portfolio] Portfolio data is fresh')
@@ -188,28 +180,7 @@ export function usePortfolio() {
   }
 
   /**
-   * Background refresh that doesn't interrupt user experience
-   */
-  const refreshPortfolioInBackground = async () => {
-    if (!user || wallets.length === 0 || refreshing || backgroundRefreshing || isOperationInProgress) {
-      console.log('[Portfolio] Skipping background refresh - conditions not met')
-      return
-    }
-
-    setBackgroundRefreshing(true)
-    console.log('[Portfolio] Starting background refresh')
-    
-    try {
-      await refreshPortfolio()
-    } catch (error) {
-      console.error('[Portfolio] Background refresh failed:', error)
-    } finally {
-      setBackgroundRefreshing(false)
-    }
-  }
-
-  /**
-   * Force refresh portfolio by fetching from Solana blockchain (MANUAL ONLY)
+   * Manual refresh portfolio by fetching from Solana blockchain (MANUAL ONLY)
    */
   const refreshPortfolio = async (retryCount = 0) => {
     if (!user || wallets.length === 0) {
@@ -380,7 +351,7 @@ export function usePortfolio() {
         
         await loadPortfolioFromDB()
         
-        // Dispatch event ONLY after successful completion (debounced)
+        // Dispatch event ONLY after successful manual refresh (single event)
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('portfolio-updated'))
         }, 500)
@@ -557,13 +528,13 @@ export function usePortfolio() {
     portfolio,
     loading,
     refreshing,
-    backgroundRefreshing,
+    backgroundRefreshing: false, // Always false now
     lastUpdated,
     dataFreshness,
     
     // Actions
-    refreshPortfolio,
-    refreshPortfolioInBackground,
+    refreshPortfolio, // Manual only
+    refreshPortfolioInBackground: () => {}, // Disabled
     loadPortfolioFromDB,
     clearAllPortfolioData,
     cleanupAllOrphanedData,

@@ -57,12 +57,12 @@ export function usePortfolioChart(days: number = 30) {
     }
   }
 
-  // Debounced refresh function to prevent rapid-fire updates
+  // Debounced refresh function for manual refresh only
   const debouncedRefresh = useCallback(
     debounce(() => {
-      console.log('[PortfolioChart] Debounced refresh triggered')
+      console.log('[PortfolioChart] Manual refresh triggered (debounced)')
       fetchChartData()
-    }, 2000), // 2 second debounce
+    }, 1500), // 1.5 second debounce
     [user, days]
   )
 
@@ -70,10 +70,10 @@ export function usePortfolioChart(days: number = 30) {
     fetchChartData()
   }, [user, days])
 
-  // ONLY listen to manual portfolio update events with debouncing
+  // ONLY listen to manual portfolio update events (no automatic refreshing)
   useEffect(() => {
     const handlePortfolioUpdate = () => {
-      console.log('[PortfolioChart] Manual portfolio update event received - debounced')
+      console.log('[PortfolioChart] Manual portfolio update event received')
       debouncedRefresh()
     }
 

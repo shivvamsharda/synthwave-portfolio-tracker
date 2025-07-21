@@ -1,3 +1,4 @@
+
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { usePortfolioStats } from "@/hooks/usePortfolioStats"
 import { usePortfolio } from "@/hooks/usePortfolio"
@@ -76,19 +77,19 @@ export function PortfolioStats() {
   const { stats, loading, error, refreshStats } = usePortfolioStats()
   const { portfolio, portfolioStats, dataFreshness } = usePortfolio()
 
-  // Debounced refresh function
+  // Debounced refresh function for manual refresh only
   const debouncedRefresh = useCallback(
     debounce(() => {
-      console.log('[PortfolioStats] Debounced manual refresh triggered')
+      console.log('[PortfolioStats] Manual refresh triggered (debounced)')
       refreshStats()
-    }, 3000), // 3 second debounce
+    }, 2000), // 2 second debounce
     [refreshStats]
   )
 
   // ONLY refresh stats when explicitly requested via manual portfolio update
   useEffect(() => {
     const handlePortfolioUpdate = () => {
-      console.log('[PortfolioStats] Manual portfolio update event received - debounced')
+      console.log('[PortfolioStats] Manual portfolio update event received')
       debouncedRefresh()
     }
 

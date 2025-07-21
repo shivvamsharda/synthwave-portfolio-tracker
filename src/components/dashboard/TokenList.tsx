@@ -8,7 +8,7 @@ import { usePortfolioProcessing } from "@/hooks/usePortfolioProcessing"
 import { TokenListControls } from "./TokenListControls"
 import { TokenListContent } from "./TokenListContent"
 import { TokenListProps } from "./types"
-import { RefreshCw, Plus, AlertCircle, Clock, Loader2 } from "lucide-react"
+import { RefreshCw, Plus, AlertCircle, Clock } from "lucide-react"
 import { useState } from "react"
 
 export function TokenList({ onNavigate }: TokenListProps) {
@@ -17,7 +17,6 @@ export function TokenList({ onNavigate }: TokenListProps) {
     portfolio, 
     loading, 
     refreshing, 
-    backgroundRefreshing,
     refreshPortfolio, 
     lastUpdated, 
     dataFreshness 
@@ -38,14 +37,7 @@ export function TokenList({ onNavigate }: TokenListProps) {
 
   // Get data freshness indicator
   const getDataFreshnessIndicator = () => {
-    if (backgroundRefreshing) {
-      return (
-        <Badge variant="secondary" className="text-blue-600 bg-blue-50 border-blue-200">
-          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-          Updating...
-        </Badge>
-      )
-    } else if (dataFreshness === 'fresh') {
+    if (dataFreshness === 'fresh') {
       return (
         <Badge variant="secondary" className="text-green-600 bg-green-50 border-green-200">
           <Clock className="w-3 h-3 mr-1" />
@@ -87,11 +79,6 @@ export function TokenList({ onNavigate }: TokenListProps) {
                   Updated: {lastUpdated.toLocaleString()}
                 </p>
               )}
-              {backgroundRefreshing && (
-                <p className="text-xs text-blue-600">
-                  Refreshing in background...
-                </p>
-              )}
             </div>
           )}
         </div>
@@ -110,18 +97,18 @@ export function TokenList({ onNavigate }: TokenListProps) {
               variant={dataFreshness === 'stale' ? "default" : "ghost"}
               size="sm" 
               onClick={handleRefreshPortfolio}
-              disabled={refreshing || backgroundRefreshing}
+              disabled={refreshing}
               className={dataFreshness === 'stale' ? "bg-amber-500 hover:bg-amber-600 text-white" : "text-primary hover:text-primary"}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${(refreshing || backgroundRefreshing) ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : backgroundRefreshing ? 'Updating...' : dataFreshness === 'stale' ? 'Refresh Required' : 'Refresh'}
+              <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : dataFreshness === 'stale' ? 'Refresh Required' : 'Refresh'}
             </Button>
           )}
         </div>
       </div>
 
       {/* Auto-refresh warning for stale data */}
-      {dataFreshness === 'stale' && !refreshing && !backgroundRefreshing && (
+      {dataFreshness === 'stale' && !refreshing && (
         <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
           <div className="flex items-center gap-2 text-amber-800">
             <AlertCircle className="w-4 h-4" />
@@ -129,19 +116,6 @@ export function TokenList({ onNavigate }: TokenListProps) {
           </div>
           <p className="text-xs text-amber-700 mt-1">
             Portfolio data is more than 5 minutes old. Click "Refresh Required" to get the latest balances.
-          </p>
-        </div>
-      )}
-
-      {/* Background refresh notification */}
-      {backgroundRefreshing && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2 text-blue-800">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span className="text-sm font-medium">Updating portfolio data</span>
-          </div>
-          <p className="text-xs text-blue-700 mt-1">
-            Fetching the latest token balances and prices from the blockchain...
           </p>
         </div>
       )}

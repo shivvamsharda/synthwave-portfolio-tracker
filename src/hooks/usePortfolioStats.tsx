@@ -119,29 +119,6 @@ export function usePortfolioStats() {
     }
   }
 
-  const savePortfolioSnapshot = async () => {
-    if (!user || !stats || isRefreshing) return
-
-    try {
-      // Save current portfolio value as a snapshot for historical tracking
-      const { error } = await supabase
-        .from('portfolio_history')
-        .insert({
-          user_id: user.id,
-          total_value: stats.totalValue,
-          total_value_change_24h: stats.valueChange24h,
-          total_value_change_percentage_24h: stats.valueChange24hPercentage,
-          total_assets: stats.totalAssets
-        })
-
-      if (error) {
-        console.error('Error saving portfolio snapshot:', error)
-      }
-    } catch (err) {
-      console.error('Error in savePortfolioSnapshot:', err)
-    }
-  }
-
   // Initial load only - no automatic refresh intervals
   useEffect(() => {
     if (user) {
@@ -149,13 +126,12 @@ export function usePortfolioStats() {
     }
   }, [user])
 
-  // Remove all automatic refresh intervals and event listeners that cause loops
+  // Manual refresh only - no automatic event listeners
 
   return {
     stats,
     loading,
     error,
-    refreshStats: fetchPortfolioStats,
-    saveSnapshot: savePortfolioSnapshot
+    refreshStats: fetchPortfolioStats
   }
 }

@@ -1,3 +1,4 @@
+
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { usePortfolioChart } from "@/hooks/usePortfolioChart"
@@ -31,27 +32,27 @@ export function PortfolioChart() {
   const { stats, loading: statsLoading, refreshStats } = usePortfolioStats()
   const { portfolio, portfolioStats } = usePortfolio()
 
-  // Debounced refresh functions
+  // Debounced refresh functions for manual refresh only
   const debouncedChartRefresh = useCallback(
     debounce(() => {
-      console.log('[PortfolioChart] Debounced chart refresh triggered')
+      console.log('[PortfolioChart] Manual chart refresh triggered (debounced)')
       refreshChartData()
-    }, 2000),
+    }, 1500),
     [refreshChartData]
   )
 
   const debouncedStatsRefresh = useCallback(
     debounce(() => {
-      console.log('[PortfolioChart] Debounced stats refresh triggered')
+      console.log('[PortfolioChart] Manual stats refresh triggered (debounced)')
       refreshStats()
-    }, 2500),
+    }, 2000),
     [refreshStats]
   )
 
-  // ONLY refresh when explicitly requested via manual portfolio update (with debouncing)
+  // ONLY refresh when explicitly requested via manual portfolio update
   useEffect(() => {
     const handlePortfolioUpdate = () => {
-      console.log('[PortfolioChart] Manual portfolio update event received - debounced')
+      console.log('[PortfolioChart] Manual portfolio update event received')
       debouncedChartRefresh()
       debouncedStatsRefresh()
     }
