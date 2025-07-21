@@ -22,12 +22,15 @@ export function useJupiterOrderHistory() {
       setError(null)
       
       const walletAddresses = wallets.map(wallet => wallet.wallet_address)
+      console.log('[JupiterOrderHistory] Fetching order history for wallets:', walletAddresses)
+      
       const orderHistory = await jupiterOrderHistoryService.getOrderHistoryForWallets(walletAddresses)
+      console.log('[JupiterOrderHistory] Received order history:', orderHistory.length, 'orders')
       
       setOrders(orderHistory)
       setLastUpdated(new Date())
     } catch (err) {
-      console.error('Error fetching Jupiter order history:', err)
+      console.error('[JupiterOrderHistory] Error fetching order history:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch order history')
     } finally {
       setLoading(false)
