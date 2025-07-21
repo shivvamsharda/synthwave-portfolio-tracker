@@ -84,7 +84,7 @@ export function MobileDashboardPreview() {
             <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
               <Wallet className="w-4 h-4 text-white" />
             </div>
-            <span className="text-white font-semibold">Neptune</span>
+            <span className="text-white font-semibold">Cryptic</span>
           </div>
           <div className="relative">
             <Bell className="w-6 h-6 text-white" />

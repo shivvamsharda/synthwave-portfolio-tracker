@@ -49,7 +49,7 @@ export function MessagingPreview() {
               <MessageSquare className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">Neptune Chat</h3>
+              <h3 className="font-semibold text-foreground">Cryptic Chat</h3>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-xs text-muted-foreground">3 active bots</span>
