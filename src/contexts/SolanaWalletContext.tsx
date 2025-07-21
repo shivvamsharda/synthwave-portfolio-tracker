@@ -28,9 +28,9 @@ export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({ children }
     }
   }, [])
   
-  // Use mainnet RPC from Supabase secrets, fallback to mainnet-beta
+  // Use mainnet RPC from Supabase secrets, fallback to Helius
   const endpoint = useMemo(() => {
-    return apiKeys.solanaRpcUrl || clusterApiUrl('mainnet-beta')
+    return apiKeys.solanaRpcUrl || 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
   }, [apiKeys.solanaRpcUrl])
 
   // Only include wallets that don't auto-register as Standard Wallets

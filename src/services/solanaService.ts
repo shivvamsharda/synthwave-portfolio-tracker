@@ -2,8 +2,9 @@ import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js'
 import { tokenMetadataService } from './tokenMetadataService'
 import { blockchainMetadataService } from './blockchainMetadataService'
 
-// Fallback Solana mainnet RPC endpoints
+// Primary and fallback Solana mainnet RPC endpoints
 const FALLBACK_RPC_ENDPOINTS = [
+  'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15',
   'https://solana-api.projectserum.com',
   'https://rpc.ankr.com/solana',
   'https://api.mainnet-beta.solana.com'
