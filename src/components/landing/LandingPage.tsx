@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -75,7 +76,7 @@ export function LandingPage() {
     {
       name: "Free",
       price: "$0",
-      description: "Perfect for getting started with Neptune AI analytics",
+      description: "Perfect for getting started with Cryptic analytics",
       features: [
         "Up to 3 wallet connections",
         "Basic portfolio tracking",
@@ -127,12 +128,12 @@ export function LandingPage() {
           <div className="flex items-center space-x-4">
             <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
               <img 
-                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-                alt="Neptune AI Logo" 
+                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+                alt="Cryptic Logo" 
                 className="h-6 w-6 object-contain"
               />
             </div>
-            <span className="text-xl md:text-2xl font-bold gradient-text">Neptune AI</span>
+            <span className="text-xl md:text-2xl font-bold gradient-text">Cryptic</span>
           </div>
           
           {/* Desktop Navigation */}
@@ -392,12 +393,12 @@ export function LandingPage() {
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
                 <img 
-                  src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-                  alt="Neptune AI Logo" 
+                  src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+                  alt="Cryptic Logo" 
                   className="h-6 w-6 object-contain"
                 />
               </div>
-              <span className="text-xl font-bold gradient-text">Neptune AI</span>
+              <span className="text-xl font-bold gradient-text">Cryptic</span>
             </div>
             
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm text-muted-foreground">
@@ -407,7 +408,7 @@ export function LandingPage() {
             </div>
             
             <p className="text-sm text-muted-foreground text-center md:text-left font-medium">
-              © 2024 Neptune AI. All rights reserved.
+              © 2024 Cryptic. All rights reserved.
             </p>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import { useState } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { DashboardCard } from "@/components/ui/dashboard-card"
@@ -73,11 +74,11 @@ export function AuthPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
             <img 
-              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos/Neptune%20AI%20Logo%20Transparent.png" 
-              alt="Neptune AI" 
+              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+              alt="Cryptic" 
               className="h-8 w-auto"
             />
-            <span className="text-xl font-bold gradient-text">Neptune AI</span>
+            <span className="text-xl font-bold gradient-text">Cryptic</span>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -104,8 +105,8 @@ export function AuthPage() {
           </h1>
           <p className="text-muted-foreground mb-8 text-center">
             {isLogin 
-              ? "Sign in to access your Solana portfolio" 
-              : "Create an account to start tracking your Solana assets"
+              ? "Sign in to access your crypto portfolio" 
+              : "Create an account to start tracking your crypto assets"
             }
           </p>
 
