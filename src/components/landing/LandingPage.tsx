@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -126,13 +125,11 @@ export function LandingPage() {
       <nav className="relative z-50 backdrop-blur-xl bg-background/60 border border-border/30 shadow-navbar mx-4 mt-6 rounded-2xl">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex h-20 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
-              <img 
-                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-                alt="Cryptic Logo" 
-                className="h-6 w-6 object-contain"
-              />
-            </div>
+            <img 
+              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+              alt="Cryptic Logo" 
+              className="h-10 w-10 object-contain"
+            />
             <span className="text-xl md:text-2xl font-bold gradient-text">Cryptic</span>
           </div>
           
@@ -391,13 +388,11 @@ export function LandingPage() {
         <div className="container px-6">
           <div className="flex flex-col items-center justify-center space-y-8 md:flex-row md:justify-between md:space-y-0">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
-                <img 
-                  src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-                  alt="Cryptic Logo" 
-                  className="h-6 w-6 object-contain"
-                />
-              </div>
+              <img 
+                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+                alt="Cryptic Logo" 
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-xl font-bold gradient-text">Cryptic</span>
             </div>
             
