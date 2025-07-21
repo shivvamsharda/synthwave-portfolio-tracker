@@ -37,12 +37,21 @@ export function usePortfolio() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [dataFreshness, setDataFreshness] = useState<'fresh' | 'stale' | 'cached'>('cached')
   const [isOperationInProgress, setIsOperationInProgress] = useState(false)
+  const [backgroundRefreshing, setBackgroundRefreshing] = useState(false)
 
   // Load portfolio from database on component mount and when wallets change
   useEffect(() => {
     if (user && wallets.length > 0) {
       console.log(`[Portfolio] Loading portfolio for ${wallets.length} wallets:`, wallets.map(w => w.wallet_address))
       loadPortfolioFromDB()
+      
+      // Always refresh on page load for fresh data
+      const timer = setTimeout(() => {
+        console.log('[Portfolio] Auto-refreshing portfolio on page load')
+        refreshPortfolioInBackground()
+      }, 2000) // Small delay to show cached data first
+      
+      return () => clearTimeout(timer)
     } else if (user && wallets.length === 0) {
       console.log('[Portfolio] No wallets connected, clearing all portfolio display immediately')
       setPortfolio([])
@@ -63,12 +72,12 @@ export function usePortfolio() {
     }
   }, [user, wallets])
 
-  // Only check data freshness on mount, not continuous checking
+  // Check data freshness
   useEffect(() => {
     if (lastUpdated && wallets.length > 0) {
       const timeSinceUpdate = Date.now() - lastUpdated.getTime()
-      if (timeSinceUpdate > (10 * 60 * 1000)) {
-        console.log('[Portfolio] Data is very stale (>10min) on page load')
+      if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
+        console.log('[Portfolio] Data is stale, showing stale indicator')
         setDataFreshness('stale')
       } else {
         setDataFreshness('fresh')
@@ -161,7 +170,7 @@ export function usePortfolio() {
           const timeSinceUpdate = Date.now() - mostRecentUpdate.getTime()
           if (timeSinceUpdate > DATA_REFRESH_THRESHOLD) {
             setDataFreshness('stale')
-            console.log('[Portfolio] Portfolio data is stale, consider refreshing')
+            console.log('[Portfolio] Portfolio data is stale, will refresh in background')
           } else {
             setDataFreshness('fresh')
             console.log('[Portfolio] Portfolio data is fresh')
@@ -175,6 +184,27 @@ export function usePortfolio() {
       console.error('[Portfolio] Error loading portfolio:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  /**
+   * Background refresh that doesn't interrupt user experience
+   */
+  const refreshPortfolioInBackground = async () => {
+    if (!user || wallets.length === 0 || refreshing || backgroundRefreshing || isOperationInProgress) {
+      console.log('[Portfolio] Skipping background refresh - conditions not met')
+      return
+    }
+
+    setBackgroundRefreshing(true)
+    console.log('[Portfolio] Starting background refresh')
+    
+    try {
+      await refreshPortfolio()
+    } catch (error) {
+      console.error('[Portfolio] Background refresh failed:', error)
+    } finally {
+      setBackgroundRefreshing(false)
     }
   }
 
@@ -527,11 +557,13 @@ export function usePortfolio() {
     portfolio,
     loading,
     refreshing,
+    backgroundRefreshing,
     lastUpdated,
     dataFreshness,
     
     // Actions
     refreshPortfolio,
+    refreshPortfolioInBackground,
     loadPortfolioFromDB,
     clearAllPortfolioData,
     cleanupAllOrphanedData,
