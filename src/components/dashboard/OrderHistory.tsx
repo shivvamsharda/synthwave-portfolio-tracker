@@ -2,11 +2,13 @@
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RefreshCw, History, Plus, Wallet } from "lucide-react"
 import { useJupiterOrderHistory } from "@/hooks/useJupiterOrderHistory"
 import { OrderHistoryItem } from "./OrderHistoryItem"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useWallet } from "@/hooks/useWallet"
+import { useState } from "react"
 
 interface OrderHistoryProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -15,6 +17,7 @@ interface OrderHistoryProps {
 export function OrderHistory({ onNavigate }: OrderHistoryProps) {
   const { orders, loading, error, lastUpdated, refreshOrderHistory } = useJupiterOrderHistory()
   const { wallets } = useWallet()
+  const [selectedWallet, setSelectedWallet] = useState<string>("all")
 
   // Group orders by wallet
   const ordersByWallet = orders.reduce((acc, order) => {
@@ -31,6 +34,14 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
     const wallet = wallets.find(w => w.wallet_address === address)
     return wallet?.wallet_name || `${address.slice(0, 4)}...${address.slice(-4)}`
   }
+
+  // Filter orders based on selected wallet
+  const filteredOrders = selectedWallet === "all" 
+    ? orders 
+    : orders.filter(order => order.userPubkey === selectedWallet)
+
+  // Get available wallets that have orders
+  const walletsWithOrders = Object.keys(ordersByWallet)
 
   const LoadingSkeleton = () => (
     <div className="space-y-3">
@@ -98,7 +109,7 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
   return (
     <DashboardCard className="p-6 flex flex-col" style={{ height: '400px' }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Order History</h3>
           <p className="text-xs text-muted-foreground">
@@ -122,6 +133,33 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
         </Button>
       </div>
 
+      {/* Wallet Filter */}
+      {!loading && orders.length > 0 && walletsWithOrders.length > 1 && (
+        <div className="mb-4">
+          <Select value={selectedWallet} onValueChange={setSelectedWallet}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select wallet" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                <div className="flex items-center space-x-2">
+                  <Wallet className="w-4 h-4" />
+                  <span>All Wallets ({orders.length} orders)</span>
+                </div>
+              </SelectItem>
+              {walletsWithOrders.map((walletAddress) => (
+                <SelectItem key={walletAddress} value={walletAddress}>
+                  <div className="flex items-center space-x-2">
+                    <Wallet className="w-4 h-4" />
+                    <span>{getWalletName(walletAddress)} ({ordersByWallet[walletAddress].length} orders)</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {/* Content */}
       <div className="flex-1 min-h-0">
         {loading ? (
@@ -132,28 +170,36 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
           <EmptyState />
         ) : (
           <ScrollArea className="h-full">
-            <div className="space-y-4 pr-4">
-              {Object.entries(ordersByWallet).map(([walletAddress, walletOrders]) => (
-                <div key={walletAddress} className="space-y-3">
-                  {/* Wallet Header */}
-                  <div className="flex items-center space-x-2 px-3 py-2 bg-muted/20 rounded-lg">
-                    <Wallet className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">
-                      {getWalletName(walletAddress)}
-                    </span>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      {walletOrders.length} order{walletOrders.length !== 1 ? 's' : ''}
-                    </span>
+            <div className="space-y-3 pr-4">
+              {selectedWallet === "all" ? (
+                // Show grouped by wallet when "All Wallets" is selected
+                Object.entries(ordersByWallet).map(([walletAddress, walletOrders]) => (
+                  <div key={walletAddress} className="space-y-3">
+                    {/* Wallet Header */}
+                    <div className="flex items-center space-x-2 px-3 py-2 bg-muted/20 rounded-lg">
+                      <Wallet className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">
+                        {getWalletName(walletAddress)}
+                      </span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {walletOrders.length} order{walletOrders.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    
+                    {/* Orders for this wallet */}
+                    <div className="space-y-2 ml-4">
+                      {walletOrders.map((order) => (
+                        <OrderHistoryItem key={order.orderKey} order={order} />
+                      ))}
+                    </div>
                   </div>
-                  
-                  {/* Orders for this wallet */}
-                  <div className="space-y-2 ml-4">
-                    {walletOrders.map((order) => (
-                      <OrderHistoryItem key={order.orderKey} order={order} />
-                    ))}
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                // Show flat list when specific wallet is selected
+                filteredOrders.map((order) => (
+                  <OrderHistoryItem key={order.orderKey} order={order} />
+                ))
+              )}
             </div>
           </ScrollArea>
         )}
