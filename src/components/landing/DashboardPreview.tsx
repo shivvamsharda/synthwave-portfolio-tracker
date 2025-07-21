@@ -2,7 +2,7 @@ import React from 'react';
 import { AnimatedLineChart, AnimatedBarChart, CircularProgress, CountingNumber } from './AnimatedChart';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import cryptoHero from '@/assets/crypto-hero.jpg';
+import crypticLogo from '@/assets/cryptic-logo.png';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -53,7 +53,7 @@ export function DashboardPreview() {
           <div className="p-6 border-b border-border">
             <div className="flex items-center space-x-3">
               <img 
-                src={cryptoHero} 
+                src={crypticLogo} 
                 alt="Cryptic Logo" 
                 className="w-8 h-8 rounded-lg object-cover"
               />
