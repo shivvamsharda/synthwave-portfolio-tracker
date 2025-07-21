@@ -72,12 +72,73 @@ export interface ProcessedJupiterOrder {
   openTx: string
   closeTx: string | null
   trades: JupiterTrade[]
+  programVersion: string
+  protocolName?: string // DEX/protocol name from program version
 }
 
 export class JupiterOrderHistoryService {
   private static readonly JUPITER_ORDERS_API = 'https://lite-api.jup.ag/trigger/v1/getTriggerOrders'
   private static orderCache: Map<string, { data: ProcessedJupiterOrder[], timestamp: number }> = new Map()
   private static readonly CACHE_DURATION = 30 * 1000 // 30 seconds
+
+  // Jupiter program ID to DEX name mapping
+  private static readonly PROGRAM_ID_TO_LABEL: Record<string, string> = {
+    "PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY": "Phoenix",
+    "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P": "Pump.fun",
+    "PSwapMdSai8tjrEXcxFeQth87xC4rRsa4VA5mhGhXkP": "Penguin",
+    "REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2": "Byreal",
+    "SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ": "Saber",
+    "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8": "Token Swap",
+    "HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq": "PancakeSwap",
+    "WooFif76YGRNjk1pA8wCsN67aQsD9f9iLsz4NcJ1AVb": "Woofi",
+    "ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY": "ZeroFi",
+    "srAMMzfVHVAtgSJc8iH6CfKzuWuUTzLHVCE81QU1rgi": "Gavel",
+    "CURVGoZn8zycx6FXwwevgBTB2gVvdbGTEpvMJDbgs2t4": "Aldrin V2",
+    "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu": "Perps",
+    "SSwapUtytfBdBn1b9NUGG6foMVPtcWgpRU32HToDUZr": "Saros",
+    "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj": "Raydium Launchlab",
+    "CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR": "Crema",
+    "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA": "Pump.fun Amm",
+    "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb": "OpenBook V2",
+    "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB": "Meteora",
+    "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx": "Sanctum Infinity",
+    "SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe": "SolFi",
+    "9H6tua7jkLhdm3w8BvgpTn5LZNU7g4ZynDmCiNN3q6Rp": "HumidiFi",
+    "dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN": "Dynamic Bonding Curve",
+    "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6": "Aldrin",
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc": "Whirlpool",
+    "DecZY86MU5Gj7kppfUCEmd4LbXXuyZH1yHaP2NTqdiZB": "Saber (Decimals)",
+    "boop8hVGQGqehUK2iVEMEnMrL5RbjywRzHKBmBE7ry4": "Boop.fun",
+    "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo": "Meteora DLMM",
+    "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG": "Moonit",
+    "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP": "Orca V2",
+    "DSwpgjMvXhtGn6BsbqmacdBZyfLj6jSWf3HJpdJtmg6N": "DexLab",
+    "goonERTdGsjnkZqWuVjs73BZ3Pb9qoCUdBUL17BnS5j": "GoonFi",
+    "obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y": "Obric V2",
+    "cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG": "Meteora DAMM v2",
+    "FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X": "FluxBeam",
+    "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C": "Raydium CP",
+    "endoLNCKTqDn8gSVnN2hDdpgACUPWHZTwoYnnMybpAT": "Solayer",
+    "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p": "Bonkswap",
+    "H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt": "Cropper",
+    "GAMMA7meSFWaBXF25oSUgmGRwaW6sCMFLmBNiMSdbHVT": "GooseFX GAMMA",
+    "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1": "Orca V1",
+    "swapFpHZwjELNnjvThjajtiVmkz3yPQEHjLtka2fwHW": "Stabble Weighted Swap",
+    "DEXYosS6oEGvk8uCDayvwEZz4qEyDJRf9nFgYCaqPMTm": "1DEX",
+    "TessVdML9pBGgG9yGks7o4HewRaXVAMuoVj4x83GLQH": "TesseraV",
+    "Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1": "Guacswap",
+    "swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ": "Stabble Stable Swap",
+    "NUMERUNsFCP3kuNmWZuXtm1AaQCPj9uw6Guv2Ekoi5P": "Perena",
+    "5U3EU2ubXtK84QcRjWVmYt9RaDyA8gKxdUrPFXmZyaki": "Virtuals",
+    "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8": "Raydium",
+    "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK": "Raydium CLMM",
+    "treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5": "Helium Network",
+    "MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky": "Mercurial",
+    "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt": "Invariant",
+    "Dooar9JkhdZ7J3LHN3A7YCuoGRUggXhQaG4kijfLGU2j": "StepN",
+    "stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq": "Sanctum",
+    "2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c": "Lifinity V2"
+  }
 
   /**
    * Get order history for a specific wallet
@@ -128,6 +189,13 @@ export class JupiterOrderHistoryService {
       console.error('Error fetching Jupiter order history:', error)
       return []
     }
+  }
+
+  /**
+   * Get protocol name from program version
+   */
+  private static getProtocolName(programVersion: string): string | undefined {
+    return this.PROGRAM_ID_TO_LABEL[programVersion]
   }
 
   /**
@@ -214,7 +282,9 @@ export class JupiterOrderHistoryService {
         tradesCount: order.trades.length,
         openTx: order.openTx,
         closeTx: order.closeTx,
-        trades: order.trades
+        trades: order.trades,
+        programVersion: order.programVersion,
+        protocolName: this.getProtocolName(order.programVersion)
       }
     })
   }

@@ -70,6 +70,11 @@ export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
               {order.tradesCount} {order.tradesCount === 1 ? 'trade' : 'trades'}
             </Badge>
           )}
+          {order.protocolName && (
+            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+              {order.protocolName}
+            </Badge>
+          )}
         </div>
         <div className="text-xs text-muted-foreground">
           {formatDistanceToNow(order.createdAt, { addSuffix: true })}
