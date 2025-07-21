@@ -2,10 +2,11 @@
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { RefreshCw, History, Plus } from "lucide-react"
+import { RefreshCw, History, Plus, Wallet } from "lucide-react"
 import { useJupiterOrderHistory } from "@/hooks/useJupiterOrderHistory"
 import { OrderHistoryItem } from "./OrderHistoryItem"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useWallet } from "@/hooks/useWallet"
 
 interface OrderHistoryProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -13,6 +14,23 @@ interface OrderHistoryProps {
 
 export function OrderHistory({ onNavigate }: OrderHistoryProps) {
   const { orders, loading, error, lastUpdated, refreshOrderHistory } = useJupiterOrderHistory()
+  const { wallets } = useWallet()
+
+  // Group orders by wallet
+  const ordersByWallet = orders.reduce((acc, order) => {
+    const walletAddress = order.userPubkey
+    if (!acc[walletAddress]) {
+      acc[walletAddress] = []
+    }
+    acc[walletAddress].push(order)
+    return acc
+  }, {} as Record<string, typeof orders>)
+
+  // Get wallet name from wallet list
+  const getWalletName = (address: string) => {
+    const wallet = wallets.find(w => w.wallet_address === address)
+    return wallet?.wallet_name || `${address.slice(0, 4)}...${address.slice(-4)}`
+  }
 
   const LoadingSkeleton = () => (
     <div className="space-y-3">
@@ -78,7 +96,7 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
   )
 
   return (
-    <DashboardCard className="p-6 h-full flex flex-col">
+    <DashboardCard className="p-6 flex flex-col" style={{ height: '400px' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -114,9 +132,27 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
           <EmptyState />
         ) : (
           <ScrollArea className="h-full">
-            <div className="space-y-3 pr-4">
-              {orders.map((order) => (
-                <OrderHistoryItem key={order.orderKey} order={order} />
+            <div className="space-y-4 pr-4">
+              {Object.entries(ordersByWallet).map(([walletAddress, walletOrders]) => (
+                <div key={walletAddress} className="space-y-3">
+                  {/* Wallet Header */}
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-muted/20 rounded-lg">
+                    <Wallet className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">
+                      {getWalletName(walletAddress)}
+                    </span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {walletOrders.length} order{walletOrders.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  
+                  {/* Orders for this wallet */}
+                  <div className="space-y-2 ml-4">
+                    {walletOrders.map((order) => (
+                      <OrderHistoryItem key={order.orderKey} order={order} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </ScrollArea>
