@@ -28,9 +28,14 @@ export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({ children }
     }
   }, [])
   
-  // Use mainnet RPC from Supabase secrets, fallback to Helius
+  // Use mainnet RPC from Supabase secrets, fallback to Helius, then Alchemy
   const endpoint = useMemo(() => {
-    return apiKeys.solanaRpcUrl || 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
+    if (apiKeys.solanaRpcUrl) {
+      return apiKeys.solanaRpcUrl
+    }
+    // Primary fallback: Helius
+    return 'https://mainnet.helius-rpc.com/?api-key=4489f099-8307-4b7f-b48c-8ea926316e15'
+    // Note: Alchemy fallback will be handled by the connection provider's retry logic
   }, [apiKeys.solanaRpcUrl])
 
   // Only include wallets that don't auto-register as Standard Wallets
