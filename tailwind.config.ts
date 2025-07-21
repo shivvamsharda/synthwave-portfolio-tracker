@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,9 +20,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Outfit', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-				'outfit': ['Outfit', 'sans-serif'],
-				'blacklisted': ['Blacklisted', 'Impact', 'Arial Black', 'sans-serif'],
+				sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
