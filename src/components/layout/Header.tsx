@@ -39,7 +39,7 @@ export function Header({ onNavigate }: HeaderProps) {
             className="w-16 h-16 object-contain"
           />
           <div>
-            <span className="text-2xl font-bold gradient-text">
+            <span className="nav-title gradient-text">
               Cryptic
             </span>
             <div className="text-xs text-muted-foreground font-medium">Crypto Analytics Platform</div>
@@ -51,7 +51,7 @@ export function Header({ onNavigate }: HeaderProps) {
           <Button 
             variant="ghost" 
             onClick={handleHomeClick} 
-            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+            className="nav-item text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
           >
             <Home className="w-4 h-4 mr-2" />
             Home
@@ -59,7 +59,7 @@ export function Header({ onNavigate }: HeaderProps) {
           <Button 
             variant="ghost" 
             onClick={() => navigate("dashboard")} 
-            className="font-semibold text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
+            className="nav-item text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-200 px-4 py-2 rounded-xl"
           >
             Dashboard
           </Button>
@@ -106,7 +106,7 @@ export function Header({ onNavigate }: HeaderProps) {
             <Button 
               variant="ghost" 
               onClick={handleHomeClick} 
-              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl nav-item"
             >
               <Home className="w-4 h-4 mr-3" />
               Home
@@ -114,7 +114,7 @@ export function Header({ onNavigate }: HeaderProps) {
             <Button 
               variant="ghost" 
               onClick={() => navigate("dashboard")} 
-              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+              className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl nav-item"
             >
               Dashboard
             </Button>
@@ -122,7 +122,7 @@ export function Header({ onNavigate }: HeaderProps) {
               <Button 
                 variant="ghost" 
                 onClick={() => navigate("settings")} 
-                className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl font-medium"
+                className="w-full justify-start hover:bg-primary/5 hover:text-primary rounded-xl nav-item"
               >
                 <Settings className="w-4 h-4 mr-3" />
                 Settings
@@ -130,7 +130,7 @@ export function Header({ onNavigate }: HeaderProps) {
               <Button 
                 variant="ghost" 
                 onClick={handleSignOut} 
-                className="w-full justify-start text-muted-foreground hover:bg-destructive/5 hover:text-destructive rounded-xl font-medium"
+                className="w-full justify-start text-muted-foreground hover:bg-destructive/5 hover:text-destructive rounded-xl nav-item"
               >
                 <LogOut className="w-4 h-4 mr-3" />
                 Sign Out

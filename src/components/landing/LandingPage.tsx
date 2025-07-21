@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -130,12 +131,12 @@ export function LandingPage() {
               alt="Cryptic Logo" 
               className="h-10 w-10 object-contain"
             />
-            <span className="text-xl md:text-2xl font-bold gradient-text">Cryptic</span>
+            <span className="nav-title gradient-text">Cryptic</span>
           </div>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+            <a href="#features" className="nav-item text-muted-foreground hover:text-primary transition-colors">
               Features
             </a>
             <Button 
@@ -161,7 +162,7 @@ export function LandingPage() {
             <div className="px-6 py-6 space-y-4">
               <a 
                 href="#features" 
-                className="block text-sm font-semibold text-muted-foreground hover:text-primary transition-colors py-2"
+                className="block nav-item text-muted-foreground hover:text-primary transition-colors py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Features
@@ -320,7 +321,7 @@ export function LandingPage() {
                 </div>
                 
                 <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200">
+                  <h3 className="title-card text-foreground group-hover:text-primary transition-colors duration-200">
                     {feature.title}
                   </h3>
                   <p className="text-muted-foreground group-hover:text-foreground/90 leading-relaxed transition-colors duration-200">
@@ -393,7 +394,7 @@ export function LandingPage() {
                 alt="Cryptic Logo" 
                 className="h-10 w-10 object-contain"
               />
-              <span className="text-xl font-bold gradient-text">Cryptic</span>
+              <span className="nav-title gradient-text">Cryptic</span>
             </div>
             
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm text-muted-foreground">
