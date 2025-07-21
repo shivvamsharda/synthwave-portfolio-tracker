@@ -6,7 +6,7 @@ import { PortfolioChart } from "./PortfolioChart"
 import { TokenList } from "./TokenList"
 import { useWallet } from "@/hooks/useWallet"
 import { usePortfolio } from "@/hooks/usePortfolio"
-import { Download, TrendingUp, BarChart3 } from "lucide-react"
+import { Download, TrendingUp } from "lucide-react"
 
 interface DashboardProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -39,7 +39,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {/* Quick Actions */}
         <div className="crypto-card p-8">
           <h3 className="text-xl font-bold text-foreground mb-6 gradient-text">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button className="group p-6 rounded-2xl bg-card/40 hover:bg-card/60 transition-all duration-300 text-left border border-border/30 hover:border-primary/30 hover:shadow-glow">
               <div className="flex items-center space-x-3 mb-3">
                 <div className="feature-icon group-hover:scale-110 transition-transform">
@@ -58,16 +58,6 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                 <div className="text-primary font-bold text-lg">Share Portfolio</div>
               </div>
               <div className="text-sm text-muted-foreground font-medium">Create public link</div>
-            </button>
-
-            <button className="group p-6 rounded-2xl bg-card/40 hover:bg-card/60 transition-all duration-300 text-left border border-border/30 hover:border-primary/30 hover:shadow-glow">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="feature-icon group-hover:scale-110 transition-transform">
-                  <BarChart3 className="h-5 w-5" />
-                </div>
-                <div className="text-primary font-bold text-lg">Advanced Reports</div>
-              </div>
-              <div className="text-sm text-muted-foreground font-medium">Deep insights & AI analysis</div>
             </button>
           </div>
         </div>
