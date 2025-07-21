@@ -33,13 +33,11 @@ export function Header({ onNavigate }: HeaderProps) {
       <div className="container flex h-20 items-center justify-between px-6">
         {/* Logo */}
         <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigate("dashboard")}>
-          <div className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-lg">
-            <img 
-              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-              alt="Cryptic" 
-              className="w-8 h-8 object-contain"
-            />
-          </div>
+          <img 
+            src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+            alt="Cryptic" 
+            className="w-16 h-16 object-contain"
+          />
           <div>
             <span className="text-2xl font-bold gradient-text">
               Cryptic
