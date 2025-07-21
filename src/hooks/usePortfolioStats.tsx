@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "./useAuth"
@@ -19,9 +20,10 @@ export function usePortfolioStats() {
   const [stats, setStats] = useState<PortfolioStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const fetchPortfolioStats = async () => {
-    if (!user) {
+    if (!user || isRefreshing) {
       setStats(null)
       setLoading(false)
       return
@@ -30,8 +32,9 @@ export function usePortfolioStats() {
     try {
       setLoading(true)
       setError(null)
+      setIsRefreshing(true)
 
-      // First check if user has any current portfolio data
+      // Check if user has any current portfolio data
       const { data: currentPortfolio } = await supabase
         .from('portfolio')
         .select('usd_value')
@@ -43,7 +46,6 @@ export function usePortfolioStats() {
       console.log('[PortfolioStats] Current portfolio value:', currentTotalValue, 'assets:', currentTotalAssets)
 
       if (currentTotalValue === 0) {
-        // No current portfolio - return zero stats
         console.log('[PortfolioStats] No current portfolio, returning zero stats')
         setStats({
           totalValue: 0,
@@ -66,7 +68,6 @@ export function usePortfolioStats() {
 
       if (statsError) {
         console.error('Error fetching portfolio stats:', statsError)
-        // If database function fails, use current portfolio value with zero changes
         setStats({
           totalValue: currentTotalValue,
           totalValue24hAgo: currentTotalValue,
@@ -96,7 +97,6 @@ export function usePortfolioStats() {
           totalUniqueTokens: Number(statsData.total_unique_tokens || currentTotalAssets)
         })
       } else {
-        // No historical data available - use current values with zero changes
         console.log('[PortfolioStats] No historical data, using current values')
         setStats({
           totalValue: currentTotalValue,
@@ -115,11 +115,12 @@ export function usePortfolioStats() {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
+      setIsRefreshing(false)
     }
   }
 
   const savePortfolioSnapshot = async () => {
-    if (!user || !stats) return
+    if (!user || !stats || isRefreshing) return
 
     try {
       // Save current portfolio value as a snapshot for historical tracking
@@ -141,29 +142,14 @@ export function usePortfolioStats() {
     }
   }
 
+  // Initial load only - no automatic refresh intervals
   useEffect(() => {
-    fetchPortfolioStats()
-
-    if (!user) return
-
-    // Remove automatic refresh to prevent loops
-
-    // Save snapshot every hour
-    const snapshotInterval = setInterval(() => {
-      savePortfolioSnapshot()
-    }, 60 * 60 * 1000) // 1 hour
-
-    // Initial snapshot save
-    setTimeout(() => {
-      savePortfolioSnapshot()
-    }, 5000) // Save after 5 seconds
-
-    return () => {
-      clearInterval(snapshotInterval)
+    if (user) {
+      fetchPortfolioStats()
     }
   }, [user])
 
-  // Remove automatic event listeners to prevent infinite loops
+  // Remove all automatic refresh intervals and event listeners that cause loops
 
   return {
     stats,

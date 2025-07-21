@@ -2,7 +2,7 @@ import { DashboardCard } from "@/components/ui/dashboard-card"
 import { usePortfolioStats } from "@/hooks/usePortfolioStats"
 import { usePortfolio } from "@/hooks/usePortfolio"
 import { TrendingUp, TrendingDown, DollarSign, Package } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useCallback } from "react"
 
 interface StatCardProps {
   title: string
@@ -59,22 +59,42 @@ function StatCard({ title, value, change, changeType, icon, loading }: StatCardP
   )
 }
 
+// Debounce utility
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
 export function PortfolioStats() {
   const { stats, loading, error, refreshStats } = usePortfolioStats()
   const { portfolio, portfolioStats, dataFreshness } = usePortfolio()
 
-  // Only refresh stats when explicitly requested, not automatically
+  // Debounced refresh function
+  const debouncedRefresh = useCallback(
+    debounce(() => {
+      console.log('[PortfolioStats] Debounced manual refresh triggered')
+      refreshStats()
+    }, 3000), // 3 second debounce
+    [refreshStats]
+  )
+
+  // ONLY refresh stats when explicitly requested via manual portfolio update
   useEffect(() => {
     const handlePortfolioUpdate = () => {
-      console.log('[PortfolioStats] Manual portfolio update event received')
-      setTimeout(() => {
-        refreshStats()
-      }, 500)
+      console.log('[PortfolioStats] Manual portfolio update event received - debounced')
+      debouncedRefresh()
     }
 
     window.addEventListener('portfolio-updated', handlePortfolioUpdate)
     return () => window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
-  }, [refreshStats])
+  }, [debouncedRefresh])
 
   // Use real-time portfolio stats as fallback if database stats are stale
   const displayStats = portfolio.length > 0 ? {

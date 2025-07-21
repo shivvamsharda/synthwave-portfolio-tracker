@@ -4,7 +4,7 @@ import { usePortfolioChart } from "@/hooks/usePortfolioChart"
 import { usePortfolioStats } from "@/hooks/usePortfolioStats"
 import { usePortfolio } from "@/hooks/usePortfolio"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 const timeRanges = [
   { label: "24H", days: 1 },
@@ -12,25 +12,53 @@ const timeRanges = [
   { label: "30D", days: 30 }
 ]
 
+// Debounce utility
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
 export function PortfolioChart() {
   const [selectedRange, setSelectedRange] = useState(30)
   const { chartData, loading: chartLoading, refreshChartData } = usePortfolioChart(selectedRange)
   const { stats, loading: statsLoading, refreshStats } = usePortfolioStats()
   const { portfolio, portfolioStats } = usePortfolio()
 
-  // Only refresh chart when explicitly requested, not automatically
+  // Debounced refresh functions
+  const debouncedChartRefresh = useCallback(
+    debounce(() => {
+      console.log('[PortfolioChart] Debounced chart refresh triggered')
+      refreshChartData()
+    }, 2000),
+    [refreshChartData]
+  )
+
+  const debouncedStatsRefresh = useCallback(
+    debounce(() => {
+      console.log('[PortfolioChart] Debounced stats refresh triggered')
+      refreshStats()
+    }, 2500),
+    [refreshStats]
+  )
+
+  // ONLY refresh when explicitly requested via manual portfolio update (with debouncing)
   useEffect(() => {
     const handlePortfolioUpdate = () => {
-      console.log('[PortfolioChart] Manual portfolio update event received')
-      setTimeout(() => {
-        refreshChartData()
-        refreshStats()
-      }, 1000)
+      console.log('[PortfolioChart] Manual portfolio update event received - debounced')
+      debouncedChartRefresh()
+      debouncedStatsRefresh()
     }
 
     window.addEventListener('portfolio-updated', handlePortfolioUpdate)
     return () => window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
-  }, [refreshChartData, refreshStats])
+  }, [debouncedChartRefresh, debouncedStatsRefresh])
 
   // Prepare chart data
   const processedChartData = chartData.map(point => ({
