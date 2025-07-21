@@ -30,7 +30,7 @@ export function Header({ onNavigate }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/80 border-b border-border/50 shadow-navbar">
-      <div className="container flex h-20 items-center justify-between px-6">
+      <div className="container flex h-20 items-center px-6">
         {/* Logo */}
         <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigate("dashboard")}>
           <img 
@@ -46,8 +46,8 @@ export function Header({ onNavigate }: HeaderProps) {
           </div>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-2">
+        {/* Centered Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-2 flex-1 justify-center">
           <Button 
             variant="ghost" 
             onClick={handleHomeClick} 
