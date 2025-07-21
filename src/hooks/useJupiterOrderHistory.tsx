@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useWallet } from './useWallet'
 import { jupiterOrderHistoryService, ProcessedJupiterOrder } from '@/services/jupiterOrderHistoryService'
 
@@ -9,6 +9,9 @@ export function useJupiterOrderHistory() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  
+  // Track previous wallet addresses to detect actual changes
+  const prevWalletAddressesRef = useRef<string[]>([])
 
   const fetchOrderHistory = useCallback(async () => {
     if (wallets.length === 0) {
@@ -38,23 +41,28 @@ export function useJupiterOrderHistory() {
     }
   }, [wallets])
 
-  // Initial fetch
+  // Only fetch when wallet addresses actually change (add/remove)
   useEffect(() => {
-    fetchOrderHistory()
-  }, [fetchOrderHistory])
+    const currentWalletAddresses = wallets.map(wallet => wallet.wallet_address).sort()
+    const prevWalletAddresses = prevWalletAddressesRef.current
 
-  // Listen for portfolio updates to refresh order history
-  useEffect(() => {
-    const handlePortfolioUpdate = () => {
-      console.log('[JupiterOrderHistory] Portfolio updated - refreshing order history')
+    // Check if wallet addresses have actually changed
+    const addressesChanged = 
+      currentWalletAddresses.length !== prevWalletAddresses.length ||
+      currentWalletAddresses.some((addr, index) => addr !== prevWalletAddresses[index])
+
+    if (addressesChanged) {
+      console.log('[JupiterOrderHistory] Wallet addresses changed - fetching order history')
+      console.log('[JupiterOrderHistory] Previous:', prevWalletAddresses)
+      console.log('[JupiterOrderHistory] Current:', currentWalletAddresses)
+      
+      // Update the ref with current addresses
+      prevWalletAddressesRef.current = currentWalletAddresses
+      
+      // Fetch order history
       fetchOrderHistory()
     }
-
-    window.addEventListener('portfolio-updated', handlePortfolioUpdate)
-    return () => {
-      window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
-    }
-  }, [fetchOrderHistory])
+  }, [wallets, fetchOrderHistory])
 
   const refreshOrderHistory = useCallback(() => {
     console.log('[JupiterOrderHistory] Manual refresh triggered')
