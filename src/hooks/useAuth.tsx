@@ -1,8 +1,8 @@
 
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
+import { useToast } from './use-toast'
 
 interface AuthContextType {
   user: User | null
@@ -10,7 +10,7 @@ interface AuthContextType {
   loading: boolean
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signInWithSolanaWallet: (wallet: any) => Promise<{ error: AuthError | null }>
+  signInWithSolanaWallet: (wallet: any) => Promise<{ error: AuthError | null, success: boolean }>
   signOut: () => Promise<{ error: AuthError | null }>
 }
 
@@ -20,11 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id)
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
@@ -64,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithSolanaWallet = async (wallet: any) => {
     try {
-      console.log('Starting Solana wallet sign in...', {
+      console.log('Starting enhanced Solana wallet sign in...', {
         walletName: wallet?.wallet?.adapter?.name || wallet?.adapter?.name,
         walletConnected: wallet?.connected,
         publicKey: wallet?.publicKey?.toString(),
@@ -72,12 +74,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         defaultAdapter: wallet?.adapter?.name
       })
 
+      if (!wallet.connected || !wallet.publicKey) {
+        console.error('Wallet not connected or missing public key')
+        toast({
+          title: "Wallet Error",
+          description: "Your wallet is not connected. Please connect your wallet first.",
+          variant: "destructive",
+        })
+        return { error: { message: 'Wallet not connected or missing public key' } as AuthError, success: false }
+      }
+
       // Use the selected wallet adapter, not the default adapter
       const selectedAdapter = wallet?.wallet?.adapter || wallet?.adapter
       
       if (!selectedAdapter) {
         console.error('No wallet adapter found')
-        return { error: { message: 'No wallet adapter available' } as AuthError }
+        toast({
+          title: "Wallet Error",
+          description: "No wallet adapter available. Please try again.",
+          variant: "destructive",
+        })
+        return { error: { message: 'No wallet adapter available' } as AuthError, success: false }
       }
 
       console.log('Using wallet adapter:', selectedAdapter.name)
@@ -90,14 +107,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Supabase signInWithWeb3 error:', error)
+        toast({
+          title: "Authentication Failed",
+          description: error.message || "Failed to authenticate with wallet",
+          variant: "destructive",
+        })
+        return { error, success: false }
       } else {
         console.log('Supabase signInWithWeb3 success:', data)
+        
+        // If we successfully authenticated, return success
+        toast({
+          title: "Authentication Successful",
+          description: "Successfully signed in with Solana wallet",
+        })
+        return { error: null, success: true }
       }
-
-      return { error }
     } catch (err) {
       console.error('Unexpected error in signInWithSolanaWallet:', err)
-      return { error: err as AuthError }
+      toast({
+        title: "Authentication Error",
+        description: err instanceof Error ? err.message : "An unexpected error occurred",
+        variant: "destructive",
+      })
+      return { error: err as AuthError, success: false }
     }
   }
 
@@ -143,4 +176,3 @@ export function useAuth() {
   }
   return context
 }
-
