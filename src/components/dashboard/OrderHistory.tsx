@@ -128,7 +128,7 @@ export function OrderHistory({ onNavigate }: OrderHistoryProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Order History</h3>
+          <h3 className="text-lg font-semibold text-foreground">Limit Order</h3>
           <p className="text-xs text-muted-foreground">
             Jupiter trigger orders
             {lastUpdated && (
