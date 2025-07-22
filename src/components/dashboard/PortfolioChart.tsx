@@ -61,13 +61,41 @@ export function PortfolioChart() {
     return () => window.removeEventListener('portfolio-updated', handlePortfolioUpdate)
   }, [debouncedChartRefresh, debouncedStatsRefresh])
 
-  // Prepare chart data
-  const processedChartData = chartData.map(point => ({
-    ...point,
-    date: new Date(point.date).toLocaleDateString(),
-    time: new Date(point.date).getTime(),
-    formattedValue: point.value.toFixed(2)
-  }))
+  // Prepare chart data with better formatting
+  const processedChartData = chartData.map((point, index) => {
+    const date = new Date(point.date)
+    let formattedDate = ''
+    
+    // Format date based on selected range
+    if (selectedRange === 1) {
+      // 24H: show hours
+      formattedDate = date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    } else if (selectedRange === 7) {
+      // 7D: show day of week
+      formattedDate = date.toLocaleDateString('en-US', { 
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      })
+    } else {
+      // 30D: show month/day
+      formattedDate = date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      })
+    }
+    
+    return {
+      ...point,
+      date: formattedDate,
+      time: date.getTime(),
+      formattedValue: point.value.toFixed(2),
+      index
+    }
+  })
 
   // Use real-time portfolio stats for current values
   const currentValue = portfolio.length > 0 ? portfolioStats.totalValue : (stats?.totalValue || 0)
@@ -156,11 +184,11 @@ export function PortfolioChart() {
         </div>
       </div>
 
-      {/* Real Chart */}
+      {/* Enhanced Chart */}
       <div className="h-64 w-full">
         {processedChartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={processedChartData}>
+            <AreaChart data={processedChartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
               <defs>
                 <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -174,13 +202,20 @@ export function PortfolioChart() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                interval="preserveStartEnd"
+                minTickGap={30}
               />
               <YAxis 
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                tickFormatter={(value) => {
+                  if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`
+                  if (value >= 1000) return `$${(value / 1000).toFixed(1)}k`
+                  return `$${value.toFixed(0)}`
+                }}
+                domain={['dataMin * 0.95', 'dataMax * 1.05']}
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
@@ -196,6 +231,7 @@ export function PortfolioChart() {
                   stroke: "hsl(var(--background))",
                   strokeWidth: 2
                 }}
+                connectNulls={true}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -203,8 +239,8 @@ export function PortfolioChart() {
           <div className="flex items-center justify-center h-full text-muted-foreground">
             <div className="text-center">
               <TrendingUp className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No historical data available</p>
-              <p className="text-sm">Data will appear as you use the app</p>
+              <p>No portfolio data available</p>
+              <p className="text-sm">Connect a wallet to view your portfolio</p>
             </div>
           </div>
         )}
