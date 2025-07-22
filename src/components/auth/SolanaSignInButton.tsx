@@ -37,36 +37,28 @@ export function SolanaSignInButton() {
             console.error('Auto sign in error:', error)
             toast({
               title: "Sign In Failed",
-              description: `${error.message || 'Unknown error'} - Check console for details`,
+              description: `Authentication failed: ${error.message}`,
               variant: "destructive",
             })
           } else if (success) {
             console.log('Auto sign in successful!')
             
-            // After successful login, explicitly save the wallet details
-            if (wallet.publicKey) {
-              const walletAddress = wallet.publicKey.toString()
-              const walletName = wallet.wallet?.adapter?.name ? `${wallet.wallet.adapter.name} Wallet` : 'Solana Wallet'
-              
-              console.log('Saving connected wallet after authentication:', walletAddress)
-              const saved = await saveWalletToDatabase(walletAddress, walletName)
-              
-              if (saved) {
-                toast({
-                  title: "Success",
-                  description: "Successfully signed in with Solana wallet",
-                })
-                
-                // Navigate to dashboard after successful login
-                navigate('/dashboard')
-              }
-            }
+            toast({
+              title: "Authentication Successful",
+              description: "Successfully signed in with Solana wallet. Setting up your portfolio...",
+            })
+            
+            // Navigate to dashboard immediately after successful authentication
+            navigate('/dashboard')
+            
+            // Note: Wallet saving will be handled by useWallet hook automatically
+            // after authentication is complete and user state is updated
           }
         } catch (error) {
           console.error('Unexpected error in auto sign-in:', error)
           toast({
-            title: "Error",
-            description: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'} - Check console for details`,
+            title: "Authentication Error",
+            description: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`,
             variant: "destructive",
           })
         } finally {
@@ -76,7 +68,7 @@ export function SolanaSignInButton() {
     }
 
     handleAutoSignIn()
-  }, [wallet.connected, wallet.wallet, wallet.publicKey, signInWithSolanaWallet, toast, loading, saveWalletToDatabase, navigate])
+  }, [wallet.connected, wallet.wallet, wallet.publicKey, signInWithSolanaWallet, toast, loading, navigate])
 
   return (
     <div className="w-full space-y-3">

@@ -55,15 +55,15 @@ export function useWallet() {
     try {
       console.log('Saving wallet to database:', { walletAddress, userId: user.id })
       
-      // Check if wallet already exists
+      // Check if wallet already exists using maybeSingle() instead of single()
       const { data: existingWallet, error: checkError } = await supabase
         .from('wallets')
         .select('*')
         .eq('user_id', user.id)
         .eq('wallet_address', walletAddress)
-        .single()
+        .maybeSingle()
 
-      if (checkError && !checkError.message.includes('No rows found')) {
+      if (checkError) {
         console.error('Error checking existing wallet:', checkError)
         toast({
           title: "Error",
@@ -75,7 +75,17 @@ export function useWallet() {
 
       if (existingWallet) {
         console.log('Wallet already exists in database:', existingWallet)
-        // We don't need to do anything, but we'll count this as success
+        // Wallet exists, trigger portfolio refresh and show success
+        toast({
+          title: "Success",
+          description: "Wallet connected successfully! Refreshing portfolio data...",
+        })
+        
+        // Trigger portfolio refresh event for existing wallet
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        }, 500)
+        
         return true
       }
 
@@ -100,25 +110,54 @@ export function useWallet() {
       } else {
         toast({
           title: "Success",
-          description: "Wallet connected successfully!",
+          description: "Wallet connected and saved successfully! Loading your portfolio...",
         })
-        // Refresh wallets list
+        
+        // Refresh wallets list first
         await loadWallets()
+        
+        // Then trigger portfolio refresh after a short delay
+        setTimeout(() => {
+          console.log('Triggering portfolio refresh for new wallet')
+          window.dispatchEvent(new CustomEvent('portfolio-updated'))
+        }, 1000)
+        
         return true
       }
     } catch (error) {
       console.error('Error saving wallet:', error)
+      toast({
+        title: "Error",
+        description: "Unexpected error while saving wallet",
+        variant: "destructive",
+      })
       return false
     }
   }, [user, wallets.length, toast, loadWallets])
 
   // Save wallet when connected - watches for wallet connection
   useEffect(() => {
+    // Add a delay to ensure user authentication is complete
     if (connected && publicKey && user) {
-      console.log('Wallet connected, attempting to save to database...')
-      const walletAddress = publicKey.toString()
-      const walletName = wallet?.adapter?.name ? `${wallet.adapter.name} Wallet` : 'Solana Wallet'
-      saveWalletToDatabase(walletAddress, walletName)
+      console.log('Wallet connected, waiting for authentication to stabilize...')
+      
+      const saveWalletWithDelay = async () => {
+        // Wait a bit to ensure authentication is fully complete
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        if (connected && publicKey && user) {
+          console.log('Authentication stable, attempting to save wallet to database...')
+          const walletAddress = publicKey.toString()
+          const walletName = wallet?.adapter?.name ? `${wallet.adapter.name} Wallet` : 'Solana Wallet'
+          
+          const success = await saveWalletToDatabase(walletAddress, walletName)
+          if (success) {
+            console.log('Wallet saved successfully, portfolio should refresh automatically')
+          }
+        }
+      }
+      
+      saveWalletWithDelay()
     }
   }, [connected, publicKey, user, wallet, saveWalletToDatabase])
 
