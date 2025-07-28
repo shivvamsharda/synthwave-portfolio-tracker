@@ -3,7 +3,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { useNavigate } from "react-router-dom"
-import { Settings, Menu, X, LogOut, Home } from "lucide-react"
+import { Settings, Menu, X, LogOut, Home, Copy } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface HeaderProps {
   onNavigate?: (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => void
@@ -13,6 +14,7 @@ export function Header({ onNavigate }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { signOut } = useAuth()
   const navigateToRoute = useNavigate()
+  const { toast } = useToast()
 
   const navigate = (page: "dashboard" | "wallets" | "nfts" | "yield" | "analytics" | "settings") => {
     onNavigate?.(page)
@@ -28,22 +30,53 @@ export function Header({ onNavigate }: HeaderProps) {
     await signOut()
   }
 
+  const copyContractAddress = async () => {
+    const contractAddress = "51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk"
+    try {
+      await navigator.clipboard.writeText(contractAddress)
+      toast({
+        title: "Copied!",
+        description: "Contract address copied to clipboard",
+      })
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy to clipboard",
+        variant: "destructive",
+      })
+    }
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/80 border-b border-border/50 shadow-navbar">
       <div className="container flex h-20 items-center px-6">
         {/* Logo */}
-        <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigate("dashboard")}>
-          <img 
-            src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-            alt="Cryptic" 
-            className="w-16 h-16 object-contain"
-          />
-          <div>
-            <span className="nav-title gradient-text">
-              Cryptic
-            </span>
-            <div className="text-xs text-muted-foreground font-medium">Crypto Analytics Platform</div>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigate("dashboard")}>
+            <img 
+              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+              alt="Cryptic" 
+              className="w-16 h-16 object-contain"
+            />
+            <div>
+              <span className="nav-title gradient-text">
+                Cryptic
+              </span>
+              <div className="text-xs text-muted-foreground font-medium">Crypto Analytics Platform</div>
+            </div>
           </div>
+          
+          {/* Contract Address Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={copyContractAddress}
+            className="hidden lg:flex items-center space-x-2 text-xs font-mono bg-primary/5 border-primary/20 hover:bg-primary/10 transition-all duration-200"
+          >
+            <span className="text-muted-foreground">CA:</span>
+            <span className="text-primary font-medium">51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk</span>
+            <Copy className="w-3 h-3 ml-2" />
+          </Button>
         </div>
 
         {/* Centered Desktop Navigation */}
