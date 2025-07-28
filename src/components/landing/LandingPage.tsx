@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock } from "lucide-react"
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock, Twitter, Send } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
 import { DashboardPreview } from "./DashboardPreview"
@@ -211,7 +211,7 @@ export function LandingPage() {
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-6">
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start pt-6">
                 <Button 
                   size="lg"
                   onClick={() => navigate('/dashboard')} 
@@ -220,6 +220,25 @@ export function LandingPage() {
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
+                
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://x.com/Cryptic_Markets"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-card/40 border border-border/30 backdrop-blur-sm hover:bg-card/60 hover:border-primary/30 transition-all duration-300 group"
+                  >
+                    <Twitter className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </a>
+                  <a
+                    href="https://t.me/cryptic_markets"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-card/40 border border-border/30 backdrop-blur-sm hover:bg-card/60 hover:border-primary/30 transition-all duration-300 group"
+                  >
+                    <Send className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </a>
+                </div>
               </div>
             </div>
             
