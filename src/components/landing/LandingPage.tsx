@@ -195,7 +195,7 @@ export function LandingPage() {
             <div className="lg:col-span-5 space-y-8 animate-slide-up text-center lg:text-left">
               <Badge variant="secondary" className="bg-primary/10 border-primary/20 text-primary animate-pulse-glow w-fit mx-auto lg:mx-0 mb-4 px-4 py-2 rounded-full">
                 <Zap className="mr-2 h-4 w-4" />
-                <span className="text-sm font-semibold">Version 1.3 Available Now</span>
+                <span className="text-sm font-semibold">Version 1.0 Available Now</span>
               </Badge>
               
               <div className="space-y-8">
