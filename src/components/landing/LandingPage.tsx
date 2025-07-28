@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock, Twitter, Send } from "lucide-react"
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock, Twitter, Send, Copy } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
+import { useToast } from "@/hooks/use-toast"
 import { DashboardPreview } from "./DashboardPreview"
 import { MessagingPreview } from "./MessagingPreview"
 import { MobileDashboardPreview } from "./MobileDashboardPreview"
@@ -14,9 +15,27 @@ import { useIsMobile } from "@/hooks/use-mobile"
 export function LandingPage() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const { toast } = useToast()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [visibleCards, setVisibleCards] = useState<number[]>([])
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  const copyContractAddress = async () => {
+    const contractAddress = "51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk"
+    try {
+      await navigator.clipboard.writeText(contractAddress)
+      toast({
+        title: "Copied!",
+        description: "Contract address copied to clipboard",
+      })
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy to clipboard",
+        variant: "destructive",
+      })
+    }
+  }
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -126,12 +145,26 @@ export function LandingPage() {
       <nav className="relative z-50 backdrop-blur-xl bg-background/60 border border-border/30 shadow-navbar mx-4 mt-6 rounded-2xl">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex h-20 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <img 
-              src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-              alt="Cryptic Logo" 
-              className="h-10 w-10 object-contain"
-            />
-            <span className="nav-title gradient-text">Cryptic</span>
+            <div className="flex items-center space-x-4">
+              <img 
+                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
+                alt="Cryptic Logo" 
+                className="h-10 w-10 object-contain"
+              />
+              <span className="nav-title gradient-text">Cryptic</span>
+            </div>
+            
+            {/* Contract Address Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={copyContractAddress}
+              className="hidden lg:flex items-center space-x-2 text-xs font-mono bg-primary/5 border-primary/20 hover:bg-primary/10 transition-all duration-200"
+            >
+              <span className="text-muted-foreground">CA:</span>
+              <span className="text-primary font-medium">51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk</span>
+              <Copy className="w-3 h-3 ml-2" />
+            </Button>
           </div>
           
           {/* Desktop Navigation */}
