@@ -1,170 +1,124 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock, Twitter, Send, Copy } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import { useState, useEffect, useRef } from "react"
-import { useToast } from "@/hooks/use-toast"
-import { DashboardPreview } from "./DashboardPreview"
-import { MessagingPreview } from "./MessagingPreview"
-import { MobileDashboardPreview } from "./MobileDashboardPreview"
-import { FeatureCarousel } from "./FeatureCarousel"
-import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart"
-import { useIsMobile } from "@/hooks/use-mobile"
-
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, TrendingUp, Activity, BarChart3, Zap, Shield, Globe, CheckCircle, MessageSquare, Bell, Users, Wallet, Menu, X, Eye, GitBranch, Layers, Clock, Twitter, Send, Copy } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { DashboardPreview } from "./DashboardPreview";
+import { MessagingPreview } from "./MessagingPreview";
+import { MobileDashboardPreview } from "./MobileDashboardPreview";
+import { FeatureCarousel } from "./FeatureCarousel";
+import { AnimatedLineChart, AnimatedBarChart, CountingNumber } from "./AnimatedChart";
+import { useIsMobile } from "@/hooks/use-mobile";
 export function LandingPage() {
-  const navigate = useNavigate()
-  const isMobile = useIsMobile()
-  const { toast } = useToast()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [visibleCards, setVisibleCards] = useState<number[]>([])
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
-
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const {
+    toast
+  } = useToast();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [visibleCards, setVisibleCards] = useState<number[]>([]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const copyContractAddress = async () => {
-    const contractAddress = "51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk"
+    const contractAddress = "51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk";
     try {
-      await navigator.clipboard.writeText(contractAddress)
+      await navigator.clipboard.writeText(contractAddress);
       toast({
         title: "Copied!",
-        description: "Contract address copied to clipboard",
-      })
+        description: "Contract address copied to clipboard"
+      });
     } catch (err) {
       toast({
         title: "Failed to copy",
         description: "Could not copy to clipboard",
-        variant: "destructive",
-      })
+        variant: "destructive"
+      });
     }
-  }
+  };
 
   // Intersection Observer for scroll animations
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = cardRefs.current.indexOf(entry.target as HTMLDivElement)
-          if (entry.isIntersecting && index !== -1) {
-            setTimeout(() => {
-              setVisibleCards(prev => [...new Set([...prev, index])])
-            }, index * 100) // Stagger animation by 100ms
-          }
-        })
-      },
-      { threshold: 0.1, rootMargin: '50px' }
-    )
-
-    cardRefs.current.forEach((ref) => {
-      if (ref) observer.observe(ref)
-    })
-
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const index = cardRefs.current.indexOf(entry.target as HTMLDivElement);
+        if (entry.isIntersecting && index !== -1) {
+          setTimeout(() => {
+            setVisibleCards(prev => [...new Set([...prev, index])]);
+          }, index * 100); // Stagger animation by 100ms
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '50px'
+    });
+    cardRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
     return () => {
-      cardRefs.current.forEach((ref) => {
-        if (ref) observer.unobserve(ref)
-      })
-    }
-  }, [])
-
-  const features = [
-    {
-      icon: <TrendingUp className="h-6 w-6" />,
-      title: "Total Earnings Analytics",
-      description: "Track your portfolio performance with real-time value calculations and detailed earning breakdowns.",
-      value: "$2,847,329",
-      change: "+12.5%",
-      period: "24h"
-    },
-    {
-      icon: <Activity className="h-6 w-6" />,
-      title: "Real-Time Analytics", 
-      description: "Monitor live market movements and transaction flows across all your connected wallets.",
-      value: "1,247",
-      change: "+8.2%",
-      period: "Active Tokens"
-    },
-    {
-      icon: <BarChart3 className="h-6 w-6" />,
-      title: "Advanced Insights",
-      description: "Get deep analytics on token flows, holder movements, and market sentiment analysis.",
-      value: "847",
-      change: "+15.7%",
-      period: "Insights Generated"
-    }
-  ]
-
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      description: "Perfect for getting started with Cryptic analytics",
-      features: [
-        "Up to 3 wallet connections",
-        "Basic portfolio tracking",
-        "24-hour data history",
-        "Community support"
-      ],
-      highlighted: false
-    },
-    {
-      name: "Professional",
-      price: "$29",
-      description: "Advanced analytics for serious Web3 users and traders",
-      features: [
-        "Unlimited wallet connections",
-        "Real-time analytics",
-        "90-day data history",
-        "Advanced charting tools",
-        "Email notifications",
-        "Priority support"
-      ],
-      highlighted: true
-    },
-    {
-      name: "Enterprise",
-      price: "$99",
-      description: "Complete solution for institutions and power users",
-      features: [
-        "Everything in Professional",
-        "Custom analytics dashboard",
-        "API access",
-        "White-label options",
-        "Dedicated account manager",
-        "Custom integrations"
-      ],
-      highlighted: false
-    }
-  ]
+      cardRefs.current.forEach(ref => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, []);
+  const features = [{
+    icon: <TrendingUp className="h-6 w-6" />,
+    title: "Total Earnings Analytics",
+    description: "Track your portfolio performance with real-time value calculations and detailed earning breakdowns.",
+    value: "$2,847,329",
+    change: "+12.5%",
+    period: "24h"
+  }, {
+    icon: <Activity className="h-6 w-6" />,
+    title: "Real-Time Analytics",
+    description: "Monitor live market movements and transaction flows across all your connected wallets.",
+    value: "1,247",
+    change: "+8.2%",
+    period: "Active Tokens"
+  }, {
+    icon: <BarChart3 className="h-6 w-6" />,
+    title: "Advanced Insights",
+    description: "Get deep analytics on token flows, holder movements, and market sentiment analysis.",
+    value: "847",
+    change: "+15.7%",
+    period: "Insights Generated"
+  }];
+  const plans = [{
+    name: "Free",
+    price: "$0",
+    description: "Perfect for getting started with Cryptic analytics",
+    features: ["Up to 3 wallet connections", "Basic portfolio tracking", "24-hour data history", "Community support"],
+    highlighted: false
+  }, {
+    name: "Professional",
+    price: "$29",
+    description: "Advanced analytics for serious Web3 users and traders",
+    features: ["Unlimited wallet connections", "Real-time analytics", "90-day data history", "Advanced charting tools", "Email notifications", "Priority support"],
+    highlighted: true
+  }, {
+    name: "Enterprise",
+    price: "$99",
+    description: "Complete solution for institutions and power users",
+    features: ["Everything in Professional", "Custom analytics dashboard", "API access", "White-label options", "Dedicated account manager", "Custom integrations"],
+    highlighted: false
+  }];
 
   // Sample data for animations
   const portfolioData = [1200, 1350, 1180, 1620, 1890, 2100, 1950, 2340, 2680, 2470, 2847];
   const analyticsData = [420, 380, 510, 490, 650, 720, 680, 820, 960, 1050, 1247];
   const insightsData = [120, 185, 210, 340, 420, 380, 520, 610, 730, 680, 847];
-
-  return (
-    <div className="min-h-screen bg-gradient-hero overflow-hidden">
+  return <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Navigation */}
       <nav className="relative z-50 backdrop-blur-xl bg-background/60 border border-border/30 shadow-navbar mx-4 mt-6 rounded-2xl">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex h-20 items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-4">
-              <img 
-                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-                alt="Cryptic Logo" 
-                className="h-10 w-10 object-contain"
-              />
+              <img src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" alt="Cryptic Logo" className="h-10 w-10 object-contain" />
               <span className="nav-title gradient-text">Cryptic</span>
             </div>
             
             {/* Contract Address Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={copyContractAddress}
-              className="hidden lg:flex items-center space-x-2 text-xs font-mono bg-primary/5 border-primary/20 hover:bg-primary/10 transition-all duration-200"
-            >
-              <span className="text-muted-foreground">CA:</span>
-              <span className="text-primary font-medium">51d8RGGrp9E2aVZtjHGtQpbxDQo53wCUvDcsXZuAbonk</span>
-              <Copy className="w-3 h-3 ml-2" />
-            </Button>
+            
           </div>
           
           {/* Desktop Navigation */}
@@ -172,46 +126,31 @@ export function LandingPage() {
             <a href="#features" className="nav-item text-muted-foreground hover:text-primary transition-colors">
               Features
             </a>
-            <Button 
-              onClick={() => navigate('/dashboard')}
-              className="crypto-button text-sm"
-            >
+            <Button onClick={() => navigate('/dashboard')} className="crypto-button text-sm">
               Get Started
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors rounded-xl hover:bg-primary/5"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors rounded-xl hover:bg-primary/5" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border/20 bg-background/95 backdrop-blur-xl rounded-b-2xl">
+        {mobileMenuOpen && <div className="md:hidden border-t border-border/20 bg-background/95 backdrop-blur-xl rounded-b-2xl">
             <div className="px-6 py-6 space-y-4">
-              <a 
-                href="#features" 
-                className="block nav-item text-muted-foreground hover:text-primary transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+              <a href="#features" className="block nav-item text-muted-foreground hover:text-primary transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
                 Features
               </a>
-              <Button 
-                onClick={() => {
-                  navigate('/dashboard')
-                  setMobileMenuOpen(false)
-                }}
-                className="crypto-button w-full text-sm"
-              >
+              <Button onClick={() => {
+            navigate('/dashboard');
+            setMobileMenuOpen(false);
+          }} className="crypto-button w-full text-sm">
                 Get Started
               </Button>
             </div>
-          </div>
-        )}
+          </div>}
       </nav>
 
       {/* Hero Section */}
@@ -220,7 +159,9 @@ export function LandingPage() {
         
         {/* Background Elements */}
         <div className="absolute top-20 left-4 sm:left-10 w-32 sm:w-48 h-32 sm:h-48 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-4 sm:right-10 w-48 sm:w-64 h-48 sm:h-64 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 right-4 sm:right-10 w-48 sm:w-64 h-48 sm:h-64 bg-accent/5 rounded-full blur-3xl animate-float" style={{
+        animationDelay: '1s'
+      }}></div>
         
         <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -245,30 +186,16 @@ export function LandingPage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start pt-6">
-                <Button 
-                  size="lg"
-                  onClick={() => navigate('/dashboard')} 
-                  className="crypto-button text-base px-10 py-4 group"
-                >
+                <Button size="lg" onClick={() => navigate('/dashboard')} className="crypto-button text-base px-10 py-4 group">
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
                 <div className="flex items-center gap-3">
-                  <a
-                    href="https://x.com/Cryptic_Markets"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-card/40 border border-border/30 backdrop-blur-sm hover:bg-card/60 hover:border-primary/30 transition-all duration-300 group"
-                  >
+                  <a href="https://x.com/Cryptic_Markets" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-card/40 border border-border/30 backdrop-blur-sm hover:bg-card/60 hover:border-primary/30 transition-all duration-300 group">
                     <Twitter className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </a>
-                  <a
-                    href="https://t.me/cryptic_markets"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-card/40 border border-border/30 backdrop-blur-sm hover:bg-card/60 hover:border-primary/30 transition-all duration-300 group"
-                  >
+                  <a href="https://t.me/cryptic_markets" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-card/40 border border-border/30 backdrop-blur-sm hover:bg-card/60 hover:border-primary/30 transition-all duration-300 group">
                     <Send className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </a>
                 </div>
@@ -277,13 +204,9 @@ export function LandingPage() {
             
             {/* Right Side - Dashboard Preview */}
             <div className="lg:col-span-7 relative animate-slide-in-right overflow-visible">
-              {isMobile ? (
-                <div className="flex justify-center mt-12 lg:mt-0">
+              {isMobile ? <div className="flex justify-center mt-12 lg:mt-0">
                   <MobileDashboardPreview />
-                </div>
-              ) : (
-                <DashboardPreview />
-              )}
+                </div> : <DashboardPreview />}
             </div>
           </div>
         </div>
@@ -321,73 +244,51 @@ export function LandingPage() {
           </div>
           
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
-            {[
-              {
-                icon: <BarChart3 className="h-6 w-6" />,
-                title: "Custom Token Analytics",
-                description: "Get deep insights on any token by mint address or symbol, including volume, holders, market cap, and more."
-              },
-              {
-                icon: <TrendingUp className="h-6 w-6" />,
-                title: "Trending Token Radar",
-                description: "Live feed of top-performing tokens across timeframes. Discover what's gaining momentum and why."
-              },
-              {
-                icon: <Shield className="h-6 w-6" />,
-                title: "AI Risk Assessment",
-                description: "Instantly evaluate token risk with AI-driven scores across price volatility, whale activity, liquidity, and social signals."
-              },
-              {
-                icon: <Users className="h-6 w-6" />,
-                title: "Holder Movement Tracking",
-                description: "Visualize wallet behavior—new holders, exits, transfers, and volume movement across time ranges."
-              },
-              {
-                icon: <Eye className="h-6 w-6" />,
-                title: "Whale Tracker",
-                description: "Identify and follow whale wallet actions. Monitor their inflows/outflows, timing, and holding patterns."
-              },
-              {
-                icon: <GitBranch className="h-6 w-6" />,
-                title: "Token Flow Analysis",
-                description: "Trace token movements across wallets and protocols. Understand how capital flows in and out of ecosystems."
-              },
-              {
-                icon: <Layers className="h-6 w-6" />,
-                title: "Multi-Chain Support",
-                description: "Seamlessly track tokens and analytics across Solana, Ethereum, and more—without switching dashboards."
-              },
-              {
-                icon: <Clock className="h-6 w-6" />,
-                title: "Real-Time Updates",
-                description: "Every metric auto-refreshes, giving you always-on insights without needing to reload or re-analyze."
-              }
-            ].map((feature, index) => (
-              <div 
-                key={index}
-                ref={(el) => (cardRefs.current[index] = el)}
-                className={`
+            {[{
+            icon: <BarChart3 className="h-6 w-6" />,
+            title: "Custom Token Analytics",
+            description: "Get deep insights on any token by mint address or symbol, including volume, holders, market cap, and more."
+          }, {
+            icon: <TrendingUp className="h-6 w-6" />,
+            title: "Trending Token Radar",
+            description: "Live feed of top-performing tokens across timeframes. Discover what's gaining momentum and why."
+          }, {
+            icon: <Shield className="h-6 w-6" />,
+            title: "AI Risk Assessment",
+            description: "Instantly evaluate token risk with AI-driven scores across price volatility, whale activity, liquidity, and social signals."
+          }, {
+            icon: <Users className="h-6 w-6" />,
+            title: "Holder Movement Tracking",
+            description: "Visualize wallet behavior—new holders, exits, transfers, and volume movement across time ranges."
+          }, {
+            icon: <Eye className="h-6 w-6" />,
+            title: "Whale Tracker",
+            description: "Identify and follow whale wallet actions. Monitor their inflows/outflows, timing, and holding patterns."
+          }, {
+            icon: <GitBranch className="h-6 w-6" />,
+            title: "Token Flow Analysis",
+            description: "Trace token movements across wallets and protocols. Understand how capital flows in and out of ecosystems."
+          }, {
+            icon: <Layers className="h-6 w-6" />,
+            title: "Multi-Chain Support",
+            description: "Seamlessly track tokens and analytics across Solana, Ethereum, and more—without switching dashboards."
+          }, {
+            icon: <Clock className="h-6 w-6" />,
+            title: "Real-Time Updates",
+            description: "Every metric auto-refreshes, giving you always-on insights without needing to reload or re-analyze."
+          }].map((feature, index) => <div key={index} ref={el => cardRefs.current[index] = el} className={`
                   crypto-card group cursor-pointer p-8 space-y-6 
-                  ${visibleCards.includes(index) 
-                    ? 'opacity-100 translate-y-0' 
-                    : 'opacity-0 translate-y-8'
-                  }
-                `}
-                style={{ 
-                  transitionDelay: visibleCards.includes(index) ? '0ms' : `${index * 100}ms`,
-                }}
-              >
+                  ${visibleCards.includes(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+                `} style={{
+            transitionDelay: visibleCards.includes(index) ? '0ms' : `${index * 100}ms`
+          }}>
                 {/* Icon container */}
                 <div className={`
                   feature-icon group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300
-                  ${visibleCards.includes(index) 
-                    ? 'scale-100 opacity-100' 
-                    : 'scale-80 opacity-0'
-                  }
-                `}
-                style={{ 
-                  transitionDelay: visibleCards.includes(index) ? `${index * 100 + 200}ms` : '0ms',
-                }}>
+                  ${visibleCards.includes(index) ? 'scale-100 opacity-100' : 'scale-80 opacity-0'}
+                `} style={{
+              transitionDelay: visibleCards.includes(index) ? `${index * 100 + 200}ms` : '0ms'
+            }}>
                   {feature.icon}
                 </div>
                 
@@ -399,8 +300,7 @@ export function LandingPage() {
                     {feature.description}
                   </p>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -425,23 +325,30 @@ export function LandingPage() {
               </div>
               
               <div className="grid gap-4">
-                {[
-                  { icon: <MessageSquare className="h-5 w-5" />, text: "Instant portfolio updates", delay: '0.2s' },
-                  { icon: <Bell className="h-5 w-5" />, text: "Smart alert system", delay: '0.4s' },
-                  { icon: <Users className="h-5 w-5" />, text: "Team collaboration", delay: '0.6s' },
-                  { icon: <Wallet className="h-5 w-5" />, text: "Multi-wallet notifications", delay: '0.8s' }
-                ].map((item, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-center space-x-4 p-4 rounded-2xl bg-card/40 border border-border/30 backdrop-blur-sm animate-slide-in-right hover:bg-card/60 transition-all duration-300"
-                    style={{ animationDelay: item.delay }}
-                  >
+                {[{
+                icon: <MessageSquare className="h-5 w-5" />,
+                text: "Instant portfolio updates",
+                delay: '0.2s'
+              }, {
+                icon: <Bell className="h-5 w-5" />,
+                text: "Smart alert system",
+                delay: '0.4s'
+              }, {
+                icon: <Users className="h-5 w-5" />,
+                text: "Team collaboration",
+                delay: '0.6s'
+              }, {
+                icon: <Wallet className="h-5 w-5" />,
+                text: "Multi-wallet notifications",
+                delay: '0.8s'
+              }].map((item, index) => <div key={index} className="flex items-center space-x-4 p-4 rounded-2xl bg-card/40 border border-border/30 backdrop-blur-sm animate-slide-in-right hover:bg-card/60 transition-all duration-300" style={{
+                animationDelay: item.delay
+              }}>
                     <div className="feature-icon">
                       {item.icon}
                     </div>
                     <span className="text-foreground font-semibold">{item.text}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
 
@@ -460,11 +367,7 @@ export function LandingPage() {
         <div className="container px-6">
           <div className="flex flex-col items-center justify-center space-y-8 md:flex-row md:justify-between md:space-y-0">
             <div className="flex items-center space-x-4">
-              <img 
-                src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" 
-                alt="Cryptic Logo" 
-                className="h-10 w-10 object-contain"
-              />
+              <img src="https://iktftsxuuiyeabxgdxzo.supabase.co/storage/v1/object/public/platform-logos//cryptic.png" alt="Cryptic Logo" className="h-10 w-10 object-contain" />
               <span className="nav-title gradient-text">Cryptic</span>
             </div>
             
@@ -480,6 +383,5 @@ export function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
-  )
+    </div>;
 }
